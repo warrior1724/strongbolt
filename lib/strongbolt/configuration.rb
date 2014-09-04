@@ -3,17 +3,15 @@ module StrongBolt
   module Configuration
 
     #
-    # Allows to configure what happens when the access is denied
+    # Allows to configure what happens when the access is denied,
+    # or call the block that has been given
     #
-    def self.access_denied &block
-      @@access_denied_block = block
-    end
-
-    #
-    # Returns the block to call when access is denied
-    #
-    def self.access_denied_block
-      @@access_denied_block
+    def self.access_denied *args, &block
+      if block.present?
+        @@access_denied_block = block
+      else
+        @@access_denied_block.call *args
+      end
     end
 
   end

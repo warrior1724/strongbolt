@@ -21,8 +21,9 @@ describe StrongBolt do
     before do
       block = double('block', :call => nil)
       expect(block).to receive(:call).with 'user', 'instance', 'action', 'request_path'
-      expect(StrongBolt::Configuration).to receive(:access_denied_block)
-        .and_return(block).twice
+      StrongBolt::Configuration.access_denied do |user, instance, action, request_path|
+        block.call user, instance, action, request_path
+      end
     end
 
     it "should call configuration's block" do
