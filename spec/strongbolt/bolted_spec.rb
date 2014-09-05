@@ -27,8 +27,14 @@ module StrongBolt
         end
       end
 
-      context "when rails is on console" do
-        #before { expect(Rails). }
+      context "when using rails is on console" do
+        before do
+          rails = class_double 'Rails', :double => true
+        end
+
+        it "should return false" do
+          expect(Model.bolted?).to eq false
+        end
       end
 
     end

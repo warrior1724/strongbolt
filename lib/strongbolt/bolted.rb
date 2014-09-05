@@ -15,8 +15,13 @@ module StrongBolt
         !unbolted?
       end
 
+      #
+      # Not secure if Grant is disabled, there's no current user
+      # or if we're using Rails console 
+      #
       def unbolted?
-        Grant::Status.grant_disabled? || Grant::User.current_user.nil?
+        Grant::Status.grant_disabled? || (defined?(Rails) && defined?(Rails.console)) ||
+           Grant::User.current_user.nil?
       end
     end
     
@@ -36,6 +41,9 @@ module StrongBolt
       # We add the grant to filter everything
       receiver.class_eval do
 
+        #
+        # We use the grant helper method to test authorizations on all methods
+        #
         grant(:find, :create, :update, :destroy) do |user, instance, action|
           # Check the user permission unless unbolted
           granted = unbolted? ? true : user.can?( action, instance )

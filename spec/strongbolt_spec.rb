@@ -32,4 +32,71 @@ describe StrongBolt do
 
   end
 
+  #
+  # Setting the Grant user
+  #
+  describe 'setting the Grant current user' do
+
+    context "when it is from the same class then defined (or default)" do
+
+      context "when the model doesn't have the module UserAbilities included" do
+        before do
+          class UserWithout < ActiveRecord::Base
+            self.table_name = 'users'
+          end
+          
+          # We configure the user class
+          StrongBolt::Configuration.user_class = 'UserWithout'
+        end
+        after { Object.send :remove_const, "UserWithout" }
+
+        let(:user) { UserWithout.new }
+
+        it "should have included the module" do
+          Grant::User.current_user = user
+          expect(UserWithout.included_modules).to include StrongBolt::UserAbilities
+        end
+
+        it "should set the current user" do
+          Grant::User.current_user = user
+          expect(Grant::User.current_user).to eq user
+        end
+      end # End when User Class doesn't have the UserAbilities included
+      
+      context 'when the model has the UserAbilities module included' do
+        
+        before do
+          class UserWithAbilities < ActiveRecord::Base
+            include StrongBolt::UserAbilities
+            self.table_name = 'users'
+          end
+          
+          # We configure the user class
+          StrongBolt::Configuration.user_class = 'UserWithAbilities'
+        end
+        after { Object.send :remove_const, "UserWithAbilities" }
+        
+        let(:user) { UserWithAbilities.new }
+
+        it "should set the current user" do
+          Grant::User.current_user = user
+          expect(Grant::User.current_user).to eq user
+        end
+
+      end # End when User class has Abilities
+
+    end # End when user given is the right class
+
+    context "when the model isn't from the user class" do
+      
+      it "should raise error" do
+        expect do
+          Grant::User.current_user = Model.new
+        end.to raise_error StrongBolt::WrongUserClass
+      end
+
+    end
+
+  end
+
 end
