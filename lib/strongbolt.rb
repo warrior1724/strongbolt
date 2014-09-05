@@ -5,6 +5,7 @@ require "awesome_nested_set"
 
 require "strongbolt/version"
 require "strongbolt/configuration"
+require "strongbolt/tenantable"
 require "strongbolt/bolted"
 require "strongbolt/user_abilities"
 require "strongbolt/capability"
@@ -12,6 +13,7 @@ require "strongbolt/role"
 require "strongbolt/user_group"
 
 ActiveRecord::Base.send :include, StrongBolt::Bolted
+ActiveRecord::Base.send :include, StrongBolt::Tenantable
 
 #
 # Updates Grant current_user method to raise an error if the user
