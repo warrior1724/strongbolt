@@ -66,5 +66,16 @@ module StrongBolt
     block.call Configuration
   end
 
-  class WrongUserClass < StandardError; end
+  #
+  # Tenant models
+  #
+  def self.add_tenant model
+    @@tenants ||= []
+    @@tenants |= [model]
+  end
+  def self.tenants() @@tenants ||= []; end
+
+  class StrongBoltError < StandardError; end
+  class WrongUserClass < StrongBoltError; end
+  class AssociationNotConfigured < StrongBoltError; end
 end

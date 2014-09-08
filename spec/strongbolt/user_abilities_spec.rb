@@ -94,11 +94,11 @@ module StrongBolt
         
         context "when authorized" do
           it "should return true when passing instance" do
-            expect(user.can? :create, Model.new).to eq true
+            expect(user.can? :create, ::Model.new).to eq true
           end
 
           it "should return true when passing class" do
-            expect(user.can? :create, Model).to eq true
+            expect(user.can? :create, ::Model).to eq true
           end
         end
 
@@ -132,13 +132,13 @@ module StrongBolt
         
         context "when requiring all attributes" do
           it "should return false" do
-            expect(user.can? :create, UnownedModel, :all).to eq false
+            expect(user.can? :create, ::UnownedModel, :all).to eq false
           end
         end
 
         context "when requiring any attribute" do
           it "should return true" do
-            expect(user.can? :create, UnownedModel, :any).to eq true
+            expect(user.can? :create, ::UnownedModel, :any).to eq true
           end
         end
 

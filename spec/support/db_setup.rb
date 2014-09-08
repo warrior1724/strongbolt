@@ -30,6 +30,14 @@ class TestsMigrations < ActiveRecord::Migration
       t.string :name
       t.string :value
       t.integer :user_id
+      t.integer :parent_id
+
+      t.timestamps
+    end
+
+    create_table :child_models, :force => true do |t|
+      t.integer :model_id
+      t.integer :parent_id
 
       t.timestamps
     end
@@ -39,6 +47,11 @@ class TestsMigrations < ActiveRecord::Migration
       t.string :value
 
       t.timestamps
+    end
+
+    create_table :model_models, :force => true do |t|
+      t.integer :parent_id
+      t.integer :child_id
     end
 
     create_table :strongbolt_capabilities, :force => true do |t|
@@ -89,5 +102,22 @@ class TestsMigrations < ActiveRecord::Migration
 end
 
 class User < ActiveRecord::Base; end
-class Model < ActiveRecord::Base; end
-class UnownedModel < ActiveRecord::Base; end
+
+module StrongBolt
+  class Model < ActiveRecord::Base
+    self.table_name = "models"
+  end
+  class UnownedModel < ActiveRecord::Base
+    self.table_name = "unowned_models"
+  end
+end
+
+class Model < ActiveRecord::Base
+  self.table_name = "models"
+end
+class UnownedModel < ActiveRecord::Base
+  self.table_name = "unowned_models"
+end
+
+
+

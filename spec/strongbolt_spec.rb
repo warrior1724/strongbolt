@@ -91,7 +91,7 @@ describe StrongBolt do
       
       it "should raise error" do
         expect do
-          Grant::User.current_user = Model.new
+          Grant::User.current_user = StrongBolt::Model.new
         end.to raise_error StrongBolt::WrongUserClass
       end
 
