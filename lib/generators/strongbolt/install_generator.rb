@@ -18,7 +18,7 @@ module Strongbolt
         if self.class.migration_exists?("db/migrate", "#{target}")
           say_status "skipped", "Migration #{target}.rb already exists"
         else
-          migration_template "migrations/#{source}.rb", "db/migrate/#{target}.rb"
+          migration_template "#{source}.rb", "db/migrate/#{target}.rb"
         end
       end
 
