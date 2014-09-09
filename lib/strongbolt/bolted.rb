@@ -83,7 +83,7 @@ module StrongBolt
       #
       receiver.grant(:find, :create, :update, :destroy) do |user, instance, action|
         # Check the user permission unless unbolted
-        granted = unbolted? ? true : user.can?( action, instance )
+        granted = receiver.unbolted? ? true : user.can?( action, instance )
 
         # If not granted, trigger the access denied
         unless granted
