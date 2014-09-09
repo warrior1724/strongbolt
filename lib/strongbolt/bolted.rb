@@ -78,20 +78,27 @@ module StrongBolt
       receiver.extend         ClassMethods
       receiver.send :include, InstanceMethods
 
-      #
-      # We use the grant helper method to test authorizations on all methods
-      #
-      receiver.grant(:find, :create, :update, :destroy) do |user, instance, action|
-        # Check the user permission unless unbolted
-        granted = receiver.unbolted? ? true : user.can?( action, instance )
+      # We add the grant to filter everything
+      receiver.class_eval do
 
-        # If not granted, trigger the access denied
-        unless granted
-          StrongBolt.access_denied user, instance, action, $request.try(:fullpath)
-        end
-        
-        granted
-      end # End Grant
+        #
+        # We use the grant helper method to test authorizations on all methods
+        #
+        grant(:find, :create, :update, :destroy) do |user, instance, action|
+          # Check the user permission unless unbolted
+          StrongBolt.logger.warn "StrongBolt not activated on #{receiver.name}" if unbolted?
+          
+          granted = unbolted? ? true : user.can?( action, instance )
+
+          # If not granted, trigger the access denied
+          unless granted
+            StrongBolt.access_denied user, instance, action, $request.try(:fullpath)
+          end
+          
+          granted
+        end # End Grant
+
+      end
     end
   end
 end
