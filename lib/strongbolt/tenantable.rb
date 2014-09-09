@@ -35,6 +35,9 @@ module StrongBolt
             models_to_traverse.concat current_association.klass.reflect_on_all_associations
           end
         end
+
+        setup_association_on_user
+
         @tenant = true
         StrongBolt.add_tenant self
       end
@@ -85,17 +88,35 @@ module StrongBolt
           
           # If the target is linked through some sort of has_many
           if link == plural_association_name || inverse.collection?
+            # Setup the association
             klass.has_many plural_association_name, options
+            # Setup the scope with_name_of_plural_associations
+            klass.scope "with_#{plural_association_name}", -> { includes plural_association_name }
+            
             puts "#{klass.name} has_many #{plural_association_name} through: #{options[:through]}"
             return plural_association_name
 
           # Otherwise, it's linked through a has one
           else
+            # Setup the association
             klass.has_one singular_association_name, options
+            # Setup the scope with_name_of_plural_associations
+            klass.scope "with_#{plural_association_name}", -> { includes singular_association_name }
+            
             puts "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}"
             return singular_association_name
           end 
         end
+      end
+
+      #
+      # Setups the has_many thru association on the User class
+      #
+      def setup_association_on_user
+        Configuration.user_class.constantize.has_many plural_association_name,
+          :source => :tenant,
+          :source_type => self.name,
+          :through => :users_tenants
       end
 
       #

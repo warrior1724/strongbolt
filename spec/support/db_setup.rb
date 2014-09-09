@@ -61,6 +61,7 @@ class TestsMigrations < ActiveRecord::Migration
       t.string   :action
       t.string   :attr
       t.boolean  :require_ownership, :default => false, :null => false
+      t.boolean  :require_tenant_management, :default => true, :null => false
 
       t.timestamps
     end
@@ -95,8 +96,12 @@ class TestsMigrations < ActiveRecord::Migration
     create_table :strongbolt_capabilities_roles, :id => false, :force => true do |t|
       t.integer  :role_id
       t.integer  :capability_id
-      
-      t.timestamps
+    end
+
+    create_table :strongbolt_users_tenants, :id => false, :force => true do |t|
+      t.integer  :user_id
+      t.integer  :tenant_id
+      t.string   :tenant_type
     end
   end
 end

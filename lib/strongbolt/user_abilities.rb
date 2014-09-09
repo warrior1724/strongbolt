@@ -176,8 +176,13 @@ module StrongBolt
 
       receiver.class_eval do
         has_and_belongs_to_many :user_groups, foreign_key: :user_id,
-          class_name: "StrongBolt::UserGroup"
+          :class_name => "StrongBolt::UserGroup",
+          :join_table => :strongbolt_user_groups_users,
+          :inverse_of => :users
         has_many :roles, through: :user_groups
+
+        has_many :users_tenants, class_name: "StrongBolt::UsersTenant",
+          foreign_key: :user_id
       end
     end
   end

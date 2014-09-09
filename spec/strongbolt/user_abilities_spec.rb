@@ -9,6 +9,7 @@ describe StrongBolt::UserAbilities do
 
   it { is_expected.to have_and_belong_to_many :user_groups }
   it { is_expected.to have_many(:roles).through :user_groups }
+  it { is_expected.to have_many(:users_tenants) }
   it { is_expected.to respond_to(:capabilities) }
 
 

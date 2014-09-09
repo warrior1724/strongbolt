@@ -11,6 +11,7 @@ require "strongbolt/user_abilities"
 require "strongbolt/capability"
 require "strongbolt/role"
 require "strongbolt/user_group"
+require "strongbolt/users_tenant"
 
 ActiveRecord::Base.send :include, StrongBolt::Bolted
 ActiveRecord::Base.send :include, StrongBolt::Tenantable
