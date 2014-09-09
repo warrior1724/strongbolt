@@ -1,6 +1,6 @@
 require 'rails/generators/base'
 
-module StrongBolt
+module Strongbolt
   module Generators
     class InstallGenerator < Rails::Generators::Base
       
