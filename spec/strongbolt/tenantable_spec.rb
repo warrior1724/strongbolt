@@ -26,6 +26,7 @@ describe StrongBolt::Tenantable do
           tenant
         end
       end
+      after { StrongBolt.send :tenants=, [] }
 
       it "should return true" do
         expect(OtherModel.tenant?).to eq true
@@ -153,10 +154,10 @@ describe StrongBolt::Tenantable do
       end
 
       it "should have added has_many :tenant_models to UncleModel" do
-        expect(UncleModel.new).to have_many(:tenant_models).through :other_child_models
+        expect(UncleModel.new).not_to have_many(:tenant_models).through :other_child_models
       end
 
-      %w{OtherChildModel BottomModel SiblingModel UncleModel}.each do |model|
+      %w{OtherChildModel BottomModel SiblingModel}.each do |model|
         it "should have added a scope with_tenants to #{model}" do
           expect(model.constantize).to respond_to :with_tenant_models
         end

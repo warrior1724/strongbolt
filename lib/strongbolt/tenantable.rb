@@ -6,7 +6,7 @@ module StrongBolt
       # It will traverse all the has_many relationships
       # and add a has_one :tenant if not specified
       #
-      def tenant
+      def tenant opts = {}
         # Stops if already configured
         return if tenant?
         #
@@ -25,8 +25,10 @@ module StrongBolt
           # relationship, using the intermediate model before.
 
           # So unless we've already traversed this model, or that's a through relationship
+          # Also we don't go following belongs_to relationship, it becomes crazy
           unless @models_traversed.has_key?(current_association.klass.name) ||
-            current_association.is_a?(ActiveRecord::Reflection::ThroughReflection)
+            current_association.is_a?(ActiveRecord::Reflection::ThroughReflection) ||
+            current_association.macro == :belongs_to
             # We setup the model using the association given
             method = setup_model(current_association)
             # We flag the model, storing the name of the method used to link to tenant
@@ -43,6 +45,16 @@ module StrongBolt
       end
 
       def tenant?() @tenant.present? && @tenant; end
+
+      #
+      # Returns associations potential name
+      #
+      def singular_association_name
+        @singular_association_name ||= self.name.demodulize.underscore.to_sym
+      end
+      def plural_association_name
+        @plural_association_name ||= self.name.demodulize.underscore.pluralize.to_sym
+      end
 
       private
 
@@ -82,8 +94,7 @@ module StrongBolt
 
           # Common options
           options = {
-            through: inverse.name,
-            inverse_of: association.name
+            through: inverse.name
           }
           
           # If the target is linked through some sort of has_many
@@ -120,16 +131,6 @@ module StrongBolt
       end
 
       #
-      # Returns associations potential name
-      #
-      def singular_association_name
-        @singular_association_name ||= self.name.demodulize.underscore.to_sym
-      end
-      def plural_association_name
-        @plural_association_name ||= self.name.demodulize.underscore.pluralize.to_sym
-      end
-
-      #
       # Returns the inverse of specified association, using what's given
       # as inverse_of or trying to guess it
       #
@@ -158,7 +159,6 @@ module StrongBolt
     end
     
     module InstanceMethods
-      
     end
     
     def self.included(receiver)

@@ -2,6 +2,46 @@ require "spec_helper"
 
 describe StrongBolt::UserAbilities do
 
+  before(:all) do
+    #
+    # This is a very basic schema that allows having a model,
+    # ChildModel, being tenanted by Model
+    #
+    define_model "TenantModel" do
+      self.table_name = "models"
+
+      has_many :owned_models, foreign_key: :parent_id
+      belongs_to :unowned_model, foreign_key: :parent_id
+    end
+
+    define_model "OwnedModel" do
+      self.table_name = "child_models"
+
+      belongs_to :user, foreign_key: :model_id
+      belongs_to :tenant_model, foreign_key: :parent_id
+
+      has_many :child_models, foreign_key: :parent_id
+
+      validates :tenant_model, presence: true
+    end
+
+    define_model "ChildModel" do
+      self.table_name = "model_models"
+
+      belongs_to :owned_model, foreign_key: :parent_id
+    end
+
+    define_model "UnownedModel" do
+      self.table_name = "unowned_models"
+
+      has_many :tenant_models, foreign_key: :parent_id
+    end
+
+    TenantModel.tenant
+
+    puts ChildModel.reflect_on_all_associations(:has_one).inspect
+  end
+
   let(:user) { User.create! }
 
   subject { user }
@@ -17,14 +57,28 @@ describe StrongBolt::UserAbilities do
   # Creates some fixtures for the tests here
   #
   def create_fixtures
+    # An unown model linked to a tenant
+    @linked_to_tenant = UnownedModel.create!
+    @tenant_model = TenantModel.create! unowned_model: @linked_to_tenant
+    @other_tenant_model = TenantModel.create!
+    # Add to the user
+    user.add_tenant @tenant_model
+    
     # Another user
     @other_user = User.create!
     # A owned model, owned
-    @owned_model = Model.create! user_id: user.id
+    @owned_model = OwnedModel.create! user: user,
+      tenant_model: @tenant_model
     # An model not owned
-    @unowned_model = Model.create! user_id: @other_user.id
+    @unowned_model = OwnedModel.create! user: @other_user,
+      tenant_model: @tenant_model
+    # Other tenant model
+    @unmanaged_model = OwnedModel.create! tenant_model: @other_tenant_model
     # An unownable model
     @model = UnownedModel.create!
+
+    # Child
+    @child_model = @owned_model.child_models.create!
 
     # The user belong to a group
     @group = StrongBolt::UserGroup.create! name: "Normal"
@@ -42,13 +96,13 @@ describe StrongBolt::UserAbilities do
     @parent_role.capabilities.create! model: "User", action: "update", require_ownership: true
 
     # User can read all owned models
-    @parent_role.capabilities.create! model: "Model", action: "find"
+    @parent_role.capabilities.create! model: "OwnedModel", action: "find"
 
     # And create some
-    @role.capabilities.create! model: "Model", action: "create", require_ownership: true
+    @role.capabilities.create! model: "OwnedModel", action: "create", require_ownership: true
 
     # But can delete only owned models
-    @role.capabilities.create! model: "Model", action: "destroy", require_ownership: true
+    @role.capabilities.create! model: "OwnedModel", action: "destroy", require_ownership: true
 
     # User can read any unowned models
     @guest_role.capabilities.create! model: "UnownedModel", action: "find"
@@ -60,6 +114,85 @@ describe StrongBolt::UserAbilities do
     @other_role.capabilities.create! model: "UnownedModel", action: "create"
   end
 
+
+
+
+  #
+  # Adding a tenant to the user
+  #
+  describe "add_tenant" do
+    
+    context 'when instance is from a tenant' do
+      let(:model) { TenantModel.create! }
+
+      it "should create an association" do
+        expect do
+          user.add_tenant model
+        end.to change(StrongBolt::UsersTenant, :count).by 1
+      end
+
+      it "should add the tenant to users's list" do
+        user.add_tenant model
+        expect(user.tenant_models).to include model
+      end
+    end
+
+    context "when instance is not from a tenant" do
+      let(:model) { Model.create! }
+
+      it "should raise an error" do
+        expect do
+          user.add_tenant model
+        end.to raise_error
+      end
+    end
+
+  end
+
+
+
+  #
+  # Has access to tenants?
+  #
+  describe "has_access_to_tenants?" do
+    before { create_fixtures }
+
+    context "when same tenant" do
+      
+      it "should be true when model is tenant" do
+        expect(user.has_access_to_tenants? @tenant_model).to eq true
+      end
+
+      it "should be true when model is first child" do
+        expect(user.has_access_to_tenants? @unowned_model).to eq true
+      end
+
+      it "should be true when grand child" do
+        expect(user.has_access_to_tenants? @child_model).to eq true
+      end
+
+      it "should be true for a user defined association" do
+        expect(user.has_access_to_tenants? @linked_to_tenant).to eq true
+      end
+
+    end
+
+    context "when different tenant" do
+      it "should be false when model is tenant" do
+        expect(user.has_access_to_tenants? @other_tenant_model).to eq false
+      end
+
+      it "should be false when model is first child" do
+        expect(user.has_access_to_tenants? @unmanaged_model).to eq false
+      end
+    end
+
+    context "when model doesn't have link to tenant" do
+      it "should return true" do
+        expect(user.has_access_to_tenants? @model).to eq true
+      end
+    end
+  end
 
 
 
@@ -93,11 +226,11 @@ describe StrongBolt::UserAbilities do
       
       context "when authorized" do
         it "should return true when passing instance" do
-          expect(user.can? :create, Model.new).to eq true
+          expect(user.can? :create, OwnedModel.new).to eq true
         end
 
         it "should return true when passing class" do
-          expect(user.can? :create, Model).to eq true
+          expect(user.can? :create, OwnedModel).to eq true
         end
       end
 
@@ -143,6 +276,20 @@ describe StrongBolt::UserAbilities do
 
     end # Creating a model with restricted attributes
 
+    describe 'destroying an owned model' do
+      context "when owning" do
+        it "should be true" do
+          expect(user.can? :destroy, @owned_model).to eq true
+        end
+      end
+
+      context "when not owning" do
+        it "should be false" do
+          expect(user.can? :destroy, @unowned_model).to eq false
+        end
+      end
+    end
+
   end # End can?
 
 
@@ -170,9 +317,9 @@ describe StrongBolt::UserAbilities do
 
     [
       "updateUserall-any", "updateUserany-any", # "updateUserall-#{User.first.id}", "updateUserany-#{User.first.id}",
-      "findModelall-any", "findModelany-any", "findModelall-all", "findModelany-all",
-      "createModelall-any", "createModelany-any", "createModelall-owned", "createModelany-owned",
-      "destroyModelall-any", "destroyModelany-any", "destroyModelall-owned", "destroyModelany-owned",
+      "findOwnedModelall-any", "findOwnedModelany-any", "findOwnedModelall-all", "findOwnedModelany-all",
+      "createOwnedModelall-any", "createOwnedModelany-any", "createOwnedModelall-owned", "createOwnedModelany-owned",
+      "destroyOwnedModelall-any", "destroyOwnedModelany-any", "destroyOwnedModelall-owned", "destroyOwnedModelany-owned",
       "findUnownedModelall-any", "findUnownedModelany-any", "findUnownedModelall-all", "findUnownedModelany-all",
       "createUnownedModelname-any", "createUnownedModelany-any", "createUnownedModelname-all", "createUnownedModelany-all"
     ].each do |key|

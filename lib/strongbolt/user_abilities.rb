@@ -19,6 +19,13 @@ module StrongBolt
       end
 
       #
+      # Adds a managed tenant to the user
+      #
+      def add_tenant tenant
+        users_tenants.create! tenant: tenant
+      end
+
+      #
       # Main method for user, used to check whether the user
       # is authorized to perform a certain action on an instance/class
       #
@@ -138,10 +145,9 @@ module StrongBolt
       
       def capability_in_cache?(action, instance, model_name, attrs=:any)
         action_model = "#{action}#{model_name}"
-        key = "#{action_model}#{attrs}"
         
         
-        # we don't know or care about organization or id if this is a new record
+        # we don't know or care about tenants or if this is a new record
         if instance.is_a?(ActiveRecord::Base) && !instance.new_record?
           
           # First, check if we have a hash/cache hit for User being able to do this action to every instance of the model/class
@@ -151,10 +157,17 @@ module StrongBolt
           # If we're checking on a specific instance of the class, not the general model,
           # append the id to the key
           id = instance.try(:id)
-          id_s = id.try(:to_s)
-          key << "-#{id_s}"
-          return true if @results_cache["#{action_model}all-#{id_s}"] # Access to all this instance's attributes?
-          return true if @results_cache["#{action_model}#{attrs}-#{id_s}"] #Access to this instance's attribute?
+          return true if @results_cache["#{action_model}all-#{id}"] # Access to all this instance's attributes?
+          return true if @results_cache["#{action_model}#{attrs}-#{id}"] #Access to this instance's attribute?
+
+          # Then if the model is owned but isn't preloaded yet
+          if instance.class.owned?
+            # Tests if the owner id of the instance is the same than the user
+            own_instance = instance.owner_id == self.id
+            @results_cache["#{action_model}all-#{id}"] = own_instance && @results_cache["#{action_model}all-owned"]
+            @results_cache["#{action_model}#{attrs}-#{id}"] = own_instance && @results_cache["#{action_model}#{attrs}-owned"]
+            return true if @results_cache["#{action_model}all-#{id}"] || @results_cache["#{action_model}#{attrs}-#{id}"]
+          end
         else
           # First, check if we have a hash/cache hit for User being able to do this action to every instance of the model/class
           return true if @results_cache["#{action_model}all-all"]  #Access to all attributes on ENTIRE class?
@@ -165,6 +178,44 @@ module StrongBolt
         #logger.info "Cache miss for checking access to #{key}"
         
         return false
+      end
+
+      #
+      # Checks if the instance given fulfills tenant management rules
+      #
+      def has_access_to_tenants? instance, tenants = nil        
+        # If no tenants list given, we take all
+        tenants ||= StrongBolt.tenants
+        # Populate the cache if needed
+        populate_tenants_cache
+
+        # Go over each tenants and check if we access to at least one of the tenant
+        # models linked to it
+        tenants.inject(true) do |result, tenant|
+          if instance.class == tenant
+            tenant_ids = [instance.id]
+          elsif instance.respond_to?(tenant.singular_association_name)
+            tenant_ids = [instance.send(tenant.singular_association_name).id]
+          elsif instance.respond_to?(tenant.plural_association_name)
+            tenant_ids = instance.send "#{tenant.singular_association_name}_ids"
+          else
+            next result
+          end
+          result && (tenant_ids.size == 0 || (@tenants_cache[tenant.name] & tenant_ids).present?)
+        end
+      end
+
+      #
+      # Populate a hash of tenants as keys and ids array as values
+      #
+      def populate_tenants_cache
+        return if @tenants_cache.present?
+
+        @tenants_cache = {}
+        # Go over each tenants
+        StrongBolt.tenants.each do |tenant|
+          @tenants_cache[tenant.name] = send("#{tenant.singular_association_name}_ids")
+        end
       end
 
 

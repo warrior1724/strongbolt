@@ -61,7 +61,7 @@ class TestsMigrations < ActiveRecord::Migration
       t.string   :action
       t.string   :attr
       t.boolean  :require_ownership, :default => false, :null => false
-      t.boolean  :require_tenant_management, :default => true, :null => false
+      t.boolean  :require_tenant_access, :default => true, :null => false
 
       t.timestamps
     end

@@ -23,6 +23,37 @@ module StrongBolt
         Grant::Status.grant_disabled? || (defined?(Rails) && defined?(Rails.console)) ||
            Grant::User.current_user.nil?
       end
+
+      #
+      # Returns true if the model is owned, ie if it has a belongs_to
+      # relationship with the user class
+      #
+      def owned?
+        @owned ||= name == Configuration.user_class || owner_association.present?
+      end
+
+      #
+      # Returns the association to the user, if present
+      #
+      def owner_association
+        @owner_association ||= reflect_on_all_associations(:belongs_to).select do |assoc|
+          assoc.klass.name == Configuration.user_class
+        end.try(:first)
+      end
+
+      #
+      # Returns the name of the attribute containing the owner id
+      #
+      def owner_attribute
+        return unless owned?
+
+        @owner_attribute ||= if name == Configuration.user_class
+          :id
+        else
+          owner_association.foreign_key.to_sym
+        end
+      end
+
     end
     
     module InstanceMethods
@@ -31,6 +62,15 @@ module StrongBolt
       #
       def accessible?(action, attrs = :any)
         unbolted? || Grant::User.current_user.can?(action, self, attrs)
+      end
+
+      #
+      # Returns the owner id according to what's
+      #
+      def owner_id
+        raise ModelNotOwned unless self.class.owned?
+
+        send self.class.owner_attribute
       end
     end
     

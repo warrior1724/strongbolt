@@ -78,7 +78,14 @@ module StrongBolt
 
   StrongBoltError = Class.new StandardError
   WrongUserClass = Class.new StrongBoltError
+  ModelNotOwned = Class.new StrongBoltError
   TenantError = Class.new StrongBoltError
   InverseAssociationNotConfigured = Class.new TenantError
   DirectAssociationNotConfigured = Class.new TenantError
+
+  private
+
+  def self.tenants= tenants
+    @@tenants = tenants
+  end
 end

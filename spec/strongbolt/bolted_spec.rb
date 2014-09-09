@@ -47,4 +47,76 @@ module StrongBolt
 
   end
 
+  #
+  # Owned?
+  #
+  describe 'owned?' do
+
+    context "when model is User" do
+      let(:user) { User.create! }
+
+      it "should be true" do
+        expect(User).to be_owned
+      end
+
+      it "should return the user id" do
+        expect(user.owner_id).to eq user.id
+      end
+
+      it "should have the right owner attribute" do
+        expect(User.owner_attribute).to eq :id
+      end
+    end
+    
+    context 'when model is ownable' do
+
+      before do
+        define_model "OwnedModel" do
+          self.table_name = "models"
+
+          belongs_to :user
+        end
+      end
+
+      let(:model) { OwnedModel.create! user: User.create! }
+
+      it "should be true" do
+        expect(OwnedModel).to be_owned
+      end
+
+      it "should return the model user id" do
+        expect(model.owner_id).to eq model.user_id
+      end
+
+      it "should have the right owner attribute" do
+        expect(OwnedModel.owner_attribute).to eq :user_id
+      end
+    
+    end
+    
+    context 'when model isnt ownable' do
+      
+      it "should be true" do
+        expect(UnownedModel).not_to be_owned
+      end
+
+      it "should raise error" do
+        expect do
+          UnownedModel.new.owner_id
+        end.to raise_error ModelNotOwned
+      end
+    
+    end
+
+  end
+
+  #
+  # Owner id
+  #
+  describe "owner_id" do
+    
+
+
+  end
+
 end
