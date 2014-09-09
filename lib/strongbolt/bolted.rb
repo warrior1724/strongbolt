@@ -86,8 +86,8 @@ module StrongBolt
         #
         grant(:find, :create, :update, :destroy) do |user, instance, action|
           # Check the user permission unless unbolted
-          StrongBolt.logger.warn "StrongBolt not activated on #{receiver.name}" if unbolted?
-          
+          StrongBolt.logger.warn "StrongBolt not activated on #{receiver.name}: #{Grant::Status.grant_disabled?} #{defined?(Rails) && defined?(Rails.console)} #{Grant::User.current_user.inspect}" if unbolted?
+
           granted = unbolted? ? true : user.can?( action, instance )
 
           # If not granted, trigger the access denied
