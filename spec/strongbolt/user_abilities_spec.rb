@@ -108,7 +108,8 @@ describe StrongBolt::UserAbilities do
     @guest_role.capabilities.create! model: "UnownedModel", action: "find"
 
     # But can create setting only the attribute name
-    @role.capabilities.create! model: "UnownedModel", action: "create", attr: "name"
+    @role.capabilities.create! model: "UnownedModel", action: "create", attr: "name",
+      :require_tenant_access => false
     
     # Admin can do whatever
     @other_role.capabilities.create! model: "UnownedModel", action: "create"
@@ -290,6 +291,20 @@ describe StrongBolt::UserAbilities do
       end
     end
 
+    describe "finding model" do
+      context "when same tenant" do
+        it "should be true" do
+          expect(user.can? :find, @unowned_model).to eq true
+        end
+      end
+
+      context "when not same tenant" do
+        it "should be false" do
+          expect(user.can? :find, @unmanaged_model).to eq false
+        end
+      end
+    end
+
   end # End can?
 
 
@@ -317,10 +332,10 @@ describe StrongBolt::UserAbilities do
 
     [
       "updateUserall-any", "updateUserany-any", # "updateUserall-#{User.first.id}", "updateUserany-#{User.first.id}",
-      "findOwnedModelall-any", "findOwnedModelany-any", "findOwnedModelall-all", "findOwnedModelany-all",
+      "findOwnedModelall-any", "findOwnedModelany-any", "findOwnedModelall-tenanted", "findOwnedModelany-tenanted",
       "createOwnedModelall-any", "createOwnedModelany-any", "createOwnedModelall-owned", "createOwnedModelany-owned",
       "destroyOwnedModelall-any", "destroyOwnedModelany-any", "destroyOwnedModelall-owned", "destroyOwnedModelany-owned",
-      "findUnownedModelall-any", "findUnownedModelany-any", "findUnownedModelall-all", "findUnownedModelany-all",
+      "findUnownedModelall-any", "findUnownedModelany-any", "findUnownedModelall-tenanted", "findUnownedModelany-tenanted",
       "createUnownedModelname-any", "createUnownedModelany-any", "createUnownedModelname-all", "createUnownedModelany-all"
     ].each do |key|
       it "should have set true to #{key}" do

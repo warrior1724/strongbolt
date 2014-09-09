@@ -122,7 +122,10 @@ module StrongBolt
               @results_cache["#{k}#{attr_k}-owned"] = true
               @results_cache["#{k}any-owned"] = true
             end
-          else # If no ownership required
+          elsif capability.require_tenant_access # If tenant access required
+            @results_cache["#{k}#{attr_k}-tenanted"] = true
+            @results_cache["#{k}any-tenanted"] = true
+          else
             @results_cache["#{k}#{attr_k}-all"] = true
             @results_cache["#{k}any-all"] = true
           end
@@ -149,6 +152,8 @@ module StrongBolt
         
         # we don't know or care about tenants or if this is a new record
         if instance.is_a?(ActiveRecord::Base) && !instance.new_record?
+          # Block access for non tenanted instance
+          valid_tenants = has_access_to_tenants?(instance)
           
           # First, check if we have a hash/cache hit for User being able to do this action to every instance of the model/class
           return true if @results_cache["#{action_model}all-all"]  #Access to all attributes on ENTIRE class?
@@ -164,10 +169,15 @@ module StrongBolt
           if instance.class.owned?
             # Tests if the owner id of the instance is the same than the user
             own_instance = instance.owner_id == self.id
-            @results_cache["#{action_model}all-#{id}"] = own_instance && @results_cache["#{action_model}all-owned"]
-            @results_cache["#{action_model}#{attrs}-#{id}"] = own_instance && @results_cache["#{action_model}#{attrs}-owned"]
+            @results_cache["#{action_model}all-#{id}"] = own_instance && valid_tenants && @results_cache["#{action_model}all-owned"]
+            @results_cache["#{action_model}#{attrs}-#{id}"] = own_instance && valid_tenants && @results_cache["#{action_model}#{attrs}-owned"]
             return true if @results_cache["#{action_model}all-#{id}"] || @results_cache["#{action_model}#{attrs}-#{id}"]
           end
+
+          # Then we check for tenanted instances
+          @results_cache["#{action_model}all-#{id}"] = @results_cache["#{action_model}all-tenanted"] && valid_tenants  #Access to all attributes on tenanted class?
+          @results_cache["#{action_model}#{attrs}-#{id}"] =  @results_cache["#{action_model}#{attrs}-tenanted"] && valid_tenants #Access to this specific attribute on tenanted class?
+          return true if @results_cache["#{action_model}all-#{id}"] || @results_cache["#{action_model}#{attrs}-#{id}"]
         else
           # First, check if we have a hash/cache hit for User being able to do this action to every instance of the model/class
           return true if @results_cache["#{action_model}all-all"]  #Access to all attributes on ENTIRE class?
