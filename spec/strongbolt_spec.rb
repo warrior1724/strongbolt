@@ -13,6 +13,10 @@ describe StrongBolt do
     expect(ActiveRecord::Base.included_modules).to include StrongBolt::Bolted
   end
 
+  it "should have Grant enabled" do
+    expect(Grant::Status).to be_grant_enabled
+  end
+
   #
   # Access denied
   #

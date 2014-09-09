@@ -21,9 +21,6 @@ ActiveRecord::Base.send :include, StrongBolt::Tenantable
 # doesn't have the UserAbilities module included
 #
 
-# Enables Grant
-Grant::Status.enable_grant
-
 # Alias the method
 Grant::User.singleton_class.send(:alias_method, :_current_user=, :current_user=)
 
