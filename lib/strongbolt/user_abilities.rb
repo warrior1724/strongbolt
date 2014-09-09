@@ -174,7 +174,7 @@ module StrongBolt
             return true if @results_cache["#{action_model}all-#{id}"] || @results_cache["#{action_model}#{attrs}-#{id}"]
           end
 
-          # Then we check for tenanted instances
+          # Finally we check for tenanted instances
           @results_cache["#{action_model}all-#{id}"] = @results_cache["#{action_model}all-tenanted"] && valid_tenants  #Access to all attributes on tenanted class?
           @results_cache["#{action_model}#{attrs}-#{id}"] =  @results_cache["#{action_model}#{attrs}-tenanted"] && valid_tenants #Access to this specific attribute on tenanted class?
           return true if @results_cache["#{action_model}all-#{id}"] || @results_cache["#{action_model}#{attrs}-#{id}"]

@@ -1,59 +1,5 @@
-require 'active_support/core_ext'
-require 'active_record'
-
-tmpdir = File.join(File.dirname(__FILE__), '..', '..', 'tmp')
-FileUtils.mkdir(tmpdir) unless File.exist?(tmpdir)
-test_db = File.join(tmpdir, 'test.db')
-
-connection_spec = {
-  :adapter => 'sqlite3',
-  :database => test_db
-}
-
-# Delete any existing instance of the test database
-FileUtils.rm test_db, :force => true
-
-# Create a new test database
-ActiveRecord::Base.establish_connection(connection_spec)
-
-# Models used during the tests
-
-class TestsMigrations < ActiveRecord::Migration
+class CreateStrongBoltTables < ActiveRecord::Migration
   def change
-    create_table :users, :force => true do |t|
-      t.string :username
-
-      t.timestamps
-    end
-
-    create_table :models, :force => true do |t|
-      t.string :name
-      t.string :value
-      t.integer :user_id
-      t.integer :parent_id
-
-      t.timestamps
-    end
-
-    create_table :child_models, :force => true do |t|
-      t.integer :model_id
-      t.integer :parent_id
-
-      t.timestamps
-    end
-
-    create_table :unowned_models, :force => true do |t|
-      t.string :name
-      t.string :value
-
-      t.timestamps
-    end
-
-    create_table :model_models, :force => true do |t|
-      t.integer :parent_id
-      t.integer :child_id
-    end
-
     create_table :strongbolt_capabilities, :force => true do |t|
       t.string   :name
       t.string   :description
@@ -105,10 +51,4 @@ class TestsMigrations < ActiveRecord::Migration
     end
   end
 end
-
-class User < ActiveRecord::Base; end
-class Model < ActiveRecord::Base; end
-class UnownedModel < ActiveRecord::Base; end
-
-
 
