@@ -102,22 +102,8 @@ class TestsMigrations < ActiveRecord::Migration
 end
 
 class User < ActiveRecord::Base; end
-
-module StrongBolt
-  class Model < ActiveRecord::Base
-    self.table_name = "models"
-  end
-  class UnownedModel < ActiveRecord::Base
-    self.table_name = "unowned_models"
-  end
-end
-
-class Model < ActiveRecord::Base
-  self.table_name = "models"
-end
-class UnownedModel < ActiveRecord::Base
-  self.table_name = "unowned_models"
-end
+class Model < ActiveRecord::Base; end
+class UnownedModel < ActiveRecord::Base; end
 
 
 

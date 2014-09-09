@@ -13,21 +13,24 @@ module StrongBolt
         # We're traversing using BFS the relationships
         #
         # Keep track of traversed models and their relationship to the tenant
-        @models_traversed = {self => self}
+        @models_traversed = {self.name => self}
         # File of models/associations to traverse
         models_to_traverse = reflect_on_all_associations
         while models_to_traverse.size > 0
+          # BFS search, shiftin first elt of array (older)
           current_association = models_to_traverse.shift
-          # We don't check has_many :through association though,
+          # We don't check has_many :through association,
           # only first degree relationships. It makes sense as we'll
           # obviously also be checking the models concerned with the through
-          # relationship, using the intermediate model
-          unless @models_traversed.has_key?(current_association.klass) ||
+          # relationship, using the intermediate model before.
+
+          # So unless we've already traversed this model, or that's a through relationship
+          unless @models_traversed.has_key?(current_association.klass.name) ||
             current_association.is_a?(ActiveRecord::Reflection::ThroughReflection)
             # We setup the model using the association given
             method = setup_model(current_association)
             # We flag the model, storing the name of the method used to link to tenant
-            @models_traversed[current_association.klass] = method
+            @models_traversed[current_association.klass.name] = method
             # And add its relationships into the array, at the end
             models_to_traverse.concat current_association.klass.reflect_on_all_associations
           end
@@ -50,7 +53,7 @@ module StrongBolt
         # Current class
         klass = association.klass
         # Get the link of original class to tenant
-        link = @models_traversed[original_class]
+        link = @models_traversed[original_class.name]
         # Inverse association
         inverse = inverse_of(association)
 
@@ -61,7 +64,7 @@ module StrongBolt
           # We may have one but with a different name, and we don't care
           return inverse.name if inverse.present?
 
-          raise AssociationNotConfigured, "Class #{klass.name} is 1 degree from #{self.name} but the association isn't configured, you should implement it before using tenant method"
+          raise DirectAssociationNotConfigured, "Class #{klass.name} is 1 degree from #{self.name} but the association isn't configured, you should implement it before using tenant method"
         
         # The coming class has a relationship to the tenant
         else
@@ -71,7 +74,7 @@ module StrongBolt
           
           # If no inverse, we cannot go further
           unless inverse.present?
-            raise AssociationNotConfigured, "Assocation #{association.name} on #{association.klass.name} could not be configured correctly as no inverse has been found"
+            raise InverseAssociationNotConfigured, "Assocation #{association.name} on #{association.klass.name} could not be configured correctly as no inverse has been found"
           end
 
           # Common options
@@ -81,7 +84,7 @@ module StrongBolt
           }
           
           # If the target is linked through some sort of has_many
-          if link == plural_association_name || inverse.macro == :has_and_belongs_to_many || inverse.macro == :has_many
+          if link == plural_association_name || inverse.collection?
             klass.has_many plural_association_name, options
             puts "#{klass.name} has_many #{plural_association_name} through: #{options[:through]}"
             return plural_association_name
@@ -113,9 +116,19 @@ module StrongBolt
         # If specified in association configuration
         return association.inverse_of if association.has_inverse?
 
-        # Else we need to find it
+
+        # Else we need to find it, using the class as reference
         association.klass.reflect_on_all_associations.each do |assoc|
-          return assoc if assoc.klass == association.active_record
+          # If same class than the original source of the association
+          if assoc.klass == association.active_record
+
+            puts "Association #{association.name} between #{association.active_record} " +
+              "and #{association.klass} don't have any inverse configured, " +
+              "#{assoc.name} was selected as inverse. If it is not, please configure manually " +
+              "the inverse of #{association.name}"
+
+            return assoc
+          end
         end
 
         return nil

@@ -75,7 +75,9 @@ module StrongBolt
   end
   def self.tenants() @@tenants ||= []; end
 
-  class StrongBoltError < StandardError; end
-  class WrongUserClass < StrongBoltError; end
-  class AssociationNotConfigured < StrongBoltError; end
+  StrongBoltError = Class.new StandardError
+  WrongUserClass = Class.new StrongBoltError
+  TenantError = Class.new StrongBoltError
+  InverseAssociationNotConfigured = Class.new TenantError
+  DirectAssociationNotConfigured = Class.new TenantError
 end
