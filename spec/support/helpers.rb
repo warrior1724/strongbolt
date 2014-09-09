@@ -1,4 +1,4 @@
-module GrantHelpers
+module Helpers
   def without_grant &block
     Grant::Status.without_grant &block
   end

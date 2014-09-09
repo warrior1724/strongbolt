@@ -1,4 +1,4 @@
-# Strongbolt
+# StrongBolt
 
 TODO: Write a gem description
 
