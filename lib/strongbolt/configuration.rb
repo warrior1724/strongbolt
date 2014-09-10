@@ -40,7 +40,7 @@ module StrongBolt
       if block.present?
         @@access_denied_block = block
       else
-        @@access_denied_block.call *args
+        @@access_denied_block.call(*args) if defined?(@@access_denied_block)
       end
     end
 
