@@ -222,10 +222,12 @@ module StrongBolt
       def populate_tenants_cache
         return if @tenants_cache.present?
 
+        StrongBolt.logger.debug "Populating tenants cache for user #{self.id}"
+        
         @tenants_cache = {}
         # Go over each tenants
         StrongBolt.tenants.each do |tenant|
-          @tenants_cache[tenant.name] = send("#{tenant.singular_association_name}_ids")
+          @tenants_cache[tenant.name] = send("#{tenant.singular_association_name}_ids").to_a
         end
       end
 
