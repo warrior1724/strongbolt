@@ -26,6 +26,7 @@ if defined?(ActionController) and defined?(ActionController::Base)
 
   ActionController::Base.class_eval do
     before_filter do |c|
+      StrongBolt.logger.debut "Before Filter of StrongBolt"
       # To be accessible in the model when not granted
       $request = request
       StrongBolt.current_user = c.send(:current_user) if c.respond_to?(:current_user)
