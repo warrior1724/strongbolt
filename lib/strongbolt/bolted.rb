@@ -77,6 +77,8 @@ module StrongBolt
     def self.included(receiver)
       receiver.extend         ClassMethods
       receiver.send :include, InstanceMethods
+      receiver.send :include, StrongBolt::Tenantable
+      receiver.send :include, Grant::Grantable
 
       # We add the grant to filter everything
       receiver.class_eval do

@@ -13,8 +13,8 @@ describe StrongBolt do
     expect(ActiveRecord::Base.included_modules).to include StrongBolt::Bolted
   end
 
-  it "should have Grant enabled" do
-    expect(Grant::Status).to be_grant_enabled
+  it "should have included tentable" do
+    expect(ActiveRecord::Base.included_modules).to include StrongBolt::Tenantable
   end
 
   #
@@ -39,7 +39,7 @@ describe StrongBolt do
   #
   # Setting the Grant user
   #
-  describe 'setting the Grant current user' do
+  describe 'setting the current user' do
 
     context "when it is from the same class then defined (or default)" do
 
@@ -57,12 +57,13 @@ describe StrongBolt do
         let(:user) { UserWithout.new }
 
         it "should have included the module" do
-          Grant::User.current_user = user
+          StrongBolt.current_user = user
           expect(UserWithout.included_modules).to include StrongBolt::UserAbilities
         end
 
         it "should set the current user" do
-          Grant::User.current_user = user
+          StrongBolt.current_user = user
+          expect(StrongBolt.current_user).to eq user
           expect(Grant::User.current_user).to eq user
         end
       end # End when User Class doesn't have the UserAbilities included
@@ -83,7 +84,8 @@ describe StrongBolt do
         let(:user) { UserWithAbilities.new }
 
         it "should set the current user" do
-          Grant::User.current_user = user
+          StrongBolt.current_user = user
+          expect(StrongBolt.current_user).to eq user
           expect(Grant::User.current_user).to eq user
         end
 
@@ -95,7 +97,7 @@ describe StrongBolt do
       
       it "should raise error" do
         expect do
-          Grant::User.current_user = Model.new
+          StrongBolt.current_user = Model.new
         end.to raise_error StrongBolt::WrongUserClass
       end
 

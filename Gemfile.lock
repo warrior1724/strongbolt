@@ -1,6 +1,6 @@
 GIT
   remote: git@github.com:AnalyticsMediaGroup/grant.git
-  revision: 9601521c1f34b6911b9cd3235f5d8a261ada6fb3
+  revision: af3475d9085e79d0f3c913ec2a425ee4ea0c0291
   specs:
     grant (2.2.0)
       activerecord (> 4.0.0)

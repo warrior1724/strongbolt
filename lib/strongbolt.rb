@@ -1,7 +1,8 @@
-require "grant"
-require "grant/user"
-
+require "active_record"
 require "awesome_nested_set"
+
+require "grant/grantable"
+require 'grant/user'
 
 require "strongbolt/version"
 require "strongbolt/configuration"
@@ -13,37 +14,23 @@ require "strongbolt/role"
 require "strongbolt/user_group"
 require "strongbolt/users_tenant"
 
+#
+# Includes every module needed (including Grant)
+#
 ActiveRecord::Base.send :include, StrongBolt::Bolted
-ActiveRecord::Base.send :include, StrongBolt::Tenantable
 
 #
-# Updates Grant current_user method to raise an error if the user
-# doesn't have the UserAbilities module included
+# Default behavior, when method current_user defined on controller
 #
+if defined?(ActionController) and defined?(ActionController::Base)
 
-# Alias the method
-Grant::User.singleton_class.send(:alias_method, :_current_user=, :current_user=)
-
-# Implements the new behavior
-Grant::User.class_eval do
-  # We keep an hash so we don't have each time to test
-  # if the module is included in the list
-  def self.current_user= user
-    # Raise error if wrong user class
-    if user.class.name != StrongBolt::Configuration.user_class
-      raise StrongBolt::WrongUserClass
+  ActionController::Base.class_eval do
+    before_filter do |c|
+      StrongBolt.current_user = c.send(:current_user) if c.respond_to?(:current_user)
     end
-
-    # If the user class doesn't have included the module yet
-    unless user.class.included_modules.include? StrongBolt::UserAbilities
-      user.class.send :include, StrongBolt::UserAbilities
-    end
-
-    # Then we call the original grant method
-    self._current_user = user
   end
-end
 
+end
 
 
 #
@@ -59,6 +46,30 @@ module StrongBolt
   # Delegates to the configuration the access denied
   def_delegators Configuration, :access_denied, :logger
   module_function :access_denied, :logger
+
+  #
+  # Current User
+  #
+  def self.current_user
+    Grant::User.current_user
+  end
+
+  # We keep an hash so we don't have each time to test
+  # if the module is included in the list
+  def self.current_user= user
+    # Raise error if wrong user class
+    if user.class.name != StrongBolt::Configuration.user_class
+      raise StrongBolt::WrongUserClass
+    end
+
+    # If the user class doesn't have included the module yet
+    unless user.class.included_modules.include? StrongBolt::UserAbilities
+      user.class.send :include, StrongBolt::UserAbilities
+    end
+
+    # Then we call the original grant method
+    Grant::User.current_user = user
+  end
 
   #
   # Setting up StrongBolt
