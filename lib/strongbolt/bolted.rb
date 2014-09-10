@@ -94,7 +94,7 @@ module StrongBolt
 
           # If not granted, trigger the access denied
           unless granted
-            StrongBolt.access_denied user, instance, action, $request.try(:fullpath)
+            StrongBolt.access_denied user, instance, action, request.try(:fullpath)
           end
           
           granted
