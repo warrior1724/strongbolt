@@ -149,6 +149,7 @@ module StrongBolt
       def capability_in_cache?(action, instance, model_name, attrs=:any)
         action_model = "#{action}#{model_name}"
         
+        StrongBolt.logger.warn "User has no results cache" if @results_cache.empty?
         
         # we don't know or care about tenants or if this is a new record
         if instance.is_a?(ActiveRecord::Base) && !instance.new_record?

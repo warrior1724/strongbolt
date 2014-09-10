@@ -75,6 +75,7 @@ module StrongBolt
   # Setting up StrongBolt
   #
   def self.setup &block
+    # Configuration by user
     block.call Configuration
   end
 
