@@ -29,7 +29,7 @@ module StrongBolt
 
       context "when using rails is on console" do
         before do
-          rails = class_double 'Rails', :double => true
+          rails = class_double 'Rails'#, :console => true
         end
 
         it "should return false" do

@@ -134,8 +134,7 @@ describe StrongBolt::Tenantable do
             class_name: "OtherChildModel",
             join_table: "model_models",
             foreign_key: :child_id,
-            association_foreign_key: :parent_id,
-            inverse_of: :bottom_models
+            association_foreign_key: :parent_id
         end
 
         TenantModel.tenant

@@ -38,6 +38,7 @@ module StrongBolt
           
           # We require this to be an *existing* user, that the action and attribute be symbols
           # and that the instance is a class or a String
+          puts 
           raise ArgumentError, "Action must be a symbol and instance must be Class, String, Symbol or AR" unless self.id.present? && action.is_a?(Symbol) && 
              (instance.is_a?(ActiveRecord::Base) || instance.is_a?(Class) || instance.is_a?(String)) && attrs.is_a?(Symbol)
         
@@ -239,10 +240,11 @@ module StrongBolt
       receiver.send :include, InstanceMethods
 
       receiver.class_eval do
-        has_and_belongs_to_many :user_groups, foreign_key: :user_id,
+        has_and_belongs_to_many :user_groups,
+          :foreign_key => :user_id,
           :class_name => "StrongBolt::UserGroup",
-          :join_table => :strongbolt_user_groups_users,
-          :inverse_of => :users
+          :join_table => :strongbolt_user_groups_users
+          # :inverse_of => :users doesn't seem available before AR 4.1.5
         has_many :roles, through: :user_groups
 
         has_many :users_tenants, class_name: "StrongBolt::UsersTenant",

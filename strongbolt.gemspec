@@ -26,4 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'sqlite3', '1.3.9'
   spec.add_development_dependency 'shoulda-matchers'
   spec.add_development_dependency 'fuubar'
+  spec.add_development_dependency 'rspec-rails', '~> 3.1'
+  spec.add_development_dependency 'actionpack', '~> 4.0.0'
+  spec.add_development_dependency 'activesupport', '~> 4.0.0'
 end

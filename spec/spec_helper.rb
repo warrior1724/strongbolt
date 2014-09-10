@@ -1,9 +1,12 @@
-require 'rspec'
+#require 'rspec'
+
+require 'fixtures/application'
+require 'fixtures/controllers'
+
 require 'strongbolt'
 require 'shoulda/matchers'
 
-# Needed because not required by default without controllers
-require 'grant/user'
+require 'rspec/rails'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.

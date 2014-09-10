@@ -36,6 +36,9 @@ module StrongBolt
     # Allows to configure what happens when the access is denied,
     # or call the block that has been given
     #
+    # The block access denied receives as arguments:
+    #   user, instance, action, request_path
+    #
     def self.access_denied *args, &block
       if block.present?
         @@access_denied_block = block

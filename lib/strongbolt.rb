@@ -9,6 +9,7 @@ require "strongbolt/version"
 require "strongbolt/configuration"
 require "strongbolt/tenantable"
 require "strongbolt/bolted"
+require "strongbolt/bolted_controller"
 require "strongbolt/user_abilities"
 require "strongbolt/capability"
 require "strongbolt/role"
@@ -25,30 +26,7 @@ ActiveRecord::Base.send :include, StrongBolt::Bolted
 #
 if defined?(ActionController) and defined?(ActionController::Base)
 
-  ActionController::Base.class_eval do
-    #
-    # Sets the current user using the :current_user method.
-    # Without Grant, as with it it would check if the user
-    # can find itself before having be assigned anything...
-    #
-    # Better than having to set an anymous method for granting
-    # find to anyone!
-    #
-    before_filter do |c|
-      # To be accessible in the model when not granted
-      $request = request
-      Grant::Status.without_grant do
-        StrongBolt.current_user = c.send(:current_user) if c.respond_to?(:current_user)
-      end
-    end
-
-    #
-    # Unset the current user, by security (needed in some servers with only 1 thread)
-    #
-    after_filter do |c|
-      StrongBolt.current_user = nil
-    end
-  end
+  ActionController::Base.send :include, StrongBolt::BoltedController
 
 end
 
@@ -112,6 +90,7 @@ module StrongBolt
   def self.tenants() @@tenants ||= []; end
 
   StrongBoltError = Class.new StandardError
+  Unauthorized = Class.new StrongBoltError
   WrongUserClass = Class.new StrongBoltError
   ModelNotOwned = Class.new StrongBoltError
   TenantError = Class.new StrongBoltError
