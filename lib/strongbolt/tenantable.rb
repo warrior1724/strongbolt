@@ -135,7 +135,7 @@ module StrongBolt
             scope "where_#{plur}_among", ->(values) do
                 if values.is_a? Array
                   # If objects
-                  values = values.map(&:id) if values[0].respond_to? :id
+                  values = values.map(&:id) if values.first.respond_to? :id
                 else
                   # If object
                   values = values.id if values.respond_to?(:id)
