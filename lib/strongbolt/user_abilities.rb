@@ -209,7 +209,7 @@ module StrongBolt
           elsif instance.respond_to?(tenant.singular_association_name)
             tenant_ids = [instance.send(tenant.singular_association_name).id]
           elsif instance.respond_to?(tenant.plural_association_name)
-            tenant_ids = instance.send "#{tenant.singular_association_name}_ids"
+            tenant_ids = instance.send("#{tenant.singular_association_name}_ids")
           else
             next result
           end

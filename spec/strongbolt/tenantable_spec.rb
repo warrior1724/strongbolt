@@ -162,6 +162,12 @@ describe StrongBolt::Tenantable do
         end
       end
 
+      %w{OtherChildModel BottomModel SiblingModel}.each do |model|
+        it "should have added a scope where_tenants to #{model}" do
+          expect(model.constantize).to respond_to :where_tenant_models_among
+        end
+      end
+
       it "creates a has_many relationship on the User defined" do
         expect(StrongBolt::Configuration.user_class.constantize.new).to have_many(:tenant_models).through :users_tenants
       end

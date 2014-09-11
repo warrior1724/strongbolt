@@ -82,7 +82,7 @@ module StrongBolt
             klass.class_exec(inverse.name, plural_association_name) do |included, plur|
               scope "with_#{plur}", -> { includes included }
             end
-            
+
             return inverse.name
           end
 
@@ -108,10 +108,16 @@ module StrongBolt
           if link == plural_association_name || inverse.collection?
             # Setup the association
             # Setup the scope with_name_of_plural_associations
-            klass.class_exec(singular_association_name, plural_association_name, options) do |sing, plur, opts|
+            # Current tenant table name
+            tenant_table_name = self.table_name
+            klass.class_exec(singular_association_name, plural_association_name, options, table_name) do |sing, plur, opts, table_name|
               has_many plur, options
 
-              scope "with_#{plur}", -> { includes sing }
+              # Includes tenants
+              scope "with_#{plur}", -> { includes plur }
+
+              # Scope to select accessible tenants
+              scope "where_#{plur}_among", ->(values) { joins(plur).where(table_name => {id: values}) }
             end
             
             puts "#{klass.name} has_many #{plural_association_name} through: #{options[:through]}"
@@ -125,6 +131,8 @@ module StrongBolt
               has_one sing, opts
 
               scope "with_#{plur}", -> { includes sing }
+
+              scope "where_#{plur}_among", ->(values) { where sing: values }
             end
             
             puts "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}"
