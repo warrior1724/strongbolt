@@ -251,6 +251,11 @@ module StrongBolt
         has_many :users_tenants, class_name: "StrongBolt::UsersTenant",
           foreign_key: :user_id
       end
+
+      # Sets up user association
+      StrongBolt.tenants.each do |tenant|
+        tenant.send :setup_association_on_user
+      end
     end
   end
 end

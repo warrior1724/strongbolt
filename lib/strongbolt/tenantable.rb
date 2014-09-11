@@ -149,10 +149,17 @@ module StrongBolt
       # Setups the has_many thru association on the User class
       #
       def setup_association_on_user
-        Configuration.user_class.constantize.has_many plural_association_name,
-          :source => :tenant,
-          :source_type => self.name,
-          :through => :users_tenants
+        begin
+          user_class = Configuration.user_class.constantize
+          unless user_class.respond_to? plural_association_name
+            user_class.has_many plural_association_name,
+              :source => :tenant,
+              :source_type => self.name,
+              :through => :users_tenants
+          end
+        rescue NameError => e
+          StrongBolt.logger.warn "User #{Configuration.user_class} could not have his association to tenant #{name} created"
+        end
       end
 
       #

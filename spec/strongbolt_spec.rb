@@ -45,14 +45,14 @@ describe StrongBolt do
 
       context "when the model doesn't have the module UserAbilities included" do
         before do
-          class UserWithout < ActiveRecord::Base
+          define_model "UserWithout" do
             self.table_name = 'users'
           end
           
           # We configure the user class
           StrongBolt::Configuration.user_class = 'UserWithout'
         end
-        after { Object.send :remove_const, "UserWithout" }
+        after { undefine_model "UserWithout" }
 
         let(:user) { UserWithout.new }
 
@@ -71,7 +71,7 @@ describe StrongBolt do
       context 'when the model has the UserAbilities module included' do
         
         before do
-          class UserWithAbilities < ActiveRecord::Base
+          define_model "UserWithAbilities" do
             include StrongBolt::UserAbilities
             self.table_name = 'users'
           end
@@ -79,7 +79,7 @@ describe StrongBolt do
           # We configure the user class
           StrongBolt::Configuration.user_class = 'UserWithAbilities'
         end
-        after { Object.send :remove_const, "UserWithAbilities" }
+        after { undefine_model "UserWithAbilities" }
         
         let(:user) { UserWithAbilities.new }
 
