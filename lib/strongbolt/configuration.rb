@@ -7,8 +7,8 @@ module StrongBolt
     # Just print what's given
     #
     class DefaultLogger
-      def method_missing method_name, text
-        puts "[#{method_name}] #{text}"
+      def method_missing method_name, text = nil, &block
+        puts "[#{method_name}] #{block.present? ? block.call : text}"
       end
     end
 

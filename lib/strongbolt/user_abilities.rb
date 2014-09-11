@@ -150,7 +150,8 @@ module StrongBolt
         action_model = "#{action}#{model_name}"
         
         StrongBolt.logger.warn "User has no results cache" if @results_cache.empty?
-        
+        StrongBolt.logger.debug { "Authorizing user to perform #{action} on #{instance.inspect}" }
+
         # we don't know or care about tenants or if this is a new record
         if instance.is_a?(ActiveRecord::Base) && !instance.new_record?
           # Block access for non tenanted instance
