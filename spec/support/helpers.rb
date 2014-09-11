@@ -15,4 +15,11 @@ module Helpers
       ActiveSupport::Dependencies.reference Object.const_get(name)
     end
   end
+
+  def undefine_model name
+    begin
+      Object.send :remove_const, name
+    rescue NameError
+    end
+  end
 end

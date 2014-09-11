@@ -14,7 +14,82 @@ module StrongBolt
     }
     
     module ClassMethods
-      
+      #
+      # Allows defining a specific model for this controller,
+      # if it cannot be infer from the controller name
+      #
+      def model_for_authorization= model
+        @model_for_authorization = case model
+        when Class then model
+        when String then constantize_model(model)
+        when nil then nil
+        else
+          raise ArgumentError, "Model for authorization must be a Class or the name of the Class"
+        end 
+      end
+
+      #
+      # Returns the model used for authorization,
+      # using controller name if not defined
+      #
+      def model_for_authorization
+        if @model_for_authorization.present?
+          @model_for_authorization
+        else
+          return constantize_model controller_name.classify
+        end
+      end
+
+      #
+      # Skips controller authorization check for this controller
+      # No argument given will skip for all actions,
+      # and can be passed only: [] or except: []
+      #
+      def skip_controller_authorization opts = {}
+        skip_before_action :check_authorization, opts
+      end
+
+      #
+      # Skip all authorization checking for the controller,
+      # or a subset of actions
+      #
+      def skip_all_authorization opts = {}
+        skip_controller_authorization opts
+        around_action :disable_authorization, opts
+      end
+
+      #
+      # Sets what CRUD operation match a specific sets of non RESTful actions
+      #
+      [:find, :update, :create, :destroy].each do |operation|
+        define_method "authorize_as_#{operation}" do |*args|
+          args.each do |action|
+            actions_mapping[action] = operation
+          end
+        end
+      end
+
+      #
+      # Returns the actions mapping of this controller
+      #
+      def actions_mapping
+        # Defaults to a duplicate of the standard mapping
+        @actions_mapping ||= ACTIONS_MAPPING.dup
+      end
+
+      private
+
+      #
+      # Try to constantize a class
+      #
+      def constantize_model name
+        begin
+          name.constantize
+        rescue NameError
+          raise StrongBolt::ModelNotFound, "Model for controller #{controller_name} wasn't found"
+        end
+      end
+
     end
     
     module InstanceMethods
@@ -55,9 +130,9 @@ module StrongBolt
           begin
             # Current model
             begin
-              obj = self.controller_name.classify.constantize
-            rescue NameError => e
-              StrongBolt.logger.warn "No class found for controller #{self.controller.name}"
+              obj = self.class.model_for_authorization
+            rescue StrongBolt::ModelNotFound
+              StrongBolt.logger.warn "No class found or defined for controller #{controller_name}"
               return
             end 
 
@@ -68,7 +143,7 @@ module StrongBolt
             end
           rescue StrongBolt::Unauthorized => e
             raise e
-          rescue Exception => e
+          rescue => e
             raise e
           end
         else
@@ -77,10 +152,35 @@ module StrongBolt
       end
 
       #
+      # Catch Grant::Error and send StrongBolt::Unauthorized instead
+      #
+      def catch_grant_error
+        begin
+          yield
+        rescue Grant::Error => e
+          raise StrongBolt::Unauthorized, e.to_s
+        end
+      end
+
+      #
       # Returns the CRUD operations based on the action name
       #
       def crud_operation_of action
-        ACTIONS_MAPPING[action.to_sym]
+        operation = self.class.actions_mapping[action.to_sym]
+        # If nothing find, we raise an error
+        if operation.nil?
+          raise StrongBolt::ActionNotConfigured, "Action #{action} on controller #{self.class.controller_name} not mapped to a CRUD operation"
+        end
+        # Else ok
+        operation
+      end
+
+      #
+      # CAREFUL: this skips authorization !
+      #
+      def disable_authorization
+        Grant::Status.without_grant { yield }
+        StrongBolt.logger.warn "Authorization were disabled!"
       end
       
     end
@@ -91,16 +191,14 @@ module StrongBolt
 
       receiver.class_eval do
         # Compulsory filters
-        before_filter :set_current_user
-        after_filter :unset_current_user
+        before_action :set_current_user
+        after_action :unset_current_user
 
         # Quick check of high level authorization
-        before_filter :check_authorization
+        before_action :check_authorization
 
-        # Raise StrongBolt error instead
-        rescue_from Grant::Error do |e|
-          rescue_action_without_handler StrongBolt::Unauthorized.new
-        end
+        # Catch Grant::Error
+        around_action :catch_grant_error
 
       end # End receiver class eval
     end # End self.included
