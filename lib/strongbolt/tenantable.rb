@@ -104,13 +104,13 @@ module StrongBolt
             through: inverse.name
           }
           
+          tenant_table_name = self.table_name
           # If the target is linked through some sort of has_many
           if link == plural_association_name || inverse.collection?
             # Setup the association
             # Setup the scope with_name_of_plural_associations
             # Current tenant table name
-            tenant_table_name = self.table_name
-            klass.class_exec(singular_association_name, plural_association_name, options, table_name) do |sing, plur, opts, table_name|
+            klass.class_exec(singular_association_name, plural_association_name, options, tenant_table_name) do |sing, plur, opts, table_name|
               has_many plur, options
 
               # Includes tenants
@@ -127,12 +127,12 @@ module StrongBolt
           else
             # Setup the association
             # Setup the scope with_name_of_plural_associations
-            klass.class_exec(singular_association_name, plural_association_name, options) do |sing, plur, opts|
+            klass.class_exec(singular_association_name, plural_association_name, options, tenant_table_name) do |sing, plur, opts, table_name|
               has_one sing, opts
 
               scope "with_#{plur}", -> { includes sing }
 
-              scope "where_#{plur}_among", ->(values) { where sing: values }
+              scope "where_#{plur}_among", ->(values) { joins(sing).where table_name => {id: values} }
             end
             
             puts "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}"
