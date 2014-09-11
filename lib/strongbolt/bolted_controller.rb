@@ -51,13 +51,13 @@ module StrongBolt
       #
       def check_authorization
         # If no user, no need
-        if current_user.present?
+        if StrongBolt.current_user.present?
           begin
             # Current model
             obj = self.controller_name.classify.constantize
 
             # Unless it is authorized for this action
-            unless current_user.can? crud_operation_of(action_name), obj
+            unless StrongBolt.current_user.can? crud_operation_of(action_name), obj
               StrongBolt.access_denied current_user, obj, crud_operation_of(action_name), request.try(:fullpath)
               raise StrongBolt::Unauthorized
             end
