@@ -37,7 +37,7 @@ module StrongBolt
     @@tenants = []
     def self.tenants= tenants
       @@tenants = []
-      tenants.each {|t| add_tenant t}
+      [*tenants].each {|t| add_tenant t}
     end
 
     #
