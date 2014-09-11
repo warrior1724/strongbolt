@@ -6,6 +6,7 @@ require "grant/status"
 require 'grant/user'
 
 require "strongbolt/version"
+require "strongbolt/errors"
 require "strongbolt/configuration"
 require "strongbolt/tenantable"
 require "strongbolt/bolted"
@@ -88,19 +89,6 @@ module StrongBolt
     @@tenants |= [model]
   end
   def self.tenants() @@tenants ||= []; end
-
-  StrongBoltError = Class.new StandardError
-  Unauthorized = Class.new StrongBoltError
-  
-  ModelNotFound = Class.new StrongBoltError
-  ActionNotConfigured = Class.new StrongBoltError
-
-  WrongUserClass = Class.new StrongBoltError
-  ModelNotOwned = Class.new StrongBoltError
-
-  TenantError = Class.new StrongBoltError
-  InverseAssociationNotConfigured = Class.new TenantError
-  DirectAssociationNotConfigured = Class.new TenantError
 
   private
 

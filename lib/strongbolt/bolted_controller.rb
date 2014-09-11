@@ -197,8 +197,14 @@ module StrongBolt
         # Quick check of high level authorization
         before_action :check_authorization
 
-        # Catch Grant::Error
-        around_action :catch_grant_error
+        # Catch errors
+        rescue_from StrongBolt::Unauthorized, Grant::Error do |e|
+          if respond_to? :unauthorized
+            unauthorized
+          else
+            raise StrongBolt::Unauthorized.new e.to_s
+          end
+        end
 
       end # End receiver class eval
     end # End self.included

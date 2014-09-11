@@ -132,18 +132,33 @@ describe PostsController, :type => :controller do
   end
 
   #
-  # Catching Grant::Error and sending StrongBolt
+  # Catching Grant::Error and StrongBolt::Unauthorized
   #
   describe 'catching Grant::Error' do
-    before do
-      expect_any_instance_of(PostsController).to receive(:index)
-        .and_raise Grant::Error.new "Error"
+    context "when unauthorized method exists" do
+      before do
+        allow_any_instance_of(PostsController).to receive :unauthorized
+        expect_any_instance_of(PostsController).to receive(:index)
+          .and_raise StrongBolt::Unauthorized
+      end
+
+      it "should call unauthorized" do
+        expect_any_instance_of(PostsController).to receive(:unauthorized)
+        get :index
+      end
     end
 
-    it "should raise StrongBolt::Error" do
-      expect do
-        get :index
-      end.to raise_error StrongBolt::Unauthorized
+    context "when no unauthorized method" do
+      before do
+        expect_any_instance_of(PostsController).to receive(:index)
+          .and_raise Grant::Error.new "Error"
+      end
+
+      it "should call raise StrongBolt::Unauthorized" do
+        expect do
+          get :index
+        end.to raise_error StrongBolt::Unauthorized
+      end
     end
   end
 
