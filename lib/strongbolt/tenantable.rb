@@ -104,40 +104,47 @@ module StrongBolt
             through: inverse.name
           }
           
-          tenant_table_name = self.table_name
           # If the target is linked through some sort of has_many
           if link == plural_association_name || inverse.collection?
+            # Has many
+            assoc = plural_association_name
             # Setup the association
             # Setup the scope with_name_of_plural_associations
             # Current tenant table name
-            klass.class_exec(singular_association_name, plural_association_name, options, tenant_table_name) do |sing, plur, opts, table_name|
-              has_many plur, options
-
-              # Includes tenants
-              scope "with_#{plur}", -> { includes plur }
-
-              # Scope to select accessible tenants
-              scope "where_#{plur}_among", ->(values) { joins(plur).where(table_name => {id: values}) }
-            end
+            klass.has_many assoc, options
             
             puts "#{klass.name} has_many #{plural_association_name} through: #{options[:through]}"
-            return plural_association_name
 
           # Otherwise, it's linked through a has one
           else
+            # Has one
+            assoc = singular_association_name
             # Setup the association
             # Setup the scope with_name_of_plural_associations
-            klass.class_exec(singular_association_name, plural_association_name, options, tenant_table_name) do |sing, plur, opts, table_name|
-              has_one sing, opts
-
-              scope "with_#{plur}", -> { includes sing }
-
-              scope "where_#{plur}_among", ->(values) { joins(sing).where table_name => {id: values} }
-            end
+            klass.has_one assoc, options
             
             puts "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}"
-            return singular_association_name
           end 
+
+          #
+          # Now includes scopes
+          #
+          klass.class_exec(plural_association_name, assoc, table_name) do |plur, assoc, table_name|
+            scope "with_#{plur}", -> { includes assoc }
+
+            scope "where_#{plur}_among", ->(values) do
+                if values.is_a? Array
+                  # If objects
+                  values = values.map(&:id) if values[0].respond_to? :id
+                else
+                  # If object
+                  values = values.id if values.respond_to?(:id)
+                end
+
+                includes(assoc).where(table_name => {id: values})
+              end
+          end
+          return assoc
         end
       end
 
@@ -175,6 +182,23 @@ module StrongBolt
         end
 
         return nil
+      end
+
+      #
+      # Returns a lambda with the right scope to select models according to tenants
+      #
+      def where_tenant_among_lambda association
+        lambda = ->(values) do
+          if values.is_a? Array
+            # If objects
+            values = values.map(&:id) if values[0].respond_to? :id
+          else
+            # If object
+            values = values.id if values.respond_to?(:id)
+          end
+
+          includes(association).where(table_name => {id: values})
+        end
       end
 
     end
