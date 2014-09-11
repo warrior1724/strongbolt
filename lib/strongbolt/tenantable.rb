@@ -77,7 +77,11 @@ module StrongBolt
         if original_class == self
           # We first check the model doesn't have an association already created to the tenant
           # We may have one but with a different name, and we don't care
-          return inverse.name if inverse.present?
+          if inverse.present?
+            # We create the scope
+            klass.scope "with_#{plural_association_name}", -> { includes inverse.name }
+            return inverse.name
+          end
 
           raise DirectAssociationNotConfigured, "Class #{klass.name} is 1 degree from #{self.name} but the association isn't configured, you should implement it before using tenant method"
         

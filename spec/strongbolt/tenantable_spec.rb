@@ -156,7 +156,7 @@ describe StrongBolt::Tenantable do
         expect(UncleModel.new).not_to have_many(:tenant_models).through :other_child_models
       end
 
-      %w{OtherChildModel BottomModel SiblingModel}.each do |model|
+      %w{ChildModel OtherChildModel BottomModel SiblingModel}.each do |model|
         it "should have added a scope with_tenants to #{model}" do
           expect(model.constantize).to respond_to :with_tenant_models
         end
