@@ -1,6 +1,21 @@
 module StrongBolt
   module Tenantable
     module ClassMethods
+
+      def tenant?() @tenant.present? && @tenant; end
+
+      #
+      # Returns associations potential name
+      #
+      def singular_association_name
+        @singular_association_name ||= self.name.demodulize.underscore.to_sym
+      end
+      def plural_association_name
+        @plural_association_name ||= self.name.demodulize.underscore.pluralize.to_sym
+      end
+
+      private
+      
       #
       # Specifies that the class can be tenanted
       # It will traverse all the has_many relationships
@@ -41,22 +56,7 @@ module StrongBolt
         setup_association_on_user
 
         @tenant = true
-        StrongBolt.add_tenant self
       end
-
-      def tenant?() @tenant.present? && @tenant; end
-
-      #
-      # Returns associations potential name
-      #
-      def singular_association_name
-        @singular_association_name ||= self.name.demodulize.underscore.to_sym
-      end
-      def plural_association_name
-        @plural_association_name ||= self.name.demodulize.underscore.pluralize.to_sym
-      end
-
-      private
 
       #
       # Setup a model and returns the method name in symbol of the

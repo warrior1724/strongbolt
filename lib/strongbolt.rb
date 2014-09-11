@@ -43,8 +43,8 @@ module StrongBolt
   end
   
   # Delegates to the configuration the access denied
-  def_delegators Configuration, :access_denied, :logger
-  module_function :access_denied, :logger
+  def_delegators Configuration, :access_denied, :logger, :tenants
+  module_function :access_denied, :logger, :tenants
 
   #
   # Current User
@@ -80,16 +80,6 @@ module StrongBolt
     # Configuration by user
     block.call Configuration
   end
-
-  #
-  # Tenant models
-  #
-  def self.add_tenant model
-    @@tenants ||= []
-    # Add only if the model isn't inside
-    @@tenants << model unless @@tenants.any? { |m| m.name == model.name }
-  end
-  def self.tenants() @@tenants ||= []; end
 
   private
 

@@ -31,6 +31,31 @@ module StrongBolt
     end
     def self.logger() @@logger; end
 
+    #
+    # Sets the tenants of the application
+    #
+    @@tenants = []
+    def self.tenants= tenants
+      @@tenants = []
+      tenants.each {|t| add_tenant t}
+    end
+
+    #
+    # Returns the tenants
+    #
+    def self.tenants() @@tenants; end
+
+    #
+    # Adds a tenant if not in the list
+    #
+    def self.add_tenant tenant
+      unless @@tenants.any? { |m| m.name == tenant.name }
+        tenant = tenant.constantize if tenant.is_a? String
+        tenant.send :tenant
+        @@tenants << tenant
+      end
+    end
+
 
     #
     # Allows to configure what happens when the access is denied,

@@ -23,17 +23,13 @@ describe StrongBolt::Tenantable do
     context "when class is a tenant" do
       before do
         define_model "OtherModel" do
-          tenant
+          send :tenant
         end
       end
       after { StrongBolt.send :tenants=, [] }
 
       it "should return true" do
         expect(OtherModel.tenant?).to eq true
-      end
-
-      it "should add the model to the list of tenants" do
-        expect(StrongBolt.tenants).to include OtherModel
       end
     end
   end
@@ -137,7 +133,7 @@ describe StrongBolt::Tenantable do
             association_foreign_key: :parent_id
         end
 
-        TenantModel.tenant
+        TenantModel.send :tenant
       end
 
       it "should have added has_one :tenant_model to other child model" do
@@ -209,7 +205,7 @@ describe StrongBolt::Tenantable do
 
       it "should raise an error" do
         expect do
-          TenantModel.tenant
+          TenantModel.send :tenant
         end.to raise_error StrongBolt::InverseAssociationNotConfigured
       end
 
@@ -241,7 +237,7 @@ describe StrongBolt::Tenantable do
 
       it "should raise an error" do
         expect do
-          TenantModel.tenant
+          TenantModel.send :tenant
         end.to raise_error StrongBolt::DirectAssociationNotConfigured
       end
 
