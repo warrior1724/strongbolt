@@ -228,6 +228,7 @@ module StrongBolt
         # Go over each tenants
         StrongBolt.tenants.each do |tenant|
           @tenants_cache[tenant.name] = send("#{tenant.singular_association_name}_ids").to_a
+          StrongBolt.logger.debug "#{@tenants_cache[tenant.name].size} #{tenant.name}"
         end
       end
 
