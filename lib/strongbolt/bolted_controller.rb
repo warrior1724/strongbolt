@@ -99,7 +99,7 @@ module StrongBolt
 
         # Raise StrongBolt error instead
         rescue_from Grant::Error do |e|
-          raise StrongBolt::Unauthorized
+          rescue_action_without_handler StrongBolt::Unauthorized.new
         end
 
       end # End receiver class eval
