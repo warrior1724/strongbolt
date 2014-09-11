@@ -79,7 +79,10 @@ module StrongBolt
           # We may have one but with a different name, and we don't care
           if inverse.present?
             # We create the scope
-            klass.scope "with_#{plural_association_name}", -> { includes inverse.name }
+            klass.class_exec(inverse.name, plural_association_name) do |included, plur|
+              scope "with_#{plur}", -> { includes included }
+            end
+            
             return inverse.name
           end
 
@@ -104,9 +107,12 @@ module StrongBolt
           # If the target is linked through some sort of has_many
           if link == plural_association_name || inverse.collection?
             # Setup the association
-            klass.has_many plural_association_name, options
             # Setup the scope with_name_of_plural_associations
-            klass.scope "with_#{plural_association_name}", -> { includes plural_association_name }
+            klass.class_exec(singular_association_name, plural_association_name, options) do |sing, plur, opts|
+              has_many plur, options
+
+              scope "with_#{plur}", -> { includes sing }
+            end
             
             puts "#{klass.name} has_many #{plural_association_name} through: #{options[:through]}"
             return plural_association_name
@@ -114,9 +120,12 @@ module StrongBolt
           # Otherwise, it's linked through a has one
           else
             # Setup the association
-            klass.has_one singular_association_name, options
             # Setup the scope with_name_of_plural_associations
-            klass.scope "with_#{plural_association_name}", -> { includes singular_association_name }
+            klass.class_exec(singular_association_name, plural_association_name, options) do |sing, plur, opts|
+              has_one sing, opts
+
+              scope "with_#{plur}", -> { includes sing }
+            end
             
             puts "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}"
             return singular_association_name
