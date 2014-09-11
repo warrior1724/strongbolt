@@ -158,7 +158,7 @@ describe StrongBolt::Tenantable do
         end
       end
 
-      %w{OtherChildModel BottomModel SiblingModel}.each do |model|
+      %w{ChildModel OtherChildModel BottomModel SiblingModel}.each do |model|
         it "should have added a scope where_tenants to #{model}" do
           expect(model.constantize).to respond_to :where_tenant_models_among
         end

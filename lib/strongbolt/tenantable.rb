@@ -15,7 +15,7 @@ module StrongBolt
       end
 
       private
-      
+
       #
       # Specifies that the class can be tenanted
       # It will traverse all the has_many relationships
@@ -78,15 +78,10 @@ module StrongBolt
           # We first check the model doesn't have an association already created to the tenant
           # We may have one but with a different name, and we don't care
           if inverse.present?
-            # We create the scope
-            klass.class_exec(inverse.name, plural_association_name) do |included, plur|
-              scope "with_#{plur}", -> { includes included }
-            end
-
-            return inverse.name
+            assoc = inverse.name
+          else
+            raise DirectAssociationNotConfigured, "Class #{klass.name} is 1 degree from #{self.name} but the association isn't configured, you should implement it before using tenant method"
           end
-
-          raise DirectAssociationNotConfigured, "Class #{klass.name} is 1 degree from #{self.name} but the association isn't configured, you should implement it before using tenant method"
         
         # The coming class has a relationship to the tenant
         else
@@ -124,28 +119,30 @@ module StrongBolt
             klass.has_one assoc, options
             
             puts "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}"
-          end 
-
-          #
-          # Now includes scopes
-          #
-          klass.class_exec(plural_association_name, assoc, table_name) do |plur, assoc, table_name|
-            scope "with_#{plur}", -> { includes assoc }
-
-            scope "where_#{plur}_among", ->(values) do
-                if values.is_a? Array
-                  # If objects
-                  values = values.map(&:id) if values.first.respond_to? :id
-                else
-                  # If object
-                  values = values.id if values.respond_to?(:id)
-                end
-
-                includes(assoc).where(table_name => {id: values})
-              end
           end
-          return assoc
         end
+
+        #
+        # Now includes scopes
+        #
+        klass.class_exec(plural_association_name, assoc, table_name) do |plur, assoc, table_name|
+          scope "with_#{plur}", -> { includes assoc }
+
+          scope "where_#{plur}_among", ->(values) do
+              if values.is_a? Array
+                # If objects
+                values = values.map(&:id) if values.first.respond_to? :id
+              else
+                # If object
+                values = values.id if values.respond_to?(:id)
+              end
+
+              includes(assoc).where(table_name => {id: values})
+            end
+        end
+
+        # And return name of association
+        return assoc
       end
 
       #

@@ -10,7 +10,8 @@ module StrongBolt
       :edit     => :update,
       :update   => :update,
       :new      => :create,
-      :create   => :create
+      :create   => :create,
+      :destroy  => :destroy
     }
     
     module ClassMethods
