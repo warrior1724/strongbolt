@@ -64,8 +64,10 @@ module StrongBolt
           rescue StrongBolt::Unauthorized => e
             raise e
           rescue Exception => e
-            puts e
+            raise e
           end
+        else
+          StrongBolt.logger.warn "No authorization checking because no current user"
         end
       end
 

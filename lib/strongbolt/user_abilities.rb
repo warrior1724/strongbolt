@@ -38,7 +38,6 @@ module StrongBolt
           
           # We require this to be an *existing* user, that the action and attribute be symbols
           # and that the instance is a class or a String
-          puts 
           raise ArgumentError, "Action must be a symbol and instance must be Class, String, Symbol or AR" unless self.id.present? && action.is_a?(Symbol) && 
              (instance.is_a?(ActiveRecord::Base) || instance.is_a?(Class) || instance.is_a?(String)) && attrs.is_a?(Symbol)
         
