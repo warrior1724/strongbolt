@@ -89,6 +89,15 @@ describe StrongBolt do
           expect(Grant::User.current_user).to eq user
         end
 
+        it "should let's try" do
+          Grant::Status.without_grant do
+            User.create!
+            user1 = User.first
+            user2 = User.first
+            expect(user1 == user2).to eq true
+          end
+        end
+
       end # End when User class has Abilities
 
     end # End when user given is the right class

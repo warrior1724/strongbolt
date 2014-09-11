@@ -56,7 +56,7 @@ module StrongBolt
   # We keep an hash so we don't have each time to test
   # if the module is included in the list
   def self.current_user= user
-    # If user is an instance of something
+    # If user is an instance of something and different from what we have
     if user.present?
       # Raise error if wrong user class
       if user.class.name != StrongBolt::Configuration.user_class
@@ -70,7 +70,7 @@ module StrongBolt
     end
 
     # Then we call the original grant method
-    Grant::User.current_user = user
+    Grant::User.current_user = user unless Grant::User.current_user == user
   end
 
   #
