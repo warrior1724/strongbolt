@@ -86,7 +86,8 @@ module StrongBolt
   #
   def self.add_tenant model
     @@tenants ||= []
-    @@tenants |= [model]
+    # Add only if the model isn't inside
+    @@tenants << model unless @@tenants.any? { |m| m.name == model.name }
   end
   def self.tenants() @@tenants ||= []; end
 
