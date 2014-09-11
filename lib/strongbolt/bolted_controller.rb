@@ -54,7 +54,12 @@ module StrongBolt
         if StrongBolt.current_user.present?
           begin
             # Current model
-            obj = self.controller_name.classify.constantize
+            begin
+              obj = self.controller_name.classify.constantize
+            rescue NameError => e
+              StrongBolt.logger.warn "No class found for controller #{self.controller.name}"
+              return
+            end 
 
             # Unless it is authorized for this action
             unless StrongBolt.current_user.can? crud_operation_of(action_name), obj
