@@ -20,7 +20,8 @@ module StrongBolt
         @message
       else
         user_str = user == nil ? 'Anonymous' : "#{user.try(:class).try(:name)}:#{user.try :id}"
-        "#{action} permission not granted to #{user_str} for resource #{model.try(:class).try(:name)}:#{model.try :id}"
+        model_str = model.is_a?(Class) ? "#{model.try :name}" : "#{model.try(:class).try(:name)}"
+        "#{action} permission not granted to #{user_str} for resource #{model_str}:#{model.try :id}"
       end
     end
   end
