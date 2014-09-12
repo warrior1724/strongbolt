@@ -37,7 +37,8 @@ module StrongBolt
         if @model_for_authorization.present?
           @model_for_authorization
         else
-          return constantize_model controller_name.classify
+          # We cannot just do controller_name.classify as it doesn't keep the modules
+          return constantize_model name.sub("Controller", "").classify
         end
       end
 
@@ -130,12 +131,12 @@ module StrongBolt
         if StrongBolt.current_user.present?
           begin
             # Current model
-            begin
+            # begin
               obj = self.class.model_for_authorization
-            rescue StrongBolt::ModelNotFound
-              StrongBolt.logger.warn "No class found or defined for controller #{controller_name}"
-              return
-            end 
+            # rescue StrongBolt::ModelNotFound
+            #   StrongBolt.logger.warn "No class found or defined for controller #{controller_name}"
+            #   return
+            # end 
 
             # Unless it is authorized for this action
             unless StrongBolt.current_user.can? crud_operation_of(action_name), obj

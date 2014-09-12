@@ -274,10 +274,10 @@ describe PostsController, :type => :controller do
         setup_session
       end
 
-      it "should not raise error" do
+      it "should raise error" do
         expect do
           get :index
-        end.not_to raise_error
+        end.to raise_error
       end
 
     end # End when no model associated
