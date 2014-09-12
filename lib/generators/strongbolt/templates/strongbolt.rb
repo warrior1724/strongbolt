@@ -14,3 +14,6 @@ StrongBolt.setup do |config|
   #
   # config.tenants = "Client", "Region"
 end
+
+# Uncomment this line if using Devise
+# Devise::SessionsController.skip_controller_authorization

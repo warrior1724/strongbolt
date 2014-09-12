@@ -23,3 +23,5 @@ module StrongBolt
     end
   end
 end
+
+Capability = StrongBolt::Capability unless defined? Capability

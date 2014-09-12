@@ -11,3 +11,5 @@ module StrongBolt
 
   end
 end
+
+UserGroup = StrongBolt::UserGroup unless defined? UserGroup

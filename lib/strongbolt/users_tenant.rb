@@ -15,3 +15,5 @@ module StrongBolt
     end
   end
 end
+
+UsersTenant = StrongBolt::UsersTenant unless defined? UsersTenant

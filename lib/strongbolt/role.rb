@@ -14,3 +14,5 @@ module StrongBolt
 
   end
 end
+
+Role = StrongBolt::Role unless defined? Role
