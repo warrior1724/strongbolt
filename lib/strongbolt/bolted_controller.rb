@@ -140,7 +140,7 @@ module StrongBolt
             # Unless it is authorized for this action
             unless StrongBolt.current_user.can? crud_operation_of(action_name), obj
               StrongBolt.access_denied current_user, obj, crud_operation_of(action_name), request.try(:fullpath)
-              raise StrongBolt::Unauthorized
+              raise StrongBolt::Unauthorized.new StrongBolt.current_user, action_name, obj
             end
           rescue StrongBolt::Unauthorized => e
             raise e
@@ -201,7 +201,7 @@ module StrongBolt
         # Catch errors
         rescue_from StrongBolt::Unauthorized, Grant::Error do |e|
           if respond_to? :unauthorized
-            unauthorized
+            unauthorized e
           else
             raise StrongBolt::Unauthorized.new e.to_s
           end
