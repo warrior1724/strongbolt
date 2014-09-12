@@ -40,16 +40,19 @@ module StrongBolt
           # relationship, using the intermediate model before.
 
           # So unless we've already traversed this model, or that's a through relationship
+          # or a polymorphic association
           # Also we don't go following belongs_to relationship, it becomes crazy
-          unless @models_traversed.has_key?(current_association.klass.name) ||
-            current_association.is_a?(ActiveRecord::Reflection::ThroughReflection) ||
-            current_association.macro == :belongs_to
+          unless current_association.is_a?(ActiveRecord::Reflection::ThroughReflection) ||
+            current_association.macro == :belongs_to ||
+            @models_traversed.has_key?(current_association.klass.name)
             # We setup the model using the association given
             method = setup_model(current_association)
             # We flag the model, storing the name of the method used to link to tenant
             @models_traversed[current_association.klass.name] = method
-            # And add its relationships into the array, at the end
-            models_to_traverse.concat current_association.klass.reflect_on_all_associations
+            # And add its relationships into the array, at the end, if method not nil
+            if method.present?
+              models_to_traverse.concat current_association.klass.reflect_on_all_associations
+            end
           end
         end
 
@@ -69,12 +72,12 @@ module StrongBolt
         klass = association.klass
         # Get the link of original class to tenant
         link = @models_traversed[original_class.name]
-        # Inverse association
-        inverse = inverse_of(association)
 
         # If the original class is the actual tenant, it should have defined
         # the reverse association as we cannot guess it
         if original_class == self
+          # Inverse association
+          inverse = inverse_of(association)
           # We first check the model doesn't have an association already created to the tenant
           # We may have one but with a different name, and we don't care
           if inverse.present?
@@ -89,10 +92,16 @@ module StrongBolt
           return singular_association_name if klass.new.respond_to?(singular_association_name)
           return plural_association_name if klass.new.respond_to?(plural_association_name)
           
+          # Inverse association
+          inverse = inverse_of(association)
+          
           # If no inverse, we cannot go further
-          unless inverse.present?
+          if inverse.nil?
             raise InverseAssociationNotConfigured, "Assocation #{association.name} on #{association.klass.name} could not be configured correctly as no inverse has been found"
+          elsif inverse.options.has_key? :polymorphic
+            return nil
           end
+            
 
           # Common options
           options = {
@@ -170,11 +179,16 @@ module StrongBolt
         # If specified in association configuration
         return association.inverse_of if association.has_inverse?
 
+        polymorphic_associations = []
 
         # Else we need to find it, using the class as reference
         association.klass.reflect_on_all_associations.each do |assoc|
+          # If the association is polymorphic
+          if assoc.options.has_key? :polymorphic
+            polymorphic_associations << assoc
+
           # If same class than the original source of the association
-          if assoc.klass == association.active_record
+          elsif assoc.klass == association.active_record
 
             puts "Association #{association.name} between #{association.active_record} " +
               "and #{association.klass} don't have any inverse configured, " +
@@ -183,6 +197,10 @@ module StrongBolt
 
             return assoc
           end
+        end
+
+        if polymorphic_associations.size == 1
+          return polymorphic_associations.first
         end
 
         return nil

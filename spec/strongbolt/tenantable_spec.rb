@@ -82,6 +82,7 @@ describe StrongBolt::Tenantable do
           belongs_to :uncle_model, foreign_key: :parent_id,
             class_name: "UncleModel"
           has_one :sibling_model, class_name: "SiblingModel"
+          has_one :polymorphic_sibling_model, class_name: "PolymorphicSiblingModel"
 
           has_and_belongs_to_many :bottom_models,
             join_table: "model_models",
@@ -107,8 +108,17 @@ describe StrongBolt::Tenantable do
         define_model "SiblingModel" do
           self.table_name = "child_models"
 
-          belongs_to :other_child_model, foreign_key: :model_id,
-            class_name: "OtherChildModel"
+          belongs_to :other_child_model, foreign_key: :model_id
+        end 
+
+        #
+        # Cousin of second degree child
+        #
+        define_model "PolymorphicSiblingModel" do
+          self.table_name = "child_models"
+
+          belongs_to :model, polymorphic: true
+          has_one :unowned_model, foreign_key: :model_id
         end 
 
         #
@@ -146,6 +156,10 @@ describe StrongBolt::Tenantable do
 
       it "should have created a has_one :tenant_model to SiblingModel" do
         expect(SiblingModel.new).to have_one(:tenant_model).through :other_child_model
+      end
+
+      it "should not have set a :tenant_model on polymorphic association" do
+        expect(PolymorphicSiblingModel.new).not_to have_one(:tenant_model)
       end
 
       it "should have added has_many :tenant_models to UncleModel" do

@@ -37,6 +37,7 @@ class TestsMigrations < ActiveRecord::Migration
 
     create_table :child_models, :force => true do |t|
       t.integer :model_id
+      t.string  :model_type
       t.integer :parent_id
 
       t.timestamps
