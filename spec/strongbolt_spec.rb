@@ -58,12 +58,44 @@ describe StrongBolt do
 
 
   #
-  # Without authorizatio,
+  # Without authorization
   #
   describe "without_authorization" do
     it "should not perform authorization" do
       StrongBolt.without_authorization do
         expect(Grant::Status.grant_disabled?).to eq true
+      end
+    end
+  end
+
+
+  #
+  # Perform without authorization
+  #
+  describe "perform_without_authorization" do
+    before do
+      define("AnyClass", Object) do
+        def method arg1, arg2, &block
+          raise StandardError if Grant::Status.grant_enabled?
+        end
+      end
+    end
+
+    context "when not skipped" do
+      it "should raise error" do
+        expect do
+          AnyClass.new.method("ok", "ok2") {}
+        end.to raise_error
+      end
+    end
+
+    context "when skipped" do
+      before { AnyClass.perform_without_authorization :method }
+      
+      it "should skip authorization" do
+        expect do
+          AnyClass.new.method("ok", "ok2") {}
+        end.not_to raise_error
       end
     end
   end

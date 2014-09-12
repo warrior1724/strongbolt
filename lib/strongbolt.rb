@@ -103,3 +103,25 @@ module StrongBolt
     @@tenants = tenants
   end
 end
+
+#
+# We add a method to any object to quickly tell which method
+# should not have any authorization check perform 
+#
+class Object
+  def self.perform_without_authorization *method_names
+    method_names.each {|name| setup_without_authorization name}
+  end
+
+  private
+
+  def self.setup_without_authorization method_name
+    aliased_name = "_with_autorization_#{method_name}"
+    alias_method aliased_name, method_name
+    define_method method_name do |*args, &block|
+      StrongBolt.without_authorization do
+        send aliased_name, *args, &block
+      end
+    end
+  end
+end
