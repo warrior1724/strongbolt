@@ -204,18 +204,25 @@ module StrongBolt
         # Go over each tenants and check if we access to at least one of the tenant
         # models linked to it
         tenants.inject(true) do |result, tenant|
-          if instance.class == tenant
-            tenant_ids = [instance.id]
-          elsif instance.respond_to?(tenant.singular_association_name)
-            if instance.send(tenant.singular_association_name).present?
-              tenant_ids = [instance.send(tenant.singular_association_name).id]
+          begin
+            if instance.class == tenant
+              tenant_ids = [instance.id]
+            elsif instance.respond_to?(tenant.singular_association_name)
+              if instance.send(tenant.singular_association_name).present?
+                tenant_ids = [instance.send(tenant.singular_association_name).id]
+              else
+                tenant_ids = []
+              end
+            elsif instance.respond_to?(tenant.plural_association_name)
+              tenant_ids = instance.send("#{tenant.singular_association_name}_ids")
             else
-              tenant_ids = []
+              next result
             end
-          elsif instance.respond_to?(tenant.plural_association_name)
-            tenant_ids = instance.send("#{tenant.singular_association_name}_ids")
-          else
-            next result
+          # When we perform a :select on a model, we may omit
+          # the attribute(s) that link(s) to the tenant.
+          # In that case, we have to suppose the user has access
+          rescue ActiveModel::MissingAttributeError
+            tenant_ids = []
           end
           result && (tenant_ids.size == 0 || (@tenants_cache[tenant.name] & tenant_ids).present?)
         end
