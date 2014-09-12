@@ -37,7 +37,11 @@ module StrongBolt
       #
       def owner_association
         @owner_association ||= reflect_on_all_associations(:belongs_to).select do |assoc|
-          assoc.klass.name == Configuration.user_class
+          unless assoc.options.has_key? :polymorphic
+            assoc.klass.name == Configuration.user_class
+          else
+            false
+          end
         end.try(:first)
       end
 
