@@ -196,7 +196,7 @@ module StrongBolt
       # CAREFUL: this skips authorization !
       #
       def disable_authorization
-        Grant::Status.without_grant { yield }
+        StrongBolt.without_authorization { yield }
         StrongBolt.logger.warn "Authorization were disabled!"
       end
       

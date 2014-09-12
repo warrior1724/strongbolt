@@ -5,7 +5,9 @@ module StrongBolt
     has_many :users, through: :roles
 
     validates :model, :action, presence: true
+    validates :action, inclusion: %w{find create update destroy}
     validate :model_exists?
+
 
     private
 
