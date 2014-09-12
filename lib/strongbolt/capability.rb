@@ -5,7 +5,8 @@ module StrongBolt
     has_many :users, through: :roles
 
     validates :model, :action, presence: true
-    validates :action, inclusion: %w{find create update destroy}
+    validates :action, inclusion: %w{find create update destroy},
+      uniqueness: {scope: [:model, :require_ownership, :require_tenant_access]}
     validate :model_exists?
 
 

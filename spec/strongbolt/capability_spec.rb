@@ -24,6 +24,8 @@ module StrongBolt
     it { is_expected.to validate_presence_of :model }
     it { is_expected.to validate_presence_of :action }
 
+    it { is_expected.to validate_uniqueness_of(:action).scoped_to :model, :require_ownership, :require_tenant_access }
+
     it { is_expected.to ensure_inclusion_of(:action).in_array %w{find create update destroy} }
 
     it "should ensure the model exists" do
