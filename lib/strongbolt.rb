@@ -31,6 +31,8 @@ if defined?(ActionController) and defined?(ActionController::Base)
 
 end
 
+require 'strongbolt/railtie' if defined?(Rails::Railtie)
+
 
 #
 # Main module
