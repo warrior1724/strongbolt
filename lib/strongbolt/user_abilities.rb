@@ -29,7 +29,7 @@ module StrongBolt
       # Main method for user, used to check whether the user
       # is authorized to perform a certain action on an instance/class
       #
-      def can? action, instance, attrs = :any
+      def can? action, instance, attrs = :any, all_instance = false
         without_grant do
       
           # Get the actual instance if we were given AR
@@ -62,7 +62,7 @@ module StrongBolt
           end
           
           # Look up the various possible valid entries in the cache that would allow us to see this
-          return capability_in_cache?(action, instance, model_name, attrs)
+          return capability_in_cache?(action, instance, model_name, attrs, all_instance)
 
         end #end w/o grant   
       end
@@ -70,8 +70,8 @@ module StrongBolt
       #
       # Convenient method
       #
-      def cannot?(action, instance, attrs=:any)
-        !can?(action, instance, attrs)
+      def cannot? *args
+        !can? *args
       end
 
       #
@@ -146,7 +146,7 @@ module StrongBolt
       #                                                          #
       #----------------------------------------------------------#
       
-      def capability_in_cache?(action, instance, model_name, attrs=:any)
+      def capability_in_cache?(action, instance, model_name, attrs = :any, all_instance = false)
         action_model = "#{action}#{model_name}"
         
         StrongBolt.logger.warn "User has no results cache" if @results_cache.empty?
@@ -184,8 +184,8 @@ module StrongBolt
           # First, check if we have a hash/cache hit for User being able to do this action to every instance of the model/class
           return true if @results_cache["#{action_model}all-all"]  #Access to all attributes on ENTIRE class?
           return true if @results_cache["#{action_model}#{attrs}-all"]  #Access to this specific attribute on ENTIRE class?
-          return true if @results_cache["#{action_model}all-any"]  #Access to all attributes on at least once instance?
-          return true if @results_cache["#{action_model}#{attrs}-any"]  #Access to this specific attribute on at least once instance?
+          return true if @results_cache["#{action_model}all-any"] && ! all_instance  #Access to all attributes on at least once instance?
+          return true if @results_cache["#{action_model}#{attrs}-any"] && ! all_instance  #Access to this specific attribute on at least once instance?
         end
         #logger.info "Cache miss for checking access to #{key}"
         
