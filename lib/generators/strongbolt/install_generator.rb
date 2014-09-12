@@ -2,7 +2,8 @@ require 'rails/generators/active_record'
 
 module Strongbolt
   module Generators
-    class InstallGenerator < ActiveRecord::Generators::Base
+    class InstallGenerator < Rails::Generators::Base
+      include Rails::Generators::Migration
 
       source_root File.expand_path('../templates', __FILE__)
 
