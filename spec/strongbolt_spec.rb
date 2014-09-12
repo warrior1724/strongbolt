@@ -55,6 +55,21 @@ describe StrongBolt do
 
   end
 
+
+
+  #
+  # Without authorizatio,
+  #
+  describe "without_authorization" do
+    it "should not perform authorization" do
+      StrongBolt.without_authorization do
+        expect(Grant::Status.grant_disabled?).to eq true
+      end
+    end
+  end
+
+
+
   #
   # Setting the Grant user
   #

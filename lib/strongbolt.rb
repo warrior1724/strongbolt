@@ -90,6 +90,13 @@ module StrongBolt
     end
   end
 
+  #
+  # Perform the block without grant
+  #
+  def self.without_authorization &block
+    Grant::Status.without_grant &block
+  end
+
   private
 
   def self.tenants= tenants
