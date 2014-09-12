@@ -44,7 +44,9 @@ module StrongBolt
           # Also we don't go following belongs_to relationship, it becomes crazy
           unless current_association.is_a?(ActiveRecord::Reflection::ThroughReflection) ||
             current_association.macro == :belongs_to ||
-            @models_traversed.has_key?(current_association.klass.name)
+            (@models_traversed.has_key?(current_association.klass.name) &&
+              @models_traversed[current_association.klass.name].present?)
+            
             # We setup the model using the association given
             method = setup_model(current_association)
             # We flag the model, storing the name of the method used to link to tenant
