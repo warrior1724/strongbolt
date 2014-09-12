@@ -8,8 +8,6 @@ module StrongBolt
 
     initializer "strongbolt.devise_integration" do
       if defined? DeviseController
-        DeviseController.skip_controller_authorization
-
         Warden::SessionSerializer.perform_without_authorization :store, :fetch, :delete
       end
     end
