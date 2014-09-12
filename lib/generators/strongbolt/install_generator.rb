@@ -10,6 +10,10 @@ module Strongbolt
         copy_migration "migration", "create_strongbolt_tables"
       end
 
+      def copy_initializer
+        copy_file "strongbolt.rb", "config/initializers/strongbolt.rb"
+      end
+
       private
 
       def copy_migration(source, target)
