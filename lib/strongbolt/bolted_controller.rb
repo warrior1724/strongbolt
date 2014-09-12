@@ -38,7 +38,22 @@ module StrongBolt
           @model_for_authorization
         else
           # We cannot just do controller_name.classify as it doesn't keep the modules
-          return constantize_model name.sub("Controller", "").classify
+          # We'll also check demoduling one module after the other for case when
+          # the controller and/or the model have different modules
+          full_name = name.sub("Controller", "").classify
+          # Split by ::
+          splits = full_name.split('::')
+          # While we still have modules to test
+          while splits.size >= 1
+            begin
+              return constantize_model splits.join('::')
+            rescue StrongBolt::ModelNotFound => e
+            ensure
+              # Removes first element
+              splits.shift
+            end
+          end
+          raise StrongBolt::ModelNotFound, "Model for controller #{controller_name} wasn't found"
         end
       end
 

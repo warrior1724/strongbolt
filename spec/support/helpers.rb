@@ -3,23 +3,60 @@ module Helpers
     Grant::Status.without_grant &block
   end
 
-  def define_model name, &blk
+  def define name, klass = ActiveRecord::Base, &blk
+    mod, name = module_by_name(name)
     begin
-      Object.send :remove_const, name
+      mod.send :remove_const, name
     rescue NameError
     ensure
-      Object.send :const_set, name, Class.new(ActiveRecord::Base)
+      mod.send :const_set, name, Class.new(klass)
       # This ensures the class gets its name before configuring it
-      Object.const_get(name).class_eval &blk unless blk.nil?
+      mod.const_get(name).class_eval &blk unless blk.nil?
       # Store the right reference in the class cache
-      ActiveSupport::Dependencies.reference Object.const_get(name)
+      ActiveSupport::Dependencies.reference mod.const_get(name)
     end
   end
 
-  def undefine_model name
-    begin
-      Object.send :remove_const, name
-    rescue NameError
+  def define_model name, &blk
+    define name, ActiveRecord::Base, &blk
+  end
+
+  def define_controller name, &blk
+    define name, ActionController::Base, &blk
+  end
+
+  def undefine_model *names
+    undefine *names
+  end
+
+  def undefine *names
+    names.each do |name|
+      begin
+        mod, name = module_by_name(name)
+        mod.send :remove_const, name
+      rescue NameError
+      end
     end
+  end
+
+  private
+
+  def module_by_name name
+    base_module = Object
+    splits = name.split("::")
+    if splits.size > 1
+      splits[0...(splits.size - 1)].each do |module_name|
+        # Get the module if it exists, or create it
+        begin
+          mod = base_module.const_get(module_name)
+        rescue NameError
+          mod = Module.new
+        end
+        base_module.send :const_set, module_name, mod
+        base_module = mod
+      end
+    end
+    # Returns both module and demodulized name
+    [base_module, splits.last]
   end
 end

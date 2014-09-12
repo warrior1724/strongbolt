@@ -263,6 +263,80 @@ describe PostsController, :type => :controller do
 
     end # End when no error
 
+
+
+    #
+    # Getting model name from controller name
+    #
+    describe "model_for_authorization" do
+
+      after do
+        undefine "ItemsController", "Item", "Namespace::Item",
+          "Namespace::ItemsController"
+      end
+
+      context "when no module" do
+        before do
+          define_controller "ItemsController"
+          define_model "Item"
+        end
+
+        it "should return the right model" do
+          expect(ItemsController.model_for_authorization).to eq Item
+        end
+      end
+
+      context "when both have modules" do
+        before do
+          define_controller "Namespace::ItemsController"
+          define_model "Namespace::Item"
+        end
+
+        it "should return the right model" do
+          expect(Namespace::ItemsController.model_for_authorization).to eq Namespace::Item
+        end
+      end
+
+      context "when only controller has module" do
+        before do
+          define_controller "Namespace::ItemsController"
+          define_model "Item"
+        end
+
+        it "should return the right model" do
+          expect(Namespace::ItemsController.model_for_authorization).to eq Item
+        end
+      end
+
+      context "when only model has module" do
+        before do
+          define_controller "ItemsController"
+          define_model "Namespace::Item"
+        end
+
+        it "should raise error" do
+          expect do
+            ItemsController.model_for_authorization
+          end.to raise_error StrongBolt::ModelNotFound
+        end
+      end
+
+      context "when cannot find" do
+        before do
+          define_controller "ItemsController"
+          undefine_model "Item"
+        end
+
+        it "should return the right model" do
+          expect do
+            ItemsController.model_for_authorization
+          end.to raise_error StrongBolt::ModelNotFound
+        end
+      end
+    end
+
+
+
     #
     # When the controller doesn't have any model associated
     #
