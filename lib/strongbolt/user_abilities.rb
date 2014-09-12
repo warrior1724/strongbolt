@@ -207,7 +207,11 @@ module StrongBolt
           if instance.class == tenant
             tenant_ids = [instance.id]
           elsif instance.respond_to?(tenant.singular_association_name)
-            tenant_ids = [instance.send(tenant.singular_association_name).id]
+            if instance.send(tenant.singular_association_name).present?
+              tenant_ids = [instance.send(tenant.singular_association_name).id]
+            else
+              tenant_ids = []
+            end
           elsif instance.respond_to?(tenant.plural_association_name)
             tenant_ids = instance.send("#{tenant.singular_association_name}_ids")
           else
