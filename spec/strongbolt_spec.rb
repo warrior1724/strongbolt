@@ -18,6 +18,25 @@ describe StrongBolt do
   end
 
   #
+  # Setting up
+  #
+
+  describe "it should include module" do
+    before do
+      define_model "UserModel"
+      StrongBolt.setup do |config|
+        config.user_class = "UserModel"
+      end
+    end
+
+    it "should include UserAbilities" do
+      expect(UserModel.included_modules).to include StrongBolt::UserAbilities
+    end
+
+
+  end
+
+  #
   # Access denied
   #
   describe "access denied" do

@@ -79,6 +79,15 @@ module StrongBolt
   def self.setup &block
     # Configuration by user
     block.call Configuration
+
+    # Include the User::Abilities
+    begin
+      user_class = Configuration.user_class
+      user_class = user_class.constantize if user_class.is_a? String
+      user_class.send(:include, StrongBolt::UserAbilities) unless user_class.included_modules.include?(StrongBolt::UserAbilities)
+    rescue NameError
+      logger.warn "User class #{Configuration.user_class} wasn't found"
+    end
   end
 
   private
