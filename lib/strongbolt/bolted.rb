@@ -58,6 +58,20 @@ module StrongBolt
         end
       end
 
+      #
+      # Returns the model name for authorization
+      #
+      def name_for_authorization
+        @name_for_authorization ||= self.name
+      end
+
+      #
+      # Authorize as another model
+      #
+      def authorize_as model_name
+        @name_for_authorization = model_name
+      end
+
     end
     
     module InstanceMethods

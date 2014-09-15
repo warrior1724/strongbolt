@@ -111,11 +111,25 @@ module StrongBolt
   end
 
   #
-  # Owner id
+  # Name for authorization
   #
-  describe "owner_id" do
-    
+  describe 'name_for_authorization' do
+    it "should default to model name" do
+      expect(Model.name_for_authorization).to eq "Model"
+    end
+  end
 
+  #
+  # Authorize as
+  #
+  describe 'authorize_as' do
+    
+    before { Model.authorize_as "ParentModel" }
+    after { Model.authorize_as nil }
+
+    it "should have changed name for authorization" do
+      expect(Model.name_for_authorization).to eq "ParentModel"
+    end
 
   end
 

@@ -37,6 +37,12 @@ describe StrongBolt::UserAbilities do
       has_many :tenant_models, foreign_key: :parent_id
     end
 
+    define_model "OtherModel" do
+      self.table_name = "models"
+
+      authorize_as "UnownedModel"
+    end
+
     StrongBolt::Configuration.add_tenant TenantModel
 
     puts ChildModel.reflect_on_all_associations(:has_one).inspect
@@ -273,11 +279,19 @@ describe StrongBolt::UserAbilities do
         it "should return false" do
           expect(user.can? :create, UnownedModel, :all).to eq false
         end
+
+        it "should return false for other model authorized as it" do
+          expect(user.can? :create, OtherModel, :all).to eq false
+        end
       end
 
       context "when requiring any attribute" do
         it "should return true" do
           expect(user.can? :create, UnownedModel, :any).to eq true
+        end
+
+        it "should return true for other model authorized as it" do
+          expect(user.can? :create, OtherModel, :any).to eq true
         end
       end
 

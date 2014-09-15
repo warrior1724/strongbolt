@@ -16,6 +16,8 @@ module StrongBolt
     it { should have_many(:users).through :user_groups  }
     it { should have_and_belong_to_many :capabilities }
 
+    it { should belong_to(:parent).class_name("StrongBolt::Role") }
+
     context "when have user groups" do
       before { role.user_groups << UserGroup.create!(name: "User Group") }
 

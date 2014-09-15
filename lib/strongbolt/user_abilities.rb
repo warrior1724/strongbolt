@@ -51,10 +51,10 @@ module StrongBolt
           # Determine the model name and the actual model (if we need to traverse the hierarchy)
           if instance.is_a?(ActiveRecord::Base)
             model = instance.class
-            model_name = model.name
+            model_name = model.name_for_authorization
           elsif instance.is_a?(Class)
             model = instance
-            model_name = model.name
+            model_name = model.name_for_authorization
           else
             model = nil # We could do model_name.constantize, but there's a big cost to doing this
                         # if we don't need it, so just defer until we determine there's an actual need
