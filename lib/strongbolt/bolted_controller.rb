@@ -142,8 +142,8 @@ module StrongBolt
       # after, in the model by model authorization
       #
       def check_authorization
-        # If no user, no need
-        if StrongBolt.current_user.present?
+        # If no user or disabled, no need
+        if StrongBolt.current_user.present? && StrongBolt.enabled?
           begin
             # Current model
             # begin
