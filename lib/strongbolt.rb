@@ -99,6 +99,24 @@ module StrongBolt
     Grant::Status.without_grant &block
   end
 
+  #
+  # Disable authorization checking
+  #
+  def self.disable_authorization
+    Grant::Status.disable_grant
+  end
+
+  def self.enable_authorization
+    Grant::Status.enable_grant
+  end
+
+  def self.enabled?
+    Grant::Status.grant_enabled?
+  end
+  def self.disabled?
+    ! enabled?
+  end
+
   private
 
   def self.tenants= tenants

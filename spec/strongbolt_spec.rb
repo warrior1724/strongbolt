@@ -101,6 +101,30 @@ describe StrongBolt do
   end
 
 
+  #
+  # Disable, enable
+  #
+  describe "disable/enable" do
+    before { StrongBolt.disable_authorization }
+    after { StrongBolt.enable_authorization }
+
+    context "disabling" do
+      it "should disable Grant" do
+        expect(Grant::Status.grant_enabled?).to eq false
+        expect(StrongBolt.enabled?).to eq false
+      end
+    end
+
+    context "enabling" do
+      it "should enable Grant" do
+        StrongBolt.enable_authorization
+        expect(Grant::Status.grant_disabled?).to eq false
+        expect(StrongBolt.disabled?).to eq false
+      end
+    end
+  end
+
+
 
   #
   # Setting the Grant user
