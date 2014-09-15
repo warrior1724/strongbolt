@@ -9,6 +9,16 @@ module StrongBolt
 
     validates_presence_of :name
 
+    before_destroy :should_not_have_users
+
+    private
+
+    def should_not_have_users
+      if users.size > 0
+        raise ActiveRecord::DeleteRestrictionError.new :users
+      end
+    end
+
   end
 end
 
