@@ -1,11 +1,13 @@
 module StrongBolt
   class Capability < ActiveRecord::Base
 
+    Actions = %w{find create update destroy}
+
     has_and_belongs_to_many :roles, class_name: "StrongBolt::Role"
     has_many :users, through: :roles
 
     validates :model, :action, presence: true
-    validates :action, inclusion: %w{find create update destroy},
+    validates :action, inclusion: Actions,
       uniqueness: {scope: [:model, :require_ownership, :require_tenant_access]}
     validate :model_exists?
 
