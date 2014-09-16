@@ -182,6 +182,11 @@ describe StrongBolt::Tenantable do
         expect(StrongBolt::Configuration.user_class.constantize.new).to have_many(:tenant_models).through :users_tenants
       end
 
+      it "should have added models to Capability::Models" do
+        expect(StrongBolt::Capability::Models).to be_present
+        expect(StrongBolt::Capability::Models.size).to be > 0
+      end
+
     end
 
 

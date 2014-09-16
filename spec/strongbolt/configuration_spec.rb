@@ -51,4 +51,40 @@ describe StrongBolt::Configuration do
 
   end
 
+  #
+  # Configuring Capability Models
+  #
+  describe "models=" do
+    before do
+      StrongBolt::Configuration.models = "OtherModel", "Model"
+    end
+    after do
+      Capability::Models = nil
+    end
+
+    it "should set Capability::Models" do
+      expect(Capability::Models).to eq ["Model", "OtherModel"]
+    end
+
+    context "when adding other models" do
+      before do
+        StrongBolt::Configuration.models = "Model", "LastModel"
+      end
+
+      it "should merge with current models" do
+        expect(Capability::Models).to eq ["LastModel", "Model", "OtherModel"]
+      end
+    end
+
+    context "when adding 1 model" do
+      before do
+        StrongBolt::Configuration.models = "BottomModel"
+      end
+
+      it "should merge with current models" do
+        expect(Capability::Models).to eq ["BottomModel", "Model", "OtherModel"]
+      end
+    end
+  end
+
 end

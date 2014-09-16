@@ -58,6 +58,9 @@ module StrongBolt
           end
         end
 
+        # We add models name to Configuration
+        StrongBolt::Configuration.models = @models_traversed.keys
+
         setup_association_on_user
 
         @tenant = true
