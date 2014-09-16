@@ -33,6 +33,21 @@ module StrongBolt
       expect(capability).not_to be_valid
     end
 
+    context "when there are roles linked to it" do
+        
+      before do
+        capability.save
+        capability.roles << Role.create!(name: 'role')
+      end
+
+      it "cannot delete" do
+        expect do
+          capability.destroy
+        end.to raise_error ActiveRecord::DeleteRestrictionError
+      end
+
+    end
+
   end
 
 end

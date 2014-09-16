@@ -9,6 +9,7 @@ module StrongBolt
       uniqueness: {scope: [:model, :require_ownership, :require_tenant_access]}
     validate :model_exists?
 
+    before_destroy :should_not_have_roles
 
     private
 
@@ -22,6 +23,15 @@ module StrongBolt
         rescue NameError => e
           errors.add :model, "#{model} is not a valid model"
         end
+      end
+    end
+
+    #
+    # Should not have roles
+    #
+    def should_not_have_roles
+      if roles.size > 0
+        raise ActiveRecord::DeleteRestrictionError.new :roles
       end
     end
   end
