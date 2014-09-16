@@ -76,9 +76,7 @@ module StrongBolt
     # Allows to set Capability Models list
     #
     def self.models= models
-      StrongBolt::Capability::Models ||= []
-      StrongBolt::Capability::Models |= [*models]
-      StrongBolt::Capability::Models.sort!
+      StrongBolt::Capability.add_models models
     end
 
   end

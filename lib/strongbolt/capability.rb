@@ -13,6 +13,18 @@ module StrongBolt
 
     before_destroy :should_not_have_roles
 
+    #
+    # List all the models to be used in capabilities
+    #
+    def self.models() @models ||= []; end
+    def self.models=(models) @models = models; end
+
+    def self.add_models models
+      @models ||= []
+      @models |= [*models]
+      @models.sort!
+    end
+
     private
 
     #

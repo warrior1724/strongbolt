@@ -183,8 +183,8 @@ describe StrongBolt::Tenantable do
       end
 
       it "should have added models to Capability::Models" do
-        expect(StrongBolt::Capability::Models).to be_present
-        expect(StrongBolt::Capability::Models.size).to be > 0
+        expect(StrongBolt::Capability.models).to be_present
+        expect(StrongBolt::Capability.models.size).to be > 0
       end
 
     end
