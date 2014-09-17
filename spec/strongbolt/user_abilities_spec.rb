@@ -349,7 +349,7 @@ describe StrongBolt::UserAbilities do
     subject { cache }
 
     it "should have the right number of capabilities" do
-      expect(cache.size).to eq 4 * 6 + 1
+      expect(cache.size).to eq 4 * 6 + 2
     end
 
     [
