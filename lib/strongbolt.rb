@@ -18,6 +18,14 @@ require "strongbolt/user_group"
 require "strongbolt/users_tenant"
 
 #
+# Raise an error if version of AR not compatible (4.1.0 and 4.1.1)
+#
+ar_version = ActiveRecord.version.version
+if ar_version >= "4.1.0" && ar_version <= "4.1.1"
+  raise StandardError, "You cannot use StrongBolt with ActiveRecord versions 4.1.0 and 4.1.1. Please upgrade to at least 4.1.2."
+end
+
+#
 # Includes every module needed (including Grant)
 #
 ActiveRecord::Base.send :include, StrongBolt::Bolted

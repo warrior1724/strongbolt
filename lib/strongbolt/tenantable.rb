@@ -44,11 +44,7 @@ module StrongBolt
           # So unless we've already traversed this model, or that's a through relationship
           # or a polymorphic association
           # Also we don't go following belongs_to relationship, it becomes crazy
-          unless current_association.is_a?(ActiveRecord::Reflection::ThroughReflection) ||
-            current_association.macro == :belongs_to ||
-            (@models_traversed.has_key?(current_association.klass.name) &&
-              @models_traversed[current_association.klass.name].present?)
-            
+          if should_visit? current_association
             # We setup the model using the association given
             method = setup_model(current_association)
             # We flag the model, storing the name of the method used to link to tenant
@@ -213,20 +209,19 @@ module StrongBolt
       end
 
       #
-      # Returns a lambda with the right scope to select models according to tenants
+      # Returns true if should visit the association
       #
-      def where_tenant_among_lambda association
-        lambda = ->(values) do
-          if values.is_a? Array
-            # If objects
-            values = values.map(&:id) if values[0].respond_to? :id
-          else
-            # If object
-            values = values.id if values.respond_to?(:id)
-          end
-
-          includes(association).where(table_name => {id: values})
-        end
+      # The BFS should visit the next model if the model hasn't been visited yet
+      # or was already visited but through a polymorphic association (hence no inverse)
+      # if the model is a HasMany, HasManyAndBelongsTo or HasOne association (ie no BelongsTo)
+      # and not HasManyThrough, unless it's AR v >= 4.1.0 && < 4.2.0 where
+      # they define a HasManyAndBelongsTo as a HasManyThrough in the reflections
+      #
+      def should_visit? association
+        ! (association.is_a?(ActiveRecord::Reflection::ThroughReflection) ||
+            association.macro == :belongs_to ||
+            (@models_traversed.has_key?(association.klass.name) &&
+              @models_traversed[association.klass.name].present?) )
       end
 
     end

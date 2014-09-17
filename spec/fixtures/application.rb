@@ -21,4 +21,8 @@ module Rails
   def self.application
     @app ||= App.new
   end
+
+  def self.env
+    "test"
+  end
 end

@@ -1,5 +1,3 @@
-#require 'rspec'
-
 require 'fixtures/application'
 require 'fixtures/controllers'
 
