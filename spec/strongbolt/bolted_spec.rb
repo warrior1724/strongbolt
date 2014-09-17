@@ -133,4 +133,34 @@ module StrongBolt
 
   end
 
+
+  #
+  # Around validation
+  #
+  describe "around validation" do
+    before(:all) do
+      define_model "Model" do
+        validate :validation_method
+
+        attr_reader :strongbolt_disabled
+
+        def validation_method
+          @strongbolt_disabled = StrongBolt.disabled?
+        end
+      end
+    end
+
+    let(:instance) { Model.new }
+
+    it "should have strongbolt enabled before" do
+      expect(StrongBolt).to be_enabled
+    end
+
+    it "should disabled strongbolt while doing" do
+      instance.valid?
+      expect(instance.strongbolt_disabled).to eq true
+      expect(StrongBolt).to be_enabled
+    end
+  end
+
 end

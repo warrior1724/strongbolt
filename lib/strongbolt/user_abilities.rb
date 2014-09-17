@@ -158,8 +158,6 @@ module StrongBolt
 
         # we don't know or care about tenants or if this is a new record
         if instance.is_a?(ActiveRecord::Base) && !instance.new_record?
-          # Block access for non tenanted instance
-          valid_tenants = has_access_to_tenants?(instance)
           
           # First, check if we have a hash/cache hit for User being able to do this action to every instance of the model/class
           return true if @results_cache["#{action_model}all-all"]  #Access to all attributes on ENTIRE class?
@@ -170,14 +168,22 @@ module StrongBolt
           id = instance.try(:id)
           return true if @results_cache["#{action_model}all-#{id}"] # Access to all this instance's attributes?
           return true if @results_cache["#{action_model}#{attrs}-#{id}"] #Access to this instance's attribute?
+          
+          # Checking ownership and tenant access
+          # Block access for non tenanted instance
+          valid_tenants = has_access_to_tenants?(instance)
 
           # Then if the model is owned but isn't preloaded yet
           if instance.class.owned?
             # Tests if the owner id of the instance is the same than the user
-            own_instance = instance.owner_id == self.id
-            @results_cache["#{action_model}all-#{id}"] = own_instance && valid_tenants && @results_cache["#{action_model}all-owned"]
-            @results_cache["#{action_model}#{attrs}-#{id}"] = own_instance && valid_tenants && @results_cache["#{action_model}#{attrs}-owned"]
-            return true if @results_cache["#{action_model}all-#{id}"] || @results_cache["#{action_model}#{attrs}-#{id}"]
+            if (own_instance = instance.owner_id == self.id)
+              @results_cache["#{action_model}all-#{id}"] = own_instance && valid_tenants && @results_cache["#{action_model}all-owned"]
+              @results_cache["#{action_model}#{attrs}-#{id}"] = own_instance && valid_tenants && @results_cache["#{action_model}#{attrs}-owned"]
+              return true if @results_cache["#{action_model}all-#{id}"] || @results_cache["#{action_model}#{attrs}-#{id}"]
+            else
+              @results_cache["#{action_model}all-#{id}"] = false
+              @results_cache["#{action_model}#{attrs}-#{id}"] = false
+            end
           end
 
           # Finally we check for tenanted instances

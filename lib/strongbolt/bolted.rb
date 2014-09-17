@@ -118,6 +118,12 @@ module StrongBolt
           granted
         end # End Grant
 
+        #
+        # Around validation, disable
+        #
+        before_validation { StrongBolt.disable_authorization }
+        after_validation { StrongBolt.enable_authorization }
+
       end
     end
   end
