@@ -18,14 +18,29 @@ module StrongBolt
 
     it { should belong_to(:parent).class_name("StrongBolt::Role") }
 
-    context "when have user groups" do
-      before { role.user_groups << UserGroup.create!(name: "User Group") }
+    describe 'destroy' do |variable|
+      before { role.save! }
 
-      it "should raise error when destroy" do
-        expect do
-          role.destroy
-        end.to raise_error ActiveRecord::DeleteRestrictionError
+      context "when have user groups" do
+        before { role.user_groups << UserGroup.create!(name: "User Group") }
+
+        it "should raise error when destroy" do
+          expect do
+            role.destroy
+          end.to raise_error ActiveRecord::DeleteRestrictionError
+        end
       end
+
+      context "when have children" do
+        before { Role.create! name: "Child", parent: role }
+
+        it "should raise an error when destroy" do
+          expect do
+            role.destroy
+          end.to raise_error ActiveRecord::DeleteRestrictionError
+        end
+      end
+
     end
 
   end
