@@ -17,7 +17,7 @@ module StrongBolt
         end
       end # End Grant disabled
 
-      context "when no user" do
+      context "when no user but enabled" do
         before do
           expect(Grant::User).to receive(:current_user)
         end
@@ -152,15 +152,46 @@ module StrongBolt
 
     let(:instance) { Model.new }
 
-    it "should have strongbolt enabled before" do
-      expect(StrongBolt).to be_enabled
-    end
+    context "when auth enabled" do
 
-    it "should disabled strongbolt while doing" do
-      instance.valid?
-      expect(instance.strongbolt_disabled).to eq true
-      expect(StrongBolt).to be_enabled
-    end
+      before { StrongBolt.enable_authorization }
+
+      it "should have strongbolt enabled before" do
+        expect(StrongBolt).to be_enabled
+      end
+
+      it "should disabled strongbolt while doing" do
+        instance.valid?
+        expect(instance.strongbolt_disabled).to eq true
+      end
+
+      it "should re enable after" do
+        instance.valid?
+        expect(StrongBolt).to be_enabled
+      end
+
+    end # End auth enabled
+
+    context "when auth disabled" do
+
+      before { StrongBolt.disable_authorization }
+      after { StrongBolt.enable_authorization }
+
+      it "should have strongbolt enabled before" do
+        expect(StrongBolt).to be_disabled
+      end
+
+      it "should disabled strongbolt while doing" do
+        instance.valid?
+        expect(instance.strongbolt_disabled).to eq true
+      end
+
+      it "should let disable after" do
+        instance.valid?
+        expect(StrongBolt).to be_disabled
+      end
+
+    end # End auth enabled
   end
 
 end
