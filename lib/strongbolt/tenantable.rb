@@ -25,7 +25,9 @@ module StrongBolt
         # Stops if already configured
         return if tenant?
 
-        StrongBolt.logger.info "Configuring tenant #{self.name}\n\n"
+        StrongBolt.logger.info "-------------------------------------------------------------------\n" +
+          "Configuring tenant #{self.name}\n" +
+          "-------------------------------------------------------------------\n\n"
         #
         # We're traversing using BFS the relationships
         #

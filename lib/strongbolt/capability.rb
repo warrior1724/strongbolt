@@ -25,6 +25,14 @@ module StrongBolt
       @models.sort!
     end
 
+    scope :ordered, -> {
+      order(:model, :require_ownership, :require_tenant_access)
+        .order "CASE WHEN action = 'find' THEN 0 " +
+                "WHEN action = 'create' THEN 1 " +
+                "WHEN action = 'update' THEN 2 " +
+                "WHEN action = 'destroy' THEN 3 END"
+    }
+
     private
 
     #
