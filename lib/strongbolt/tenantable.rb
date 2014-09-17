@@ -110,7 +110,8 @@ module StrongBolt
 
           # Common options
           options = {
-            through: inverse.name
+            through: inverse.name,
+            autosave: false
           }
           
           # If the target is linked through some sort of has_many
