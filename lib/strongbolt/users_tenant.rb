@@ -10,7 +10,7 @@ module StrongBolt
 
     def tenant_model_is_a_tenant
       if tenant.present? && !tenant.class.tenant?
-        errors.add :tenant, "should be configured as a Tenant"
+        errors.add :tenant, "should be configured as a Tenant. Class #{tenant.class} is not."
       end
     end
   end
