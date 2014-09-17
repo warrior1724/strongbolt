@@ -2,7 +2,7 @@ module StrongBolt
   module Tenantable
     module ClassMethods
 
-      def tenant?() @tenant.present? && @tenant; end
+      def tenant?() (@tenant.present? && @tenant) || StrongBolt.tenants.include?(name); end
 
       #
       # Returns associations potential name
