@@ -24,6 +24,8 @@ module StrongBolt
       def tenant opts = {}
         # Stops if already configured
         return if tenant?
+
+        StrongBolt.logger.info "Configuring tenant #{self.name}\n\n"
         #
         # We're traversing using BFS the relationships
         #
@@ -122,7 +124,7 @@ module StrongBolt
             # Current tenant table name
             klass.has_many assoc, options
             
-            puts "#{klass.name} has_many #{plural_association_name} through: #{options[:through]}"
+            StrongBolt.logger.info "#{klass.name} has_many #{plural_association_name} through: #{options[:through]}\n\n"
 
           # Otherwise, it's linked through a has one
           else
@@ -132,7 +134,7 @@ module StrongBolt
             # Setup the scope with_name_of_plural_associations
             klass.has_one assoc, options
             
-            puts "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}"
+            StrongBolt.logger.info "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}\n\n"
           end
         end
 
@@ -172,7 +174,7 @@ module StrongBolt
               :through => :users_tenants
           end
         rescue NameError => e
-          StrongBolt.logger.warn "User #{Configuration.user_class} could not have his association to tenant #{name} created"
+          StrongBolt.logger.err "User #{Configuration.user_class} could not have his association to tenant #{name} created"
         end
       end
 
@@ -195,10 +197,9 @@ module StrongBolt
           # If same class than the original source of the association
           elsif assoc.klass == association.active_record
 
-            puts "Association #{association.name} between #{association.active_record} " +
-              "and #{association.klass} don't have any inverse configured, " +
-              "#{assoc.name} was selected as inverse. If it is not, please configure manually " +
-              "the inverse of #{association.name}"
+            StrongBolt.logger.info "Selected inverse of #{association.name} between #{association.active_record} " +
+              "and #{association.klass} is #{assoc.name}.\n " +
+              "If not, please configure manually the inverse of #{association.name}\n"
 
             return assoc
           end
