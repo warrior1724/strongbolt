@@ -95,6 +95,9 @@ module StrongBolt
         
         @results_cache ||= {}
         @model_ancestor_cache ||= {}
+
+        # User can find itself by default
+        @results_cache["findUserany-#{id}"] = true
         
         #
         # Store every capability fetched

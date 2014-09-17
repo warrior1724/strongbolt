@@ -62,15 +62,8 @@ describe StrongBolt::UserAbilities do
   it { is_expected.to respond_to(:capabilities) }
   it { is_expected.to have_many(:tenant_models) }
 
-  context "when finding itself" do
-    before { StrongBolt.current_user = user }
-    after { StrongBolt.current_user = nil }
-
-    it "should not raise error" do
-      expect do
-        User.find user.id
-      end.not_to raise_error
-    end
+  it "should let user find itself" do
+    expect(user.can? :find, user).to eq true
   end
 
 
@@ -356,7 +349,7 @@ describe StrongBolt::UserAbilities do
     subject { cache }
 
     it "should have the right number of capabilities" do
-      expect(cache.size).to eq 4 * 6
+      expect(cache.size).to eq 4 * 6 + 1
     end
 
     [
