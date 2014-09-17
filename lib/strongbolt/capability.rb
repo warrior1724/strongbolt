@@ -3,6 +3,11 @@ module StrongBolt
 
     Actions = %w{find create update destroy}
 
+    DEFAULT_MODELS = ["StrongBolt::UserGroup",
+      "StrongBolt::Role",
+      "StrongBolt::Capability",
+      "StrongBolt::UsersTenant"]
+
     has_and_belongs_to_many :roles, class_name: "StrongBolt::Role"
     has_many :users, through: :roles
 
@@ -16,11 +21,11 @@ module StrongBolt
     #
     # List all the models to be used in capabilities
     #
-    def self.models() @models ||= []; end
+    def self.models() @models ||= DEFAULT_MODELS; end
     def self.models=(models) @models = models; end
 
     def self.add_models models
-      @models ||= []
+      @models ||= DEFAULT_MODELS
       @models |= [*models]
       @models.sort!
     end
