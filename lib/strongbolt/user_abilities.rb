@@ -252,12 +252,6 @@ module StrongBolt
       receiver.send :include, InstanceMethods
 
       receiver.class_eval do
-        # Can find itself
-        grant(:find) do |user, instance|
-          user.nil? || (defined?(Rails) && defined?(Rails.console)) ||
-            user == instance
-        end
-
         has_and_belongs_to_many :user_groups,
           :foreign_key => :user_id,
           :class_name => "StrongBolt::UserGroup",
