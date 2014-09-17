@@ -105,7 +105,7 @@ module StrongBolt
         # We use the grant helper method to test authorizations on all methods
         #
         grant(:find, :create, :update, :destroy) do |user, instance, action|
-          StrongBolt.logger.debug { "Checking for #{action} on #{instance}\n\n#{Kernel.caller[0..10].join("\n")}" }
+          StrongBolt.logger.debug { "Checking for #{action} on #{instance}\n\n#{Kernel.caller.join("\n")}" }
           # Check the user permission unless no user or rails console
           # Not using unbolted? here
           granted = ((defined?(Rails) && defined?(Rails.console)) || user.nil?) ||
