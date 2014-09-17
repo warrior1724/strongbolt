@@ -107,8 +107,8 @@ module StrongBolt
         grant(:find, :create, :update, :destroy) do |user, instance, action|
           # Check the user permission unless no user or rails console
           # Not using unbolted? here
-          granted = ((defined?(Rails) && defined?(Rails.console)) ||
-           StrongBolt.current_user.nil?) || user.can?( action, instance )
+          granted = ((defined?(Rails) && defined?(Rails.console)) || user.nil?) ||
+            user.can?( action, instance )
 
           # If not granted, trigger the access denied
           unless granted

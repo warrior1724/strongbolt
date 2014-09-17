@@ -44,8 +44,6 @@ describe StrongBolt::UserAbilities do
     end
 
     StrongBolt::Configuration.add_tenant TenantModel
-
-    puts ChildModel.reflect_on_all_associations(:has_one).inspect
   end
   after(:all) do
     undefine_model TenantModel
@@ -63,6 +61,17 @@ describe StrongBolt::UserAbilities do
   it { is_expected.to have_many(:users_tenants) }
   it { is_expected.to respond_to(:capabilities) }
   it { is_expected.to have_many(:tenant_models) }
+
+  context "when finding itself" do
+    before { StrongBolt.current_user = user }
+    after { StrongBolt.current_user = nil }
+
+    it "should not raise error" do
+      expect do
+        User.find user.id
+      end.not_to raise_error
+    end
+  end
 
 
   #
