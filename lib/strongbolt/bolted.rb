@@ -121,8 +121,8 @@ module StrongBolt
         #
         # Around validation, disable
         #
-        before_validation { StrongBolt.disable_authorization }
-        after_validation { StrongBolt.enable_authorization }
+        # before_validation { StrongBolt.disable_authorization }
+        # after_validation { StrongBolt.enable_authorization }
 
       end
     end
