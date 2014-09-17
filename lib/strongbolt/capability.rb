@@ -34,6 +34,34 @@ module StrongBolt
         .order(:model, :require_ownership, :require_tenant_access, 'action_id')
     }
 
+    #
+    # Group by model, ownership and tenant access
+    # and tells whether each action is set or not
+    #
+    def self.to_table
+      table = []
+      all.ordered.each do |capability|
+        if table.last.nil? ||
+          ! (table.last[:model] == capability.model &&
+            table.last[:require_ownership] == capability.require_ownership &&
+            table.last[:require_tenant_access] == capability.require_tenant_access)
+          
+          table << {
+            model: capability.model,
+            require_ownership: capability.require_ownership,
+            require_tenant_access: capability.require_tenant_access,
+            find: false,
+            create: false,
+            update: false,
+            destroy: false
+          }
+        end
+
+        table.last[capability.action.to_sym] = true
+      end
+      table
+    end
+
     private
 
     #

@@ -48,38 +48,76 @@ module StrongBolt
 
     end
 
+
     #
-    # SCOPE ORDERED
+    # Scopes and table
     #
-    describe "ordered" do
-      it "should have the scope" do
-        expect(Capability).to respond_to :ordered
+    describe "scope and table" do
+      before(:all) do
+        define_model "OtherModel"
+
+        @capabilities = [
+          Capability.create!(model: "Model", action: "find"),
+          Capability.create!(model: "Model", action: "create"),
+          Capability.create!(model: "OtherModel", action: "find"),
+          Capability.create!(model: "OtherModel", action: "find", require_ownership: true),
+          Capability.create!(model: "User", action: "find")
+        ]
       end
 
-      describe "results" do
-        before do
-          define_model "OtherModel"
-
-          @capabilities = [
-            Capability.create!(model: "Model", action: "find"),
-            Capability.create!(model: "Model", action: "create"),
-            Capability.create!(model: "OtherModel", action: "find"),
-            Capability.create!(model: "OtherModel", action: "find", require_ownership: true),
-            Capability.create!(model: "User", action: "find")
-          ]
+      #
+      # SCOPE ORDERED
+      #
+      describe "ordered" do
+        it "should have the scope" do
+          expect(Capability).to respond_to :ordered
         end
 
-        let(:results) { Capability.ordered }
+        describe "results" do
 
-        subject { results }
+          let(:results) { Capability.ordered }
 
-        it "should have 5 elements" do
-          expect(results.size).to eq 5
+          subject { results }
+
+          it "should have 5 elements" do
+            expect(results.size).to eq 5
+          end
+
+          it { should == @capabilities }
         end
-
-        it { should == @capabilities }
       end
-    end
+
+      #
+      # To Table
+      #
+      describe "to_table" do
+        
+        it "should have the to_table" do
+          expect(Capability).to respond_to :to_table
+        end
+
+        describe "results" do
+          let(:results) { Capability.to_table }
+
+          subject { results }
+
+          it "should have 4" do
+            expect(results.size).to eq 4
+          end
+
+          it "should have each one as a hash with the right keys" do
+            results.each do |permission|
+              [:model, :require_ownership, :require_tenant_access,
+                :find, :create, :update, :destroy].each do |attr|
+                  expect(permission).to include attr
+                end
+            end
+          end
+        end
+
+      end
+
+    end # End Scope and Table
 
   end
 
