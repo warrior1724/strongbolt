@@ -27,10 +27,12 @@ module StrongBolt
 
     scope :ordered, -> {
       order(:model, :require_ownership, :require_tenant_access)
-        .order "CASE WHEN action = 'find' THEN 0 " +
+        .select("#{self.table_name}.*")
+        .select("CASE WHEN action = 'find' THEN 0 " +
                 "WHEN action = 'create' THEN 1 " +
                 "WHEN action = 'update' THEN 2 " +
-                "WHEN action = 'destroy' THEN 3 END"
+                "WHEN action = 'destroy' THEN 3 END AS action_id")
+        .order 'action_id'
     }
 
     private
