@@ -105,7 +105,7 @@ module StrongBolt
         # We use the grant helper method to test authorizations on all methods
         #
         grant(:find, :create, :update, :destroy) do |user, instance, action|
-          StrongBolt.logger.debug { "Checking for #{action} on #{instance}\n\n#{Kernel.caller.join("\n")}" }
+          # StrongBolt.logger.debug { "Checking for #{action} on #{instance}\n\n#{Kernel.caller.join("\n")}" }
           # Check the user permission unless no user or rails console
           # Not using unbolted? here
           granted = ((defined?(Rails) && defined?(Rails.console)) || user.nil?) ||
@@ -122,8 +122,8 @@ module StrongBolt
         #
         # Around validation, disable
         #
-        # before_validation { StrongBolt.disable_authorization }
-        # after_validation { StrongBolt.enable_authorization }
+        before_validation { StrongBolt.disable_authorization }
+        after_validation { StrongBolt.enable_authorization }
 
       end
     end
