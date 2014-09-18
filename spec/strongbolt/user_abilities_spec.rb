@@ -240,8 +240,25 @@ describe StrongBolt::UserAbilities do
     describe "creating an owned model" do
       
       context "when authorized" do
-        it "should return true when passing instance" do
-          expect(user.can? :create, OwnedModel.new).to eq true
+        let(:tenant_model) { TenantModel.create! }
+
+        before { user.tenant_models << tenant_model }
+
+        context "when same tenant" do
+          let(:instance) { OwnedModel.new tenant_model: tenant_model }
+
+          it "should return true when passing instance" do
+            expect(user.can? :create, instance).to eq true
+          end
+        end
+
+        context "when not same tenant" do
+
+          let(:instance) { OwnedModel.new tenant_model: TenantModel.create! }
+
+          it "should return false when passing instance" do
+            expect(user.can? :create, instance).to eq false
+          end
         end
 
         it "should return true when passing class" do
@@ -298,6 +315,16 @@ describe StrongBolt::UserAbilities do
       end
 
     end # Creating a model with restricted attributes
+
+    describe "creating a non tenanted model" do
+      let(:instance) { UnownedModel.new }
+
+      context "when user has the right" do
+        it "should return true" do
+          expect(user.can? :create, instance).to eq true
+        end
+      end
+    end
 
     describe 'destroying an owned model' do
       context "when owning" do

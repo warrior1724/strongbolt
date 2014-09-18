@@ -190,6 +190,17 @@ module StrongBolt
           @results_cache["#{action_model}all-#{id}"] = @results_cache["#{action_model}all-tenanted"] && valid_tenants  #Access to all attributes on tenanted class?
           @results_cache["#{action_model}#{attrs}-#{id}"] =  @results_cache["#{action_model}#{attrs}-tenanted"] && valid_tenants #Access to this specific attribute on tenanted class?
           return true if @results_cache["#{action_model}all-#{id}"] || @results_cache["#{action_model}#{attrs}-#{id}"]
+        elsif instance.is_a?(ActiveRecord::Base) && instance.new_record?
+          return true if @results_cache["#{action_model}all-all"]  #Access to all attributes on ENTIRE class?
+          return true if @results_cache["#{action_model}#{attrs}-all"]  #Access to this specific attribute on ENTIRE class?
+          # Checking if the instance is from valid tenants (if necessary)
+          valid_tenants = has_access_to_tenants?(instance)
+          return true if @results_cache["#{action_model}all-tenanted"] && valid_tenants  #Access to all attributes on tenanted class?
+          return true if @results_cache["#{action_model}#{attrs}-tenanted"] && valid_tenants #Access to this specific attribute on tenanted class?
+
+          # Finally, in the case where it's a non tenanted model (it still need to have valid_tenants == true)
+          return true if @results_cache["#{action_model}all-any"] && valid_tenants
+          return true if @results_cache["#{action_model}#{attrs}-any"] && valid_tenants
         else
           # First, check if we have a hash/cache hit for User being able to do this action to every instance of the model/class
           return true if @results_cache["#{action_model}all-all"]  #Access to all attributes on ENTIRE class?
