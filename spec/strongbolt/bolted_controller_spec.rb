@@ -73,6 +73,17 @@ describe PostsController, :type => :controller do
         PostsController.new.can? :find, User
       end
     end
+    
+    describe "cannot?" do  
+      it "should respond to cannot?" do
+        expect(PostsController.new).to respond_to :cannot?
+      end
+
+      it "should call can? on current_user" do
+        expect(StrongBolt.current_user).to receive(:cannot?).with :find, User
+        PostsController.new.cannot? :find, User
+      end
+    end
   end
 
 
