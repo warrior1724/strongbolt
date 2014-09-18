@@ -56,6 +56,29 @@ describe PostsController, :type => :controller do
 
 
 
+  #
+  # Helpers
+  #
+  describe "helpers" do
+    before { StrongBolt.current_user = User.create! }
+    after { StrongBolt.current_user = nil }
+    
+    describe "can?" do  
+      it "should respond to can?" do
+        expect(PostsController.new).to respond_to :can?
+      end
+
+      it "should call can? on current_user" do
+        expect(StrongBolt.current_user).to receive(:can?).with :find, User
+        PostsController.new.can? :find, User
+      end
+    end
+  end
+
+
+
+
+
 
 
 

@@ -51,8 +51,8 @@ module Helpers
           mod = base_module.const_get(module_name)
         rescue NameError
           mod = Module.new
+          base_module.send :const_set, module_name, mod
         end
-        base_module.send :const_set, module_name, mod
         base_module = mod
       end
     end

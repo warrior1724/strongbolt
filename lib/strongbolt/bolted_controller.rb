@@ -111,6 +111,14 @@ module StrongBolt
     
     module InstanceMethods
 
+      def can? *args
+        StrongBolt.current_user.can? *args
+      end
+
+      def cannot? *args
+        StrongBolt.current_user.cannot? *args
+      end
+
       private
 
       #
