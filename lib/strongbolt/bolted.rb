@@ -90,18 +90,6 @@ module StrongBolt
 
         send self.class.owner_attribute
       end
-
-      private
-
-      def strongbolt_disable_authorization
-        @previously_enabled = StrongBolt.enabled?
-        
-        StrongBolt.disable_authorization
-      end
-
-      def strongbolt_enable_authorization
-        StrongBolt.enable_authorization if @previously_enabled
-      end
     end
     
     def self.included(receiver)
@@ -130,12 +118,6 @@ module StrongBolt
           
           granted
         end # End Grant
-
-        #
-        # Around validation, disable
-        #
-        # before_validation :strongbolt_disable_authorization
-        # after_validation :strongbolt_enable_authorization
 
       end
     end
