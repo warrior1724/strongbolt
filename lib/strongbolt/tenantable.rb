@@ -166,11 +166,29 @@ module StrongBolt
       def setup_association_on_user
         begin
           user_class = Configuration.user_class.constantize
+
+          # Setup the association
           unless user_class.respond_to? plural_association_name
             user_class.has_many plural_association_name,
               :source => :tenant,
               :source_type => self.name,
               :through => :users_tenants
+          end
+
+          # Setup a quick method to get accessible clients directly
+          unless user_class.respond_to? "accessible_#{plural_association_name}"
+            user_class.class_exec(self, plural_association_name) do |klass, plur|
+              define_method "accessible_#{plur}" do
+                # If can find ALL the tenants
+                if can? :find, klass, :any, true
+                  # Then it can access all of them
+                  klass.all
+                else
+                  # Otherwise, only the ones he manages
+                  send plur
+                end
+              end
+            end
           end
         rescue NameError => e
           StrongBolt.logger.err "User #{Configuration.user_class} could not have his association to tenant #{name} created"

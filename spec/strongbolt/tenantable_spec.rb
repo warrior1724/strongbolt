@@ -182,6 +182,10 @@ describe StrongBolt::Tenantable do
         expect(StrongBolt::Configuration.user_class.constantize.new).to have_many(:tenant_models).through :users_tenants
       end
 
+      it "creates a relationship on the user to get accessible tenants" do
+        expect(StrongBolt::Configuration.user_class.constantize.new).to respond_to :accessible_tenant_models
+      end
+
       it "should have added models to Capability::Models" do
         expect(StrongBolt::Capability.models).to be_present
         expect(StrongBolt::Capability.models.size).to be > 0
