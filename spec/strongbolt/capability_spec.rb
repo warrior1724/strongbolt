@@ -116,7 +116,44 @@ module StrongBolt
           end
         end
 
-      end
+      end # End to_table
+
+      #
+      # To Hash
+      #
+      describe "to_hash" do
+        
+        it "should have the to_hash" do
+          expect(Capability).to respond_to :to_hash
+        end
+
+        describe "results" do
+          let(:results) { Capability.to_hash }
+
+          subject { results }
+
+          it "should have 4" do
+            expect(results.size).to eq 4
+          end
+
+          it "should have the correct keys" do
+            results.each do |key, permission|
+              expect(["Model-false-true", "OtherModel-false-true",
+                "OtherModel-true-true", "User-false-true"]).to include key
+            end
+          end
+
+          it "should have each one as a hash with the right keys" do
+            results.each do |key, permission|
+              [:model, :require_ownership, :require_tenant_access,
+                :find, :create, :update, :destroy].each do |attr|
+                  expect(permission).to include attr
+                end
+            end
+          end
+        end
+
+      end # End to_hash
 
     end # End Scope and Table
 

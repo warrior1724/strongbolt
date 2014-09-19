@@ -67,6 +67,30 @@ module StrongBolt
       table
     end
 
+    #
+    # Group by model, ownership and tenant access
+    # and tells whether each action is set or not
+    # in a hash
+    #
+    def self.to_hash
+      hash = {}
+      all.ordered.each do |capability|
+        key = "#{capability.model}-#{capability.require_ownership}-#{capability.require_tenant_access}"
+        hash[key] ||= {
+          model: capability.model,
+          require_ownership: capability.require_ownership,
+          require_tenant_access: capability.require_tenant_access,
+          find: false,
+          create: false,
+          update: false,
+          destroy: false
+        }
+
+        hash[key][capability.action.to_sym] = true
+      end
+      hash
+    end
+
     private
 
     #
