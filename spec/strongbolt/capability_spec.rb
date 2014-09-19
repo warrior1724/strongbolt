@@ -64,6 +64,7 @@ module StrongBolt
           Capability.create!(model: "User", action: "find")
         ]
       end
+      after(:all) { Capability.all.delete_all }
 
       #
       # SCOPE ORDERED

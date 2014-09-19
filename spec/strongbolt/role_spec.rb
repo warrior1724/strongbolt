@@ -21,7 +21,6 @@ module StrongBolt
     describe "inherited capabilities" do
       
       before do
-        Capability.all.delete_all
         # A family
         grandfather = Role.create! name: "GrandFather"
         father = Role.create! name: "Father", parent: grandfather
@@ -37,7 +36,6 @@ module StrongBolt
         @inherited2 = grandfather.capabilities.create! model: "Model", action: "find"
         sibling.capabilities.create! model: "User", action: "find"
       end
-      after { Capability.all.delete_all }
 
       let(:inherited_capabilities) { role.inherited_capabilities }
 
