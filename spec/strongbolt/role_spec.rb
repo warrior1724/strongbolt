@@ -18,6 +18,38 @@ module StrongBolt
 
     it { should belong_to(:parent).class_name("StrongBolt::Role") }
 
+    describe "inherited capabilities" do
+      
+      before do
+        # A family
+        grandfather = Role.create! name: "GrandFather"
+        father = Role.create! name: "Father", parent: grandfather
+        sibling = Role.create! name: "Sibling"
+        role.parent = father
+        role.save!
+        child = Role.create! name: "Child", parent: role
+
+        # Some capabilities
+        role.capabilities.create! model: "Model", action: "create"
+        child.capabilities.create! model: "Model", action: "destroy"
+        @inherited1 = father.capabilities.create! model: "Model", action: "update"
+        @inherited2 = grandfather.capabilities.create! model: "Model", action: "find"
+        sibling.capabilities.create! model: "User", action: "find"
+      end
+
+      let(:inherited_capabilities) { role.inherited_capabilities }
+
+      it "should have 2 inherited_capabilities" do
+        expect(inherited_capabilities.size).to eq 2
+      end
+
+      it "should have the right ones" do
+        expect(inherited_capabilities).to include @inherited1
+        expect(inherited_capabilities).to include @inherited2
+      end
+
+    end
+
     describe 'destroy' do |variable|
       before { role.save! }
 

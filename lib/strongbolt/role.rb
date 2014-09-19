@@ -18,6 +18,15 @@ module StrongBolt
     # We SHOULD NOT destroy descendants in our case
     skip_callback :destroy, :before, :destroy_descendants
 
+    #
+    # Returns inherited capabilities
+    #
+    def inherited_capabilities
+      StrongBolt::Capability.joins(:roles)
+        .where("strongbolt_roles.lft < :lft AND strongbolt_roles.rgt > :rgt", lft: lft, rgt: rgt)
+        .distinct
+      end
+
     private
 
     def should_not_have_user_groups
