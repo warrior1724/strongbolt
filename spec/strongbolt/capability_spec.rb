@@ -137,18 +137,38 @@ module StrongBolt
           end
 
           it "should have the correct keys" do
+            keys = [
+              {
+                model: "Model",
+                require_ownership: false,
+                require_tenant_access: true
+              },
+              {
+                model: "OtherModel",
+                require_ownership: false,
+                require_tenant_access: true
+              },
+              {
+                model: "OtherModel",
+                require_ownership: true,
+                require_tenant_access: true
+              },
+              {
+                model: "User",
+                require_ownership: false,
+                require_tenant_access: true
+              },
+            ]
             results.each do |key, permission|
-              expect(["Model-false-true", "OtherModel-false-true",
-                "OtherModel-true-true", "User-false-true"]).to include key
+              expect(keys).to include key
             end
           end
 
           it "should have each one as a hash with the right keys" do
             results.each do |key, permission|
-              [:model, :require_ownership, :require_tenant_access,
-                :find, :create, :update, :destroy].each do |attr|
-                  expect(permission).to include attr
-                end
+              [:find, :create, :update, :destroy].each do |attr|
+                expect(permission).to include attr
+              end
             end
           end
         end

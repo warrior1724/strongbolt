@@ -75,11 +75,13 @@ module StrongBolt
     def self.to_hash
       hash = {}
       all.ordered.each do |capability|
-        key = "#{capability.model}-#{capability.require_ownership}-#{capability.require_tenant_access}"
-        hash[key] ||= {
+        key = {
           model: capability.model,
           require_ownership: capability.require_ownership,
-          require_tenant_access: capability.require_tenant_access,
+          require_tenant_access: capability.require_tenant_access
+        }
+        
+        hash[key] ||= {
           find: false,
           create: false,
           update: false,
