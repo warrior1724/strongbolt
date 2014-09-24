@@ -98,6 +98,8 @@ module StrongBolt
     rescue NameError
       logger.warn "User class #{Configuration.user_class} wasn't found"
     end
+  rescue ActiveRecord::StatementInvalid => e
+    logger.fatal "Error while setting up StrongBolt:\n\n#{e}"
   end
 
   #
