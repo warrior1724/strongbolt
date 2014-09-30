@@ -28,6 +28,11 @@ describe StrongBolt do
         config.user_class = "UserModel"
       end
     end
+    after do
+      StrongBolt.setup do |config|
+        config.user_class = "User"
+      end
+    end
 
     it "should include UserAbilities" do
       expect(UserModel.included_modules).to include StrongBolt::UserAbilities
@@ -48,6 +53,7 @@ describe StrongBolt do
         block.call user, instance, action, request_path
       end
     end
+    after { StrongBolt::Configuration.access_denied {} }
 
     it "should call configuration's block" do
       StrongBolt.access_denied 'user', 'instance', 'action', 'request_path'
@@ -64,6 +70,33 @@ describe StrongBolt do
     it "should not perform authorization" do
       StrongBolt.without_authorization do
         expect(Grant::Status.grant_disabled?).to eq true
+      end
+    end
+
+    describe "perform action" do
+      before do
+        @user = User.create!
+        StrongBolt.current_user = User.create!
+      end
+      after { StrongBolt.current_user = nil }
+
+      let(:user) { @user }
+
+      context 'with authorization' do
+        it "should call user can? when normal" do
+          expect_any_instance_of(User).to receive(:can?)
+            .with(:find, user).and_return true
+          User.find user.id
+        end
+      end
+
+      context "when without_authorization" do
+        it "should not call can?" do
+          StrongBolt.without_authorization do
+            expect_any_instance_of(User).not_to receive(:can?)
+            expect(User.find user.id).to eq user
+          end
+        end
       end
     end
   end

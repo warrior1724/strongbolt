@@ -56,6 +56,10 @@ module StrongBolt
   def_delegators Configuration, :access_denied, :logger, :tenants
   module_function :access_denied, :logger, :tenants
 
+  # Delegates switching thread behavior
+  def_delegators Grant::Status, :switch_to_multithread,
+    :switch_to_monothread
+
   #
   # Current User
   #
