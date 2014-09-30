@@ -59,6 +59,7 @@ module StrongBolt
   # Delegates switching thread behavior
   def_delegators Grant::Status, :switch_to_multithread,
     :switch_to_monothread
+  module_function :switch_to_multithread, :switch_to_monothread
 
   #
   # Current User
