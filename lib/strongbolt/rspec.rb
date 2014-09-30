@@ -5,7 +5,7 @@ require 'strongbolt'
 
 StrongBolt.switch_to_multithread
 
-if defined?(Rspec)
+if defined?(RSpec)
   # We load the class that overrides user behavior,
   # more convenient for tests
   require 'strongbolt/rspec/user'
