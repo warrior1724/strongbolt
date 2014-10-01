@@ -115,6 +115,13 @@ module StrongBolt
   end
 
   #
+  # Perform the block with grant
+  #
+  def self.with_authorization &block
+    Grant::Status.with_grant &block
+  end
+
+  #
   # Disable authorization checking
   #
   def self.disable_authorization
