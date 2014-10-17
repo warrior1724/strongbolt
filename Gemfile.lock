@@ -92,7 +92,7 @@ PLATFORMS
 DEPENDENCIES
   actionpack (~> 4.1.0)
   activesupport (~> 4.1.0)
-  bundler (~> 1.5.0)
+  bundler (~> 1.7.0)
   fuubar
   grant (>= 2.2)!
   rake

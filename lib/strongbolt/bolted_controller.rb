@@ -87,6 +87,34 @@ module StrongBolt
       end
 
       #
+      # Render without authorization, for better performance
+      #
+      def render_without_authorization *actions
+        self.actions_without_authorization = [*actions]
+
+        class_eval do
+          #
+          # It needs to be created afterward,
+          # No idea why
+          #
+          def render *args
+            if render_without_authorization?
+              StrongBolt.without_authorization { _render *args }
+            else
+              _render *args
+            end
+          end
+        end
+      end
+
+      #
+      # Render with authorization
+      #
+      def render_with_authorization
+        self.actions_without_authorization = nil
+      end
+
+      #
       # Returns the actions mapping of this controller
       #
       def actions_mapping
@@ -117,6 +145,27 @@ module StrongBolt
 
       def cannot? *args
         StrongBolt.current_user.cannot? *args
+      end
+
+      #
+      # Checks if the current action needs verification
+      #
+      def render_without_authorization?
+        self.class.actions_without_authorization.present? &&
+          self.class.actions_without_authorization.include?(params[:action].to_sym)
+      end
+
+      #
+      # We're aliasing render so we can trigger the without auth
+      #
+      # DOESN'T WORK WHEN DEFINED HERE?
+      #
+      def render *args
+        if render_without_authorization?
+          StrongBolt.without_authorization { _render *args }
+        else
+          _render *args
+        end
       end
 
       private
@@ -211,9 +260,6 @@ module StrongBolt
     end
     
     def self.included(receiver)
-      receiver.extend         ClassMethods
-      receiver.send :include, InstanceMethods
-
       receiver.class_eval do
         # Compulsory filters
         before_action :set_current_user
@@ -221,6 +267,12 @@ module StrongBolt
 
         # Quick check of high level authorization
         before_action :check_authorization
+
+        # A list storing actions that render without authorization
+        self.class.send :attr_accessor, :actions_without_authorization
+
+        # To allow render without authorization
+        alias_method :_render, :render
 
         # Catch errors
         rescue_from StrongBolt::Unauthorized, Grant::Error do |e|
@@ -232,6 +284,10 @@ module StrongBolt
         end
 
       end # End receiver class eval
+
+      receiver.extend         ClassMethods
+      receiver.send :include, InstanceMethods
+
     end # End self.included
 
   end

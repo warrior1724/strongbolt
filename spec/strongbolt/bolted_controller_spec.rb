@@ -674,4 +674,51 @@ describe PostsController, :type => :controller do
   end
 
 
+
+
+  #
+  # Render without authorization
+  #
+  describe "render_without_authorization" do
+    
+    after { PostsController.render_with_authorization }
+
+    it "should have aliased render" do
+      expect(PostsController.new).to respond_to :_render
+    end
+
+    context "when no arg" do
+      before do
+        PostsController.render_without_authorization
+        expect(StrongBolt).not_to receive(:without_authorization)
+      end
+
+      it "should perform without auth when index" do
+        get :index
+      end
+
+      it "should perform without auth when show" do
+        get :show, id: 1
+      end
+    end
+
+    context "when 1 arg" do
+      before do
+        PostsController.render_without_authorization :index
+      end
+
+      it "should perform without auth when index" do
+        expect(StrongBolt).to receive(:without_authorization)
+        get :index
+      end
+
+      it "should not perform without auth when show" do
+        expect(StrongBolt).not_to receive(:without_authorization)
+        get :show, id: 1
+      end
+    end
+
+  end
+
+
 end
