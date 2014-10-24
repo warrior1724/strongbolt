@@ -25,7 +25,7 @@ module StrongBolt
         # Stops if already configured
         return if tenant?
 
-        StrongBolt.logger.info "-------------------------------------------------------------------\n" +
+        StrongBolt.logger.debug "-------------------------------------------------------------------\n" +
           "Configuring tenant #{self.name}\n" +
           "-------------------------------------------------------------------\n\n"
         #
@@ -123,7 +123,7 @@ module StrongBolt
             # Current tenant table name
             klass.has_many assoc, options
             
-            StrongBolt.logger.info "#{klass.name} has_many #{plural_association_name} through: #{options[:through]}\n\n"
+            StrongBolt.logger.debug "#{klass.name} has_many #{plural_association_name} through: #{options[:through]}\n\n"
 
           # Otherwise, it's linked through a has one
           else
@@ -133,7 +133,7 @@ module StrongBolt
             # Setup the scope with_name_of_plural_associations
             klass.has_one assoc, options
             
-            StrongBolt.logger.info "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}\n\n"
+            StrongBolt.logger.debug "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}\n\n"
           end
         end
 
@@ -214,7 +214,7 @@ module StrongBolt
           # If same class than the original source of the association
           elsif assoc.klass == association.active_record
 
-            StrongBolt.logger.info "Selected inverse of #{association.name} between #{association.active_record} " +
+            StrongBolt.logger.debug "Selected inverse of #{association.name} between #{association.active_record} " +
               "and #{association.klass} is #{assoc.name}.\n " +
               "If not, please configure manually the inverse of #{association.name}\n"
 
