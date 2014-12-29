@@ -1,6 +1,8 @@
 # StrongBolt
 
-TODO: Write a gem description
+RBAC framework for model-level authorization gem with very granular control on permissions, using Capabilities, Roles and UserGroups.
+
+Only works with Rails 4.
 
 ## Installation
 
@@ -17,7 +19,7 @@ And then execute:
 
 To creates the required migrations, run:
 
-    $ rails g strongbolt:install
+    $ rails g strongbolt:install && rake db:migrate
 
 ## Contributing
 
