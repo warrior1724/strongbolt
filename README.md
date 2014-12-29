@@ -6,19 +6,18 @@ TODO: Write a gem description
 
 Add this line to your application's Gemfile:
 
-    gem 'strongbolt'
+    gem 'grant', '>= 2.2', git: "git@github.com:AnalyticsMediaGroup/grant.git"
+    gem 'strongbolt', git: "git@github.com:AnalyticsMediaGroup/strongbolt.git"
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install strongbolt
-
 ## Usage
 
-TODO: Write usage instructions here
+To creates the required migrations, run:
+
+    $ rails g strongbolt:install
 
 ## Contributing
 
