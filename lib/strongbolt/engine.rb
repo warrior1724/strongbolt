@@ -1,4 +1,5 @@
 require "strongbolt/helpers"
+require "strongbolt/controllers/url_helpers"
 
 module Strongbolt
   class Engine < ::Rails::Engine
