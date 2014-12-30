@@ -1,5 +1,5 @@
 module StrongBolt
-  class SecurityController < StrongBoltController
+  class SecurityController < ::StrongBoltController
     self.model_for_authorization = "Role"
 
     def index

@@ -40,6 +40,7 @@ if defined?(ActionController) and defined?(ActionController::Base)
 end
 
 require 'strongbolt/railtie' if defined?(Rails::Railtie)
+require 'strongbolt/engine' if defined?(Rails::Engine)
 
 
 #

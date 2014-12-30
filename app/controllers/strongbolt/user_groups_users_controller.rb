@@ -1,5 +1,5 @@
 module StrongBolt
-  class UserGroupsUsersController < StrongBoltController
+  class UserGroupsUsersController < ::StrongBoltController
 
     self.model_for_authorization = "UserGroup"
 

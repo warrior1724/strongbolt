@@ -1,5 +1,5 @@
 module StrongBolt
-  class UserGroupsController < StrongBoltController
+  class UserGroupsController < ::StrongBoltController
   	def index
   		@user_groups = UserGroup.all
   	end
