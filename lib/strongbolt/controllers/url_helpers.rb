@@ -6,8 +6,10 @@ module Strongbolt
     # Creates the url helpers without the 'strongbolt_' prefix,
     # that both Strongbolt views and the app views can use
     #
+    # It's not very nice like that but would be too complicated to do like Devise for now...
+    #
     module UrlHelpers
-      URLS = %w{role user_group user_group_user role_capability}
+      URLS = %w{role  user_group user_group_user role_capability}
 
       #
       # Creates the url helpers for the specific url and scope

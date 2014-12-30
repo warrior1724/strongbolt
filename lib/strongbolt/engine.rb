@@ -1,3 +1,5 @@
+require "strongbolt/rails/routes"
+
 require "strongbolt/helpers"
 require "strongbolt/controllers/url_helpers"
 
