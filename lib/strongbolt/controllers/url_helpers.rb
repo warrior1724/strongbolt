@@ -7,8 +7,11 @@ module Strongbolt
     # that both Strongbolt views and the app views can use
     #
     module UrlHelpers
-      URLS = %w{role capability user_group user_group_user}
+      URLS = %w{role user_group user_group_user role_capability}
 
+      #
+      # Creates the url helpers for the specific url and scope
+      #
       def self.create_url_helper url, scope=nil
         [:path, :url].each do |path_or_url|
           class_eval <<-URL_HELPERS
@@ -19,6 +22,9 @@ module Strongbolt
         end
       end
 
+      #
+      # Loads all the required helpers
+      #
       URLS.each do |url|
         create_url_helper url
         create_url_helper url.pluralize
