@@ -2,6 +2,7 @@ module Strongbolt
   class RolesController < ::StrongboltController
     
     def index
+      puts "\n\n#{send(:main_app).inspect}\n\n"
       @roles = Role.includes(:parent)
         .order('parent_id IS NOT NULL', 'parent_id', 'name')
     end
