@@ -23,7 +23,6 @@ module Strongbolt
           expect(main_app).to receive(:edit_strongbolt_role_path).with 2
           helpers.edit_role_path 2
         end
-
       end
 
     end

@@ -152,10 +152,12 @@ module Strongbolt
   def self.include_helpers(scope)
     ActiveSupport.on_load(:action_controller) do
       include scope::UrlHelpers
+      include Rails.application.routes.url_helpers if defined?(Rails.application.routes.url_helpers)
     end
 
     ActiveSupport.on_load(:action_view) do
       include scope::UrlHelpers
+      include Rails.application.routes.url_helpers if defined?(Rails.application.routes.url_helpers)
     end
   end
 
