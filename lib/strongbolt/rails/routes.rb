@@ -4,7 +4,7 @@ module ActionDispatch::Routing
   #
   class Mapper
     def strongbolt
-      namespace :strongbolt do
+      scope :module => :strongbolt do
         resources :user_groups do
           resources :user_groups_users, as: :users, path: 'users', only: [:create, :destroy]
         end
