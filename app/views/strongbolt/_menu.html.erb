@@ -1,9 +1,4 @@
 <ul class="nav nav-pills nav-justified">
-  <li class="<%= current == 'security' ? 'active' : '' %>">
-    <%= link_to root_path do %>
-      <i class="fa fa-lock"></i> Dashboard
-    <% end %>
-  </li>
   <li class="<%= current == 'user_groups' ? 'active' : '' %>">
     <%= link_to user_groups_path do %>
       <i class="fa fa-users"></i> User Groups
