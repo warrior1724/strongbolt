@@ -1,0 +1,13 @@
+<%= render 'strongbolt/menu', current: 'user_groups' %>
+
+<ul class='breadcrumb'>
+  <h2 style='text-align:left'>Security: New User Group</h2>
+  <li>
+    <%= link_to "User Groups", user_groups_path %>
+  </li>
+  <li class='active'>
+    New
+  </li>
+</ul>
+
+<%= render 'form' %>

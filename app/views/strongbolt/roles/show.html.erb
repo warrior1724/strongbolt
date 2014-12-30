@@ -1,0 +1,52 @@
+<%= render 'strongbolt/menu', current: 'roles' %>
+
+<ul class='breadcrumb'>
+  <h2 style='text-align:left'>Security: Role <em><%= @role.name %></em></h2>
+  <li>
+    <%= link_to "Roles", roles_path %>
+  </li>
+  <li class='active'><%= @role.name %></li>
+</ul>
+
+<div class="pull-right">
+  <%= link_to "Edit", edit_role_path(@role), :class => "btn btn-default" %>
+  <%= link_to "Delete", role_path(@role), :class => "btn btn-danger", method: :delete, :data => {:confirm => "Do you confirm deleting #{@role.name}"} %>
+</div>
+
+<p><%= @role.description %></p>
+
+<% if @role.parent.present? %>
+  <p>Inherits from: <%= link_to @role.parent.name, role_path(@role.parent) %></p>
+<% end %>
+
+<h3>User Groups</h3>
+
+<table class="table table-condensed table-summary table-without-thead">
+  <% @role.user_groups.each do |user_group| %>
+    <tr>
+      <td>
+        <%= link_to user_group.name, user_group_path(user_group) %>
+      </td>
+      <td><%= user_group.description %></td>
+      <td><%= user_group.users.size %> users</td>
+    </tr>
+  <% end %>
+</table>
+
+<% if @descendants.size > 0 %>
+  <h3>Inherited by</h3>
+
+  <table class="table table-condensed table-summary table-without-thead">
+    <% @descendants.each do |descendant| %>
+      <tr>
+        <td><%= link_to descendant.name, role_path(descendant) %></td>
+        <td><%= descendant.description %></td>
+        <td><%= descendant.user_groups.size %> user groups</td>
+      <tr>
+    <% end %>
+  </table>
+<% end %>
+
+<h3>Permissions</h3>
+
+<%= render 'capabilities' %>

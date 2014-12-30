@@ -1,0 +1,53 @@
+<ul class='breadcrumb'>
+  <h2 style='text-align:left'>Security: Permission <em>#<%= @capability.id %></em></h2>
+  <li>
+    <%= link_to "Permissions", capabilities_path %>
+  </li>
+  <li class='active'>
+    #<%= @capability.id %>
+  </li>
+</ul>
+
+<table class="table table-summary">
+  <tr>
+    <td>Model</td>
+    <td><%= @capability.model %></td>
+  </tr>
+  <tr>
+    <td>Action</td>
+    <td><%= @capability.action %></td>
+  </tr>
+  <tr>
+    <td>Require Ownership?</td>
+    <td><%= @capability.require_ownership ? "Yes" : "No" %></td>
+  </tr>
+  <tr>
+    <td>Require Tenant Access</td>
+    <td><%= @capability.require_tenant_access ? "Yes" : "No" %></td>
+  </tr>
+  <tr>
+    <td>Roles</td>
+    <td>
+      <% if @capability.roles.present? %>
+        <% @capability.roles.each do |role| %>
+          <div><%= link_to role.name, role_path(role) %></div>
+        <% end %>
+      <% else %>
+        No role linked
+      <% end %>
+    </td>
+  </tr>
+</table>
+
+
+<div class="pull-right">
+  <p>
+    <% if @capability.roles.empty? %>
+      <%= link_to "Delete", capability_path(@capability), method: :delete, class: "btn btn-danger", data: {confirm: "Are you sure?"} %>
+    <% else %>
+      <span class="text-danger">
+        You cannot delete the capability while roles are still linked to it
+      </span>
+    <% end %>
+  </p>
+</div>

@@ -1,0 +1,12 @@
+<%= simple_form_for(@role,
+  as: "role",
+  url: params[:action].to_sym == :new ? roles_path : role_path(@role),
+  method: params[:action].to_sym == :new ? :post : :put) do |f| %>
+
+  <%= f.input :name %>
+  <%= f.input :parent_id, collection: Role.where.not(id: @role.id).order('parent_id IS NOT NULL', :parent_id, :name) %>
+  <%= f.input :description %>
+
+  <%= f.button :wrapped, class: 'btn-primary', value: 'Save' %>
+
+<% end %>

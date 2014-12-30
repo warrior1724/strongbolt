@@ -1,0 +1,2 @@
+class StrongBoltController < StrongBolt.parent_controller.constantize
+end

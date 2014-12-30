@@ -1,0 +1,86 @@
+<%= render 'strongbolt/menu', current: 'user_groups' %>
+
+<ul class='breadcrumb'>
+  <h2 style='text-align:left'>Security: User Group <em><%= @user_group.name %></em></h2>
+  <li>
+    <%= link_to "User Groups", user_groups_path %>
+  </li>
+  <li class='active'>
+    <%= @user_group.name %>
+  </li>
+</ul>
+
+<p>
+  <%= @user_group.description %>
+</p>
+
+<div class="pull-right">
+  <%= link_to "Edit", edit_user_group_path(@user_group), :class => "btn btn-default" %>
+  <%= link_to "Delete", user_group_path(@user_group), :class => "btn btn-danger", method: :delete, :data => {:confirm => "Do you confirm deleting #{@user_group.name}"} %>
+</div>
+
+<h3>Roles</h3>
+
+<table class="table table-summary table-condensed table-without-thead">
+  <tbody>
+    <% @user_group.roles.each do |role| %>
+
+      <tr>
+        <td><%= link_to role.name, role_path(role) %></td>
+        <td><%= role.description %></td>
+        <td><%= role.capabilities.size %> permissions</td>
+      </tr>
+
+    <% end %>
+  </tbody>
+</table>
+
+<h3>Users</h3>
+
+<%= form_tag user_group_users_path(@user_group) do %>
+
+  <table class="table table-summary table-striped">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Sign Up Date</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @user_group.users.order(:email).each do |user| %>
+
+        <tr>
+          <td><%= link_to user.email, user_path(user) %></td>
+          <td><%= l user.created_at %></td>
+          <td align="right">
+            <%= link_to(user_group_user_path(@user_group, user), method: :delete, class: 'text-danger') do %>
+              <i class="fa fa-times"></i>
+            <% end %>
+          </td>
+        </tr>
+
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">
+          <%= text_field_tag :email, "", class: "form-control autocomplete user", placeholder: "Type an user email to add another one to group" %>
+          <%= hidden_field_tag :id %>
+        </td>
+        <td>
+          <%= submit_tag "Add user", class: "btn btn-block btn-primary" %>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+
+<% end %>
+
+
+
+
+
+
+

@@ -1,0 +1,12 @@
+<%= simple_form_for(@user_group,
+  as: "user_group",
+  url: params[:action].to_sym == :new ? user_groups_path : user_group_path(@user_group),
+  method: params[:action].to_sym == :new ? :post : :put) do |f| %>
+
+  <%= f.input :name %>
+  <%= f.input :description %>
+
+  <%= f.association :roles, as: :check_boxes %>
+
+  <%= f.button :wrapped, class: 'btn-primary', value: 'Save' %>
+<% end %>

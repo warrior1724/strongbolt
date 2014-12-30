@@ -53,13 +53,19 @@ module StrongBolt
   end
   
   # Delegates to the configuration the access denied
-  def_delegators Configuration, :access_denied, :logger, :tenants
-  module_function :access_denied, :logger, :tenants
+  def_delegators Configuration, :access_denied, :logger, :tenants, :user_class
+  module_function :access_denied, :logger, :tenants, :user_class
 
   # Delegates switching thread behavior
   def_delegators Grant::Status, :switch_to_multithread,
     :switch_to_monothread
   module_function :switch_to_multithread, :switch_to_monothread
+
+  #
+  # Tje parent controller to all strongbolt controllers
+  #
+  mattr_accessor :parent_controller
+  @@parent_controller = "ApplicationController"
 
   #
   # Current User

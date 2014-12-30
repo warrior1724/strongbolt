@@ -1,0 +1,47 @@
+<%= simple_form_for(Capability.new, url: role_capabilities_path(@role), as: :capability) do |f| %>
+  <table class="table table-striped table-condensed" id="role-capabilities" data-url="<%= role_capabilities_path(@role) %>">
+
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Require Ownership?</th>
+        <th>Require Tenant Access?</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @keys.each do |key| %>
+          
+        <tr>
+          <td><%= key[:model] %></td>
+          <td>
+            <%= key[:require_ownership] ? "Yes" : "No" %>
+          </td>
+          <td>
+            <%= key[:require_tenant_access] ? "Yes" : "No" %>
+          </td>
+          <td>
+            <%= render 'capability', key: key, capability: @capabilities[key] || {}, inherited_capability: @inherited_capabilities[key] || {}, path: role_capabilities_path(@role) %>
+          </td>
+        </tr>
+
+      <% end %>
+
+    </tbody>
+
+      <tfoot>
+        <tr>
+          <td><%= f.input_field :model, collection: Capability.models, include_blank: false %></td>
+          <td><%= f.input_field :require_ownership, as: :select, include_blank: false %></td>
+          <td><%= f.input_field :require_tenant_access, as: :select, include_blank: false %></td>
+          <td colspan="4">
+            <%= f.hidden_field :action, value: "find" %>
+            <%= f.button :submit, "Add Permission", class: "btn btn-primary btn-block" %>
+          </td>
+        </tr>
+      </tfoot>
+
+  </table>
+
+<% end %>

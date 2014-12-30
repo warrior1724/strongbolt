@@ -1,0 +1,53 @@
+<ul class='breadcrumb'>
+  <h2 style='text-align:left'>Security: Permissions</h2>
+  <li class="active">
+    Permissions
+  </li>
+</ul>
+
+<%= simple_form_for(Capability.new, url: capabilities_path, as: :capability) do |f| %>
+  <table class="table table-condensed table-striped">
+
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Model</th>
+        <th>Action</th>
+        <th>Require Ownership?</th>
+        <th>Require Tenant Access?</th>
+        <th>Roles</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @capabilities.ordered.each do |capability| %>
+        <tr>
+          <td><%= capability.id %></td>
+          <td><%= capability.model %></td>
+          <td><%= capability.action %></td>
+          <td><%= capability.require_ownership ? "Yes" : "No" %></td>
+          <td><%= capability.require_tenant_access ? "Yes" : "No" %></td>
+          <td><%= link_to "#{capability.roles.size} roles", capability_path(capability) %></td>
+          <td align="right">
+            <%= link_to capability_path(capability), method: :delete, data: {confirm: "Are you sure?"}, class: 'text-danger' do %>
+              <i class="fa fa-trash-o"></i>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+
+    <tfoot>
+      <tr>
+        <td></td>
+        <td><%= f.input_field :model, collection: Capability.models, include_blank: false %></td>
+        <td><%= f.input_field :action, collection: Capability::Actions, include_blank: false %></td>
+        <td><%= f.input_field :require_ownership, as: :select, include_blank: false %></td>
+        <td><%= f.input_field :require_tenant_access, as: :select, include_blank: false %></td>
+        <td><%= f.button :submit, "Create Permission", class: "btn btn-primary btn-block" %></td>
+      </tr>
+    </tfoot>
+  </table>
+
+<% end %>

@@ -1,0 +1,46 @@
+<%= render 'strongbolt/menu', current: 'user_groups' %>
+
+<ul class='breadcrumb'>
+  <h2 style='text-align:left'>Security: User Groups</h2>
+  <li class='active'>User Groups</li>
+</ul>
+
+<div class="pull-right">
+  <%= link_to "New User Group", new_user_group_path, class: "btn btn-default" %>
+</div>
+<div class="clearfix"></div>
+
+<table class="table table-summary table-striped">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Roles</th>
+      <th>Users</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @user_groups.each do |user_group| %>
+      
+      <tr>
+        <td>
+          <%= link_to user_group.name, user_group_path(user_group) %>
+        </td>
+        <td><%= user_group.description %></td>
+        <td><%= user_group.roles.size %></td>
+        <td><%= user_group.users.size %></td>
+        <td align="right">
+          <%= link_to edit_user_group_path(user_group) do %>
+            <i class="fa fa-pencil"></i>
+          <% end %>
+          <%= link_to user_group_path(user_group), method: :delete, data: { confirm: "Do you confirm deleting #{user_group.name}?" }, class: "text-danger" do %>
+            <i class="fa fa-trash-o"></i>
+          <% end %>
+        </td>
+      </tr>
+
+    <% end %>
+  </tbody>
+</table>

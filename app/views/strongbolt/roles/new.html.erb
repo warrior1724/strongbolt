@@ -1,0 +1,11 @@
+<%= render 'strongbolt/menu', current: 'roles' %>
+
+<ul class='breadcrumb'>
+  <h2 style='text-align:left'>Security: New Role</h2>
+  <li>
+    <%= link_to "Roles", roles_path %>
+  </li>
+  <li class='active'>New Role</li>
+</ul>
+
+<%= render 'form' %>

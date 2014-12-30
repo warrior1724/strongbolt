@@ -1,0 +1,21 @@
+<div class="btn-group"
+      data-model="<%= key[:model] %>"
+      data-require-ownership=<%= key[:require_ownership] %>
+      data-require-tenant-access=<%= key[:require_tenant_access] %>>
+  
+  <% Capability::Actions.each do |action| %>
+    <% if inherited_capability[action.to_sym] %>
+      <button type="button" disabled class="btn btn-xs btn-success" title="Inherited">
+        <%= action.capitalize %>
+      </button>
+    <% else %>
+      <button type="button"
+          data-action="<%= action %>"
+          data-granted="<%= capability[action.to_sym] %>"
+          class="btn btn-xs <%= capability[action.to_sym] ? "btn-success" : "btn-danger" %>">
+        <%= action.capitalize %>
+      </button>
+    <% end %>
+  <% end %>
+
+</div>
