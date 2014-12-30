@@ -1,3 +1,5 @@
+require 'active_support/inflector'
+
 module Strongbolt
   module Controllers
     #
@@ -5,17 +7,22 @@ module Strongbolt
     # that both Strongbolt views and the app views can use
     #
     module UrlHelpers
-      URLS = %w{roles role new_role edit_role user_groups user_group new_user_group edit_user_group
-        user_group_users user_group_user role_capabilities role_capability}
+      URLS = %w{role capability user_group user_group_user}
 
-      URLS.each do |url|
+      def self.create_url_helper url, scope=nil
         [:path, :url].each do |path_or_url|
           class_eval <<-URL_HELPERS
-            def #{url}_#{path_or_url}
-              send(:main_app).send("strongbolt_#{url}_#{path_or_url}")
+            def #{scope.present? ? "#{scope}_" : ''}#{url}_#{path_or_url} *args
+              send(:main_app).send("#{scope.present? ? "#{scope}_" : ''}strongbolt_#{url}_#{path_or_url}", *args)
             end
           URL_HELPERS
         end
+      end
+
+      URLS.each do |url|
+        create_url_helper url
+        create_url_helper url.pluralize
+        [:new, :edit].each { |scope| create_url_helper url, scope }
       end
     end
   end
