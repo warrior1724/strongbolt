@@ -1,6 +1,6 @@
-module StrongBolt
+module Strongbolt
   
-  class CapabilitiesController < ::StrongBoltController
+  class CapabilitiesController < ::StrongboltController
 
     def index
       @capabilities = Capability.all

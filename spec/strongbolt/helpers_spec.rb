@@ -1,13 +1,13 @@
 require "spec_helper"
 require "strongbolt/helpers"
 
-describe StrongBolt::Helpers do
+describe Strongbolt::Helpers do
 
   before do
     @user = User.create!
 
     define("Helper", Object) do
-      include StrongBolt::Helpers
+      include Strongbolt::Helpers
     end
 
     Helper.class_exec(@user) do |user|

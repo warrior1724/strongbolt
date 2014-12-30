@@ -1,6 +1,6 @@
 require "spec_helper"
 
-module StrongBolt
+module Strongbolt
   
   describe Capability do
   
@@ -11,7 +11,7 @@ module StrongBolt
     #
     # Associations
     #
-    it { is_expected.to have_and_belong_to_many(:roles).class_name "StrongBolt::Role" }
+    it { is_expected.to have_and_belong_to_many(:roles).class_name "Strongbolt::Role" }
     it { is_expected.to have_many(:users).through :roles }
 
 

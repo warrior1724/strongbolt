@@ -20,7 +20,7 @@ RSpec.configure do |config|
   #
   config.before(:suite) do
     TestsMigrations.new.migrate :up
-    User.send :include, StrongBolt::UserAbilities
+    User.send :include, Strongbolt::UserAbilities
   end
 
   config.after(:suite) do

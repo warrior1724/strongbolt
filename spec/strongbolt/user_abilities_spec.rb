@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe StrongBolt::UserAbilities do
+describe Strongbolt::UserAbilities do
 
   before(:all) do
     #
@@ -43,11 +43,11 @@ describe StrongBolt::UserAbilities do
       authorize_as "UnownedModel"
     end
 
-    StrongBolt::Configuration.add_tenant TenantModel
+    Strongbolt::Configuration.add_tenant TenantModel
   end
   after(:all) do
     undefine_model TenantModel
-    StrongBolt::Configuration.tenants = []
+    Strongbolt::Configuration.tenants = []
   end
 
   let(:user) { User.create! }
@@ -95,13 +95,13 @@ describe StrongBolt::UserAbilities do
     @child_model = @owned_model.child_models.create!
 
     # The user belong to a group
-    @group = StrongBolt::UserGroup.create! name: "Normal"
+    @group = Strongbolt::UserGroup.create! name: "Normal"
     @group.users << user
 
     # That has a role
-    @guest_role = StrongBolt::Role.create! name: "Guest"
-    @parent_role = StrongBolt::Role.create! name: "Basic", parent_id: @guest_role.id
-    @other_role = StrongBolt::Role.create! name: "Admin"
+    @guest_role = Strongbolt::Role.create! name: "Guest"
+    @parent_role = Strongbolt::Role.create! name: "Basic", parent_id: @guest_role.id
+    @other_role = Strongbolt::Role.create! name: "Admin"
     @role = @group.roles.create! name: "Normal", parent_id: @parent_role.id
 
     # Which has capabilities
@@ -143,7 +143,7 @@ describe StrongBolt::UserAbilities do
       it "should create an association" do
         expect do
           user.add_tenant model
-        end.to change(StrongBolt::UsersTenant, :count).by 1
+        end.to change(Strongbolt::UsersTenant, :count).by 1
       end
 
       it "should add the tenant to users's list" do

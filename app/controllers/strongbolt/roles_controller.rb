@@ -1,5 +1,5 @@
-module StrongBolt
-  class RolesController < ::StrongBoltController
+module Strongbolt
+  class RolesController < ::StrongboltController
     
     def index
       @roles = Role.includes(:parent)

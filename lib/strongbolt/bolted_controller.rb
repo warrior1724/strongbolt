@@ -1,4 +1,4 @@
-module StrongBolt
+module Strongbolt
   module BoltedController
 
     #
@@ -47,13 +47,13 @@ module StrongBolt
           while splits.size >= 1
             begin
               return constantize_model splits.join('::')
-            rescue StrongBolt::ModelNotFound => e
+            rescue Strongbolt::ModelNotFound => e
             ensure
               # Removes first element
               splits.shift
             end
           end
-          raise StrongBolt::ModelNotFound, "Model for controller #{controller_name} wasn't found"
+          raise Strongbolt::ModelNotFound, "Model for controller #{controller_name} wasn't found"
         end
       end
 
@@ -99,7 +99,7 @@ module StrongBolt
           #
           def render *args
             if render_without_authorization?
-              StrongBolt.without_authorization { _render *args }
+              Strongbolt.without_authorization { _render *args }
             else
               _render *args
             end
@@ -131,7 +131,7 @@ module StrongBolt
         begin
           name.constantize
         rescue NameError
-          raise StrongBolt::ModelNotFound, "Model for controller #{controller_name} wasn't found"
+          raise Strongbolt::ModelNotFound, "Model for controller #{controller_name} wasn't found"
         end
       end
 
@@ -140,11 +140,11 @@ module StrongBolt
     module InstanceMethods
 
       def can? *args
-        StrongBolt.current_user.can? *args
+        Strongbolt.current_user.can? *args
       end
 
       def cannot? *args
-        StrongBolt.current_user.cannot? *args
+        Strongbolt.current_user.cannot? *args
       end
 
       #
@@ -162,7 +162,7 @@ module StrongBolt
       #
       def render *args
         if render_without_authorization?
-          StrongBolt.without_authorization { _render *args }
+          Strongbolt.without_authorization { _render *args }
         else
           _render *args
         end
@@ -182,7 +182,7 @@ module StrongBolt
         # To be accessible in the model when not granted
         $request = request
         Grant::Status.without_grant do
-          StrongBolt.current_user = send(:current_user) if respond_to?(:current_user)
+          Strongbolt.current_user = send(:current_user) if respond_to?(:current_user)
         end
       end
 
@@ -190,7 +190,7 @@ module StrongBolt
       # Unset the current user, by security (needed in some servers with only 1 thread)
       #
       def unset_current_user
-        StrongBolt.current_user = nil
+        Strongbolt.current_user = nil
       end
 
       #
@@ -200,39 +200,39 @@ module StrongBolt
       #
       def check_authorization
         # If no user or disabled, no need
-        if StrongBolt.current_user.present? && StrongBolt.enabled?
+        if Strongbolt.current_user.present? && Strongbolt.enabled?
           begin
             # Current model
             # begin
               obj = self.class.model_for_authorization
-            # rescue StrongBolt::ModelNotFound
-            #   StrongBolt.logger.warn "No class found or defined for controller #{controller_name}"
+            # rescue Strongbolt::ModelNotFound
+            #   Strongbolt.logger.warn "No class found or defined for controller #{controller_name}"
             #   return
             # end 
 
             # Unless it is authorized for this action
-            unless StrongBolt.current_user.can? crud_operation_of(action_name), obj
-              StrongBolt.access_denied current_user, obj, crud_operation_of(action_name), request.try(:fullpath)
-              raise StrongBolt::Unauthorized.new StrongBolt.current_user, action_name, obj
+            unless Strongbolt.current_user.can? crud_operation_of(action_name), obj
+              Strongbolt.access_denied current_user, obj, crud_operation_of(action_name), request.try(:fullpath)
+              raise Strongbolt::Unauthorized.new Strongbolt.current_user, action_name, obj
             end
-          rescue StrongBolt::Unauthorized => e
+          rescue Strongbolt::Unauthorized => e
             raise e
           rescue => e
             raise e
           end
         else
-          StrongBolt.logger.warn "No authorization checking because no current user"
+          Strongbolt.logger.warn "No authorization checking because no current user"
         end
       end
 
       #
-      # Catch Grant::Error and send StrongBolt::Unauthorized instead
+      # Catch Grant::Error and send Strongbolt::Unauthorized instead
       #
       def catch_grant_error
         begin
           yield
         rescue Grant::Error => e
-          raise StrongBolt::Unauthorized, e.to_s
+          raise Strongbolt::Unauthorized, e.to_s
         end
       end
 
@@ -243,7 +243,7 @@ module StrongBolt
         operation = self.class.actions_mapping[action.to_sym]
         # If nothing find, we raise an error
         if operation.nil?
-          raise StrongBolt::ActionNotConfigured, "Action #{action} on controller #{self.class.controller_name} not mapped to a CRUD operation"
+          raise Strongbolt::ActionNotConfigured, "Action #{action} on controller #{self.class.controller_name} not mapped to a CRUD operation"
         end
         # Else ok
         operation
@@ -253,8 +253,8 @@ module StrongBolt
       # CAREFUL: this skips authorization !
       #
       def disable_authorization
-        StrongBolt.without_authorization { yield }
-        StrongBolt.logger.warn "Authorization were disabled!"
+        Strongbolt.without_authorization { yield }
+        Strongbolt.logger.warn "Authorization were disabled!"
       end
       
     end
@@ -275,11 +275,11 @@ module StrongBolt
         alias_method :_render, :render
 
         # Catch errors
-        rescue_from StrongBolt::Unauthorized, Grant::Error do |e|
+        rescue_from Strongbolt::Unauthorized, Grant::Error do |e|
           if respond_to? :unauthorized
             unauthorized e
           else
-            raise StrongBolt::Unauthorized.new e.to_s
+            raise Strongbolt::Unauthorized.new e.to_s
           end
         end
 

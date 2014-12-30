@@ -5,7 +5,7 @@ require 'strongbolt/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "strongbolt"
-  spec.version       = StrongBolt::VERSION
+  spec.version       = Strongbolt::VERSION
   spec.authors       = ["Thomas Césaré-Herriau", "Chris Frommann"]
   spec.email         = ["thomas.cesareherriau@gmail.com", "chris@amg.tv"]
   spec.summary       = "RBAC Framework for model-level authorization"

@@ -4,7 +4,7 @@
 #
 # It implements helper methods that will be used by a lot of other models
 #
-module StrongBolt
+module Strongbolt
   module Bolted
     module ClassMethods
       #
@@ -21,7 +21,7 @@ module StrongBolt
       #
       def unbolted?
         Grant::Status.grant_disabled? || (defined?(Rails) && defined?(Rails.console)) ||
-           StrongBolt.current_user.nil?
+           Strongbolt.current_user.nil?
       end
 
       #
@@ -95,7 +95,7 @@ module StrongBolt
     def self.included(receiver)
       receiver.extend         ClassMethods
       receiver.send :include, InstanceMethods
-      receiver.send :include, StrongBolt::Tenantable
+      receiver.send :include, Strongbolt::Tenantable
       receiver.send :include, Grant::Grantable
 
       # We add the grant to filter everything
@@ -105,7 +105,7 @@ module StrongBolt
         # We use the grant helper method to test authorizations on all methods
         #
         grant(:find, :create, :update, :destroy) do |user, instance, action|
-          # StrongBolt.logger.debug { "Checking for #{action} on #{instance}\n\n#{Kernel.caller.join("\n")}" }
+          # Strongbolt.logger.debug { "Checking for #{action} on #{instance}\n\n#{Kernel.caller.join("\n")}" }
           # Check the user permission unless no user or rails console
           # Not using unbolted? here
           granted = ((defined?(Rails) && defined?(Rails.console)) || user.nil?) ||
@@ -113,7 +113,7 @@ module StrongBolt
 
           # If not granted, trigger the access denied
           unless granted
-            StrongBolt.access_denied user, instance, action, $request.try(:fullpath)
+            Strongbolt.access_denied user, instance, action, $request.try(:fullpath)
           end
           
           granted

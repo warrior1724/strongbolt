@@ -1,4 +1,4 @@
-module StrongBolt
+module Strongbolt
   class UsersTenant < ActiveRecord::Base
     belongs_to :user, class_name: Configuration.user_class
     belongs_to :tenant, polymorphic: true
@@ -16,4 +16,4 @@ module StrongBolt
   end
 end
 
-UsersTenant = StrongBolt::UsersTenant unless defined? UsersTenant
+UsersTenant = Strongbolt::UsersTenant unless defined? UsersTenant

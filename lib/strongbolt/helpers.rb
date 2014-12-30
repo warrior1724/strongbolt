@@ -1,8 +1,8 @@
-module StrongBolt
+module Strongbolt
   module Helpers
     def can? *args, &block
       # Block can be used when testing an instance
-      StrongBolt.without_authorization do
+      Strongbolt.without_authorization do
         if block.present?
           args.insert 1, block.call
         end

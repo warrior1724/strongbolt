@@ -21,7 +21,7 @@ end
 describe PostsController, :type => :controller do
   
   before(:all) do
-    PostsController.send :include, StrongBolt::BoltedController
+    PostsController.send :include, Strongbolt::BoltedController
     define_model "Post"
     @user = User.create!
   end
@@ -60,8 +60,8 @@ describe PostsController, :type => :controller do
   # Helpers
   #
   describe "helpers" do
-    before { StrongBolt.current_user = User.create! }
-    after { StrongBolt.current_user = nil }
+    before { Strongbolt.current_user = User.create! }
+    after { Strongbolt.current_user = nil }
     
     describe "can?" do  
       it "should respond to can?" do
@@ -69,7 +69,7 @@ describe PostsController, :type => :controller do
       end
 
       it "should call can? on current_user" do
-        expect(StrongBolt.current_user).to receive(:can?).with :find, User
+        expect(Strongbolt.current_user).to receive(:can?).with :find, User
         PostsController.new.can? :find, User
       end
     end
@@ -80,7 +80,7 @@ describe PostsController, :type => :controller do
       end
 
       it "should call can? on current_user" do
-        expect(StrongBolt.current_user).to receive(:cannot?).with :find, User
+        expect(Strongbolt.current_user).to receive(:cannot?).with :find, User
         PostsController.new.cannot? :find, User
       end
     end
@@ -115,7 +115,7 @@ describe PostsController, :type => :controller do
       end
     
       it "should set nil user" do
-        expect(StrongBolt.current_user).to be_nil
+        expect(Strongbolt.current_user).to be_nil
       end
 
       it "should have set $request" do
@@ -132,7 +132,7 @@ describe PostsController, :type => :controller do
       end
     
       it "should set the user" do
-        expect(StrongBolt.current_user).to eq user
+        expect(Strongbolt.current_user).to eq user
       end
     end
 
@@ -159,21 +159,21 @@ describe PostsController, :type => :controller do
       end
     
       it "should have unsetted the user" do
-        expect(StrongBolt.current_user).to be_nil
+        expect(Strongbolt.current_user).to be_nil
       end
     end
 
   end
 
   #
-  # Catching Grant::Error and StrongBolt::Unauthorized
+  # Catching Grant::Error and Strongbolt::Unauthorized
   #
   describe 'catching Grant::Error' do
     context "when unauthorized method exists" do
       before do
         allow_any_instance_of(PostsController).to receive :unauthorized
         expect_any_instance_of(PostsController).to receive(:index)
-          .and_raise StrongBolt::Unauthorized
+          .and_raise Strongbolt::Unauthorized
       end
 
       it "should call unauthorized" do
@@ -188,10 +188,10 @@ describe PostsController, :type => :controller do
           .and_raise Grant::Error.new "Error"
       end
 
-      it "should call raise StrongBolt::Unauthorized" do
+      it "should call raise Strongbolt::Unauthorized" do
         expect do
           get :index
-        end.to raise_error StrongBolt::Unauthorized
+        end.to raise_error Strongbolt::Unauthorized
       end
     end
   end
@@ -258,7 +258,7 @@ describe PostsController, :type => :controller do
         it "should raise ActionNotConfigured" do
           expect do
             get :custom
-          end.to raise_error StrongBolt::ActionNotConfigured
+          end.to raise_error Strongbolt::ActionNotConfigured
         end
 
       end
@@ -269,14 +269,14 @@ describe PostsController, :type => :controller do
       #
       context "when not authorized" do
         before do
-          expect(StrongBolt).to receive(:access_denied)
+          expect(Strongbolt).to receive(:access_denied)
           expect(user).to receive(:can?).and_return false
         end
 
-        it "should raise StrongBolt::Unauthorized" do
+        it "should raise Strongbolt::Unauthorized" do
           expect do
             get :index
-          end.to raise_error StrongBolt::Unauthorized
+          end.to raise_error Strongbolt::Unauthorized
         end
       end
 
@@ -351,7 +351,7 @@ describe PostsController, :type => :controller do
         it "should raise error" do
           expect do
             ItemsController.model_for_authorization
-          end.to raise_error StrongBolt::ModelNotFound
+          end.to raise_error Strongbolt::ModelNotFound
         end
       end
 
@@ -364,7 +364,7 @@ describe PostsController, :type => :controller do
         it "should return the right model" do
           expect do
             ItemsController.model_for_authorization
-          end.to raise_error StrongBolt::ModelNotFound
+          end.to raise_error Strongbolt::ModelNotFound
         end
       end
     end
@@ -395,8 +395,8 @@ describe PostsController, :type => :controller do
     #
     context "when no current user" do
       before do
-        expect(StrongBolt).to receive(:current_user).and_return nil
-        expect(StrongBolt).to receive(:logger).and_call_original
+        expect(Strongbolt).to receive(:current_user).and_return nil
+        expect(Strongbolt).to receive(:logger).and_call_original
       end
 
       it "should not raise error" do
@@ -430,7 +430,7 @@ describe PostsController, :type => :controller do
         it "should raise error" do
           expect do
             PostsController.model_for_authorization = "FEge"
-          end.to raise_error StrongBolt::ModelNotFound
+          end.to raise_error Strongbolt::ModelNotFound
         end
       end
 
@@ -482,7 +482,7 @@ describe PostsController, :type => :controller do
       it "should raise ModelNotFound" do
         expect do
           PostsController.model_for_authorization
-        end.to raise_error StrongBolt::ModelNotFound
+        end.to raise_error Strongbolt::ModelNotFound
       end
     end
 
@@ -610,7 +610,7 @@ describe PostsController, :type => :controller do
     before do
       class PostsController
         def index
-          raise StrongBolt::Unauthorized if Grant::Status.grant_enabled?
+          raise Strongbolt::Unauthorized if Grant::Status.grant_enabled?
         end
       end
     end
@@ -623,7 +623,7 @@ describe PostsController, :type => :controller do
     it "should raise an error" do
       expect do
         get :index
-      end.to raise_error StrongBolt::Unauthorized
+      end.to raise_error Strongbolt::Unauthorized
     end
 
     context "when skipping" do
@@ -690,7 +690,7 @@ describe PostsController, :type => :controller do
     context "when no arg" do
       before do
         PostsController.render_without_authorization
-        expect(StrongBolt).not_to receive(:without_authorization)
+        expect(Strongbolt).not_to receive(:without_authorization)
       end
 
       it "should perform without auth when index" do
@@ -708,12 +708,12 @@ describe PostsController, :type => :controller do
       end
 
       it "should perform without auth when index" do
-        expect(StrongBolt).to receive(:without_authorization)
+        expect(Strongbolt).to receive(:without_authorization)
         get :index
       end
 
       it "should not perform without auth when show" do
-        expect(StrongBolt).not_to receive(:without_authorization)
+        expect(Strongbolt).not_to receive(:without_authorization)
         get :show, id: 1
       end
     end

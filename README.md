@@ -1,4 +1,4 @@
-# StrongBolt
+# Strongbolt
 
 RBAC framework for model-level authorization gem with very granular control on permissions, using Capabilities, Roles and UserGroups.
 

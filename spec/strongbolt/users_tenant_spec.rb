@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe StrongBolt::UsersTenant do
+describe Strongbolt::UsersTenant do
 
   before(:all) do
     define_model "TenantModel" do
@@ -16,7 +16,7 @@ describe StrongBolt::UsersTenant do
   let(:user)          { User.create! }
   let(:tenant)        { TenantModel.create! }
 
-  let(:users_tenant)  { StrongBolt::UsersTenant.new user: user, tenant: tenant }
+  let(:users_tenant)  { Strongbolt::UsersTenant.new user: user, tenant: tenant }
 
   subject { users_tenant }
 
@@ -28,7 +28,7 @@ describe StrongBolt::UsersTenant do
   it { is_expected.to validate_presence_of :tenant }
 
   it "should ensure tenant is a Tenant" do
-    users_tenant = StrongBolt::UsersTenant.new user: user, tenant: Model.create!
+    users_tenant = Strongbolt::UsersTenant.new user: user, tenant: Model.create!
     expect(users_tenant).not_to be_valid
   end
 

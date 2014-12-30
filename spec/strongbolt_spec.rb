@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe StrongBolt do
+describe Strongbolt do
   
   #
   # Important included modules
@@ -10,11 +10,11 @@ describe StrongBolt do
   end
 
   it "should have included Bolted in ActiveRecord::Base" do
-    expect(ActiveRecord::Base.included_modules).to include StrongBolt::Bolted
+    expect(ActiveRecord::Base.included_modules).to include Strongbolt::Bolted
   end
 
   it "should have included tentable" do
-    expect(ActiveRecord::Base.included_modules).to include StrongBolt::Tenantable
+    expect(ActiveRecord::Base.included_modules).to include Strongbolt::Tenantable
   end
 
   #
@@ -24,18 +24,18 @@ describe StrongBolt do
   describe "it should include module" do
     before do
       define_model "UserModel"
-      StrongBolt.setup do |config|
+      Strongbolt.setup do |config|
         config.user_class = "UserModel"
       end
     end
     after do
-      StrongBolt.setup do |config|
+      Strongbolt.setup do |config|
         config.user_class = "User"
       end
     end
 
     it "should include UserAbilities" do
-      expect(UserModel.included_modules).to include StrongBolt::UserAbilities
+      expect(UserModel.included_modules).to include Strongbolt::UserAbilities
     end
 
 
@@ -49,14 +49,14 @@ describe StrongBolt do
     before do
       block = double('block', :call => nil)
       expect(block).to receive(:call).with 'user', 'instance', 'action', 'request_path'
-      StrongBolt::Configuration.access_denied do |user, instance, action, request_path|
+      Strongbolt::Configuration.access_denied do |user, instance, action, request_path|
         block.call user, instance, action, request_path
       end
     end
-    after { StrongBolt::Configuration.access_denied {} }
+    after { Strongbolt::Configuration.access_denied {} }
 
     it "should call configuration's block" do
-      StrongBolt.access_denied 'user', 'instance', 'action', 'request_path'
+      Strongbolt.access_denied 'user', 'instance', 'action', 'request_path'
     end
 
   end
@@ -68,7 +68,7 @@ describe StrongBolt do
   #
   describe "without_authorization" do
     it "should not perform authorization" do
-      StrongBolt.without_authorization do
+      Strongbolt.without_authorization do
         expect(Grant::Status.grant_disabled?).to eq true
       end
     end
@@ -76,9 +76,9 @@ describe StrongBolt do
     describe "perform action" do
       before do
         @user = User.create!
-        StrongBolt.current_user = User.create!
+        Strongbolt.current_user = User.create!
       end
-      after { StrongBolt.current_user = nil }
+      after { Strongbolt.current_user = nil }
 
       let(:user) { @user }
 
@@ -92,7 +92,7 @@ describe StrongBolt do
 
       context "when without_authorization" do
         it "should not call can?" do
-          StrongBolt.without_authorization do
+          Strongbolt.without_authorization do
             expect_any_instance_of(User).not_to receive(:can?)
             expect(User.find user.id).to eq user
           end
@@ -138,21 +138,21 @@ describe StrongBolt do
   # Disable, enable
   #
   describe "disable/enable" do
-    before { StrongBolt.disable_authorization }
-    after { StrongBolt.enable_authorization }
+    before { Strongbolt.disable_authorization }
+    after { Strongbolt.enable_authorization }
 
     context "disabling" do
       it "should disable Grant" do
         expect(Grant::Status.grant_enabled?).to eq false
-        expect(StrongBolt.enabled?).to eq false
+        expect(Strongbolt.enabled?).to eq false
       end
     end
 
     context "enabling" do
       it "should enable Grant" do
-        StrongBolt.enable_authorization
+        Strongbolt.enable_authorization
         expect(Grant::Status.grant_disabled?).to eq false
-        expect(StrongBolt.disabled?).to eq false
+        expect(Strongbolt.disabled?).to eq false
       end
     end
   end
@@ -173,20 +173,20 @@ describe StrongBolt do
           end
           
           # We configure the user class
-          StrongBolt::Configuration.user_class = 'UserWithout'
+          Strongbolt::Configuration.user_class = 'UserWithout'
         end
         after { undefine_model "UserWithout" }
 
         let(:user) { UserWithout.new }
 
         it "should have included the module" do
-          StrongBolt.current_user = user
-          expect(UserWithout.included_modules).to include StrongBolt::UserAbilities
+          Strongbolt.current_user = user
+          expect(UserWithout.included_modules).to include Strongbolt::UserAbilities
         end
 
         it "should set the current user" do
-          StrongBolt.current_user = user
-          expect(StrongBolt.current_user).to eq user
+          Strongbolt.current_user = user
+          expect(Strongbolt.current_user).to eq user
           expect(Grant::User.current_user).to eq user
         end
       end # End when User Class doesn't have the UserAbilities included
@@ -195,20 +195,20 @@ describe StrongBolt do
         
         before do
           define_model "UserWithAbilities" do
-            include StrongBolt::UserAbilities
+            include Strongbolt::UserAbilities
             self.table_name = 'users'
           end
           
           # We configure the user class
-          StrongBolt::Configuration.user_class = 'UserWithAbilities'
+          Strongbolt::Configuration.user_class = 'UserWithAbilities'
         end
         after { undefine_model "UserWithAbilities" }
         
         let(:user) { UserWithAbilities.new }
 
         it "should set the current user" do
-          StrongBolt.current_user = user
-          expect(StrongBolt.current_user).to eq user
+          Strongbolt.current_user = user
+          expect(Strongbolt.current_user).to eq user
           expect(Grant::User.current_user).to eq user
         end
 
@@ -220,8 +220,8 @@ describe StrongBolt do
       
       it "should raise error" do
         expect do
-          StrongBolt.current_user = Model.new
-        end.to raise_error StrongBolt::WrongUserClass
+          Strongbolt.current_user = Model.new
+        end.to raise_error Strongbolt::WrongUserClass
       end
 
     end

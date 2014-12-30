@@ -22,20 +22,20 @@ require "strongbolt/users_tenant"
 #
 ar_version = ActiveRecord.version.version
 if ar_version >= "4.1.0" && ar_version <= "4.1.1"
-  raise StandardError, "You cannot use StrongBolt with ActiveRecord versions 4.1.0 and 4.1.1. Please upgrade to at least 4.1.2."
+  raise StandardError, "You cannot use Strongbolt with ActiveRecord versions 4.1.0 and 4.1.1. Please upgrade to 4.1.2+"
 end
 
 #
 # Includes every module needed (including Grant)
 #
-ActiveRecord::Base.send :include, StrongBolt::Bolted
+ActiveRecord::Base.send :include, Strongbolt::Bolted
 
 #
 # Default behavior, when method current_user defined on controller
 #
 if defined?(ActionController) and defined?(ActionController::Base)
 
-  ActionController::Base.send :include, StrongBolt::BoltedController
+  ActionController::Base.send :include, Strongbolt::BoltedController
 
 end
 
@@ -48,7 +48,7 @@ require 'strongbolt/engine' if defined?(Rails::Engine)
 #
 # Main module
 #
-module StrongBolt
+module Strongbolt
   extend Forwardable
 
   def self.table_name_prefix
@@ -83,13 +83,13 @@ module StrongBolt
     # If user is an instance of something and different from what we have
     if user.present?
       # Raise error if wrong user class
-      if user.class.name != StrongBolt::Configuration.user_class
-        raise StrongBolt::WrongUserClass
+      if user.class.name != Strongbolt::Configuration.user_class
+        raise Strongbolt::WrongUserClass
       end
 
       # If the user class doesn't have included the module yet
-      unless user.class.included_modules.include? StrongBolt::UserAbilities
-        user.class.send :include, StrongBolt::UserAbilities
+      unless user.class.included_modules.include? Strongbolt::UserAbilities
+        user.class.send :include, Strongbolt::UserAbilities
       end
     end
 
@@ -98,7 +98,7 @@ module StrongBolt
   end
 
   #
-  # Setting up StrongBolt
+  # Setting up Strongbolt
   #
   def self.setup &block
     # Configuration by user
@@ -108,12 +108,12 @@ module StrongBolt
     begin
       user_class = Configuration.user_class
       user_class = user_class.constantize if user_class.is_a? String
-      user_class.send(:include, StrongBolt::UserAbilities) unless user_class.included_modules.include?(StrongBolt::UserAbilities)
+      user_class.send(:include, Strongbolt::UserAbilities) unless user_class.included_modules.include?(Strongbolt::UserAbilities)
     rescue NameError
       logger.warn "User class #{Configuration.user_class} wasn't found"
     end
   rescue ActiveRecord::StatementInvalid => e
-    logger.fatal "Error while setting up StrongBolt:\n\n#{e}"
+    logger.fatal "Error while setting up Strongbolt:\n\n#{e}"
   end
 
   #
@@ -170,7 +170,7 @@ class Object
     aliased_name = "_with_autorization_#{method_name}"
     alias_method aliased_name, method_name
     define_method method_name do |*args, &block|
-      StrongBolt.without_authorization do
+      Strongbolt.without_authorization do
         send aliased_name, *args, &block
       end
     end

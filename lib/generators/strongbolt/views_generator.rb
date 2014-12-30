@@ -3,7 +3,7 @@ require 'rails/generators/base'
 module Strongbolt
   module Generators
     class ViewsGenerator < Rails::Generators::Base
-      desc "Copies StrongBolt views to your application."
+      desc "Copies Strongbolt views to your application."
 
       argument :scope, required: false, default: nil,
                        desc: "The scope to copy views to"

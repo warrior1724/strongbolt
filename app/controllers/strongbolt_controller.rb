@@ -1,2 +1,2 @@
-class StrongBoltController < StrongBolt.parent_controller.constantize
+class StrongboltController < Strongbolt.parent_controller.constantize
 end

@@ -1,11 +1,11 @@
 require "strongbolt/helpers"
 
-module StrongBolt
+module Strongbolt
   class Engine < ::Rails::Engine
-    isolate_namespace StrongBolt
+    isolate_namespace Strongbolt
 
     initializer "strongbolt.helpers" do
-      ActionView::Base.send :include, StrongBolt::Helpers
+      ActionView::Base.send :include, Strongbolt::Helpers
     end
 
     initializer "strongbolt.session" do

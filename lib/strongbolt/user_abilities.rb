@@ -1,4 +1,4 @@
-module StrongBolt
+module Strongbolt
   module UserAbilities
     module ClassMethods
       
@@ -11,7 +11,7 @@ module StrongBolt
       #                                                          #
       #----------------------------------------------------------#
       def capabilities
-        @capabilities_cache ||= StrongBolt::Capability.joins(:roles)
+        @capabilities_cache ||= Strongbolt::Capability.joins(:roles)
           .joins('INNER JOIN strongbolt_roles as children_roles ON strongbolt_roles.lft <= children_roles.lft AND children_roles.rgt <= strongbolt_roles.rgt')
           .joins('INNER JOIN strongbolt_roles_user_groups rug ON rug.role_id = children_roles.id')
           .joins('INNER JOIN strongbolt_user_groups_users ugu ON ugu.user_group_id = rug.user_group_id')
@@ -135,7 +135,7 @@ module StrongBolt
           end
         end # End each capability
 
-        StrongBolt.logger.info "Populated capabilities in #{(Time.now - beginning)*1000}ms"
+        Strongbolt.logger.info "Populated capabilities in #{(Time.now - beginning)*1000}ms"
       
         @results_cache
       end # End Populate capabilities Cache
@@ -153,8 +153,8 @@ module StrongBolt
       def capability_in_cache?(action, instance, model_name, attrs = :any, all_instance = false)
         action_model = "#{action}#{model_name}"
         
-        StrongBolt.logger.warn "User has no results cache" if @results_cache.empty?
-        StrongBolt.logger.debug { "Authorizing user to perform #{action} on #{instance.inspect}" }
+        Strongbolt.logger.warn "User has no results cache" if @results_cache.empty?
+        Strongbolt.logger.debug { "Authorizing user to perform #{action} on #{instance.inspect}" }
 
         # we don't know or care about tenants or if this is a new record
         if instance.is_a?(ActiveRecord::Base) && !instance.new_record?
@@ -218,7 +218,7 @@ module StrongBolt
       #
       def has_access_to_tenants? instance, tenants = nil        
         # If no tenants list given, we take all
-        tenants ||= StrongBolt.tenants
+        tenants ||= Strongbolt.tenants
         # Populate the cache if needed
         populate_tenants_cache
 
@@ -255,13 +255,13 @@ module StrongBolt
       def populate_tenants_cache
         return if @tenants_cache.present?
 
-        StrongBolt.logger.debug "Populating tenants cache for user #{self.id}"
+        Strongbolt.logger.debug "Populating tenants cache for user #{self.id}"
         
         @tenants_cache = {}
         # Go over each tenants
-        StrongBolt.tenants.each do |tenant|
+        Strongbolt.tenants.each do |tenant|
           @tenants_cache[tenant.name] = send("#{tenant.singular_association_name}_ids").to_a
-          StrongBolt.logger.debug "#{@tenants_cache[tenant.name].size} #{tenant.name}"
+          Strongbolt.logger.debug "#{@tenants_cache[tenant.name].size} #{tenant.name}"
         end
       end
 
@@ -275,17 +275,17 @@ module StrongBolt
       receiver.class_eval do
         has_and_belongs_to_many :user_groups,
           :foreign_key => :user_id,
-          :class_name => "StrongBolt::UserGroup",
+          :class_name => "Strongbolt::UserGroup",
           :join_table => :strongbolt_user_groups_users
           # :inverse_of => :users doesn't seem available before AR 4.1.5
         has_many :roles, through: :user_groups
 
-        has_many :users_tenants, class_name: "StrongBolt::UsersTenant",
+        has_many :users_tenants, class_name: "Strongbolt::UsersTenant",
           foreign_key: :user_id
       end
 
       # Sets up user association
-      StrongBolt.tenants.each do |tenant|
+      Strongbolt.tenants.each do |tenant|
         tenant.send :setup_association_on_user
       end
     end

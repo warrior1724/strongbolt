@@ -1,11 +1,11 @@
-module StrongBolt
-  class UserGroupsUsersController < ::StrongBoltController
+module Strongbolt
+  class UserGroupsUsersController < ::StrongboltController
 
     self.model_for_authorization = "UserGroup"
 
     def create
       @user_group = UserGroup.find(params[:user_group_id])
-      @user = StrongBolt.user_class.find(params[:id])
+      @user = Strongbolt.user_class.find(params[:id])
       
       @user_group.users << @user unless @user_group.users.include?(@user)
 
@@ -14,7 +14,7 @@ module StrongBolt
 
     def destroy
       @user_group = UserGroup.find(params[:user_group_id])
-      @user = StrongBolt.user_class.find(params[:id])
+      @user = Strongbolt.user_class.find(params[:id])
       
       @user_group.users.delete @user
 

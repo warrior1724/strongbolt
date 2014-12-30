@@ -1,4 +1,4 @@
-module StrongBolt
+module Strongbolt
 
   module Configuration
 
@@ -23,7 +23,7 @@ module StrongBolt
     def self.user_class() @@user_class; end
 
     #
-    # Sets the logger used by StrongBolt
+    # Sets the logger used by Strongbolt
     #
     @@logger = DefaultLogger.new
     def self.logger= logger
@@ -76,7 +76,7 @@ module StrongBolt
     # Allows to set Capability Models list
     #
     def self.models= models
-      StrongBolt::Capability.add_models models
+      Strongbolt::Capability.add_models models
     end
 
   end

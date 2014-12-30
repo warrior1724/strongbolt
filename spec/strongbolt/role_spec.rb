@@ -1,6 +1,6 @@
 require "spec_helper"
 
-module StrongBolt
+module Strongbolt
 
   describe Role do
     
@@ -16,7 +16,7 @@ module StrongBolt
     it { should have_many(:users).through :user_groups  }
     it { should have_and_belong_to_many :capabilities }
 
-    it { should belong_to(:parent).class_name("StrongBolt::Role") }
+    it { should belong_to(:parent).class_name("Strongbolt::Role") }
 
     describe "inherited capabilities" do
       

@@ -1,6 +1,6 @@
 require "spec_helper"
 
-module StrongBolt
+module Strongbolt
 
   describe Bolted do
     

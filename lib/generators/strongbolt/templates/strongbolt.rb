@@ -1,5 +1,5 @@
-StrongBolt.setup do |config|
-  # Configure here the logger used by StrongBolt
+Strongbolt.setup do |config|
+  # Configure here the logger used by Strongbolt
   config.logger = Rails.logger
 
   #

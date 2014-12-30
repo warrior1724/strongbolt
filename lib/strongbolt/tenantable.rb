@@ -1,8 +1,8 @@
-module StrongBolt
+module Strongbolt
   module Tenantable
     module ClassMethods
 
-      def tenant?() (@tenant.present? && @tenant) || StrongBolt.tenants.include?(name); end
+      def tenant?() (@tenant.present? && @tenant) || Strongbolt.tenants.include?(name); end
 
       #
       # Returns associations potential name
@@ -25,7 +25,7 @@ module StrongBolt
         # Stops if already configured
         return if tenant?
 
-        StrongBolt.logger.debug "-------------------------------------------------------------------\n" +
+        Strongbolt.logger.debug "-------------------------------------------------------------------\n" +
           "Configuring tenant #{self.name}\n" +
           "-------------------------------------------------------------------\n\n"
         #
@@ -59,7 +59,7 @@ module StrongBolt
         end
 
         # We add models name to Configuration
-        StrongBolt::Configuration.models = @models_traversed.keys
+        Strongbolt::Configuration.models = @models_traversed.keys
 
         setup_association_on_user
 
@@ -123,7 +123,7 @@ module StrongBolt
             # Current tenant table name
             klass.has_many assoc, options
             
-            StrongBolt.logger.debug "#{klass.name} has_many #{plural_association_name} through: #{options[:through]}\n\n"
+            Strongbolt.logger.debug "#{klass.name} has_many #{plural_association_name} through: #{options[:through]}\n\n"
 
           # Otherwise, it's linked through a has one
           else
@@ -133,7 +133,7 @@ module StrongBolt
             # Setup the scope with_name_of_plural_associations
             klass.has_one assoc, options
             
-            StrongBolt.logger.debug "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}\n\n"
+            Strongbolt.logger.debug "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}\n\n"
           end
         end
 
@@ -191,7 +191,7 @@ module StrongBolt
             end
           end
         rescue NameError => e
-          StrongBolt.logger.err "User #{Configuration.user_class} could not have his association to tenant #{name} created"
+          Strongbolt.logger.err "User #{Configuration.user_class} could not have his association to tenant #{name} created"
         end
       end
 
@@ -214,7 +214,7 @@ module StrongBolt
           # If same class than the original source of the association
           elsif assoc.klass == association.active_record
 
-            StrongBolt.logger.debug "Selected inverse of #{association.name} between #{association.active_record} " +
+            Strongbolt.logger.debug "Selected inverse of #{association.name} between #{association.active_record} " +
               "and #{association.klass} is #{assoc.name}.\n " +
               "If not, please configure manually the inverse of #{association.name}\n"
 

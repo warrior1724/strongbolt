@@ -1,10 +1,10 @@
-module StrongBolt
-  StrongBoltError = Class.new StandardError
+module Strongbolt
+  StrongboltError = Class.new StandardError
 
   #
   # Copy & Paste of Grant Error
   #
-  class Unauthorized < StrongBoltError
+  class Unauthorized < StrongboltError
     attr_reader :user, :action, :model
 
     def initialize(*args)
@@ -26,13 +26,13 @@ module StrongBolt
     end
   end
   
-  ModelNotFound = Class.new StrongBoltError
-  ActionNotConfigured = Class.new StrongBoltError
+  ModelNotFound = Class.new StrongboltError
+  ActionNotConfigured = Class.new StrongboltError
 
-  WrongUserClass = Class.new StrongBoltError
-  ModelNotOwned = Class.new StrongBoltError
+  WrongUserClass = Class.new StrongboltError
+  ModelNotOwned = Class.new StrongboltError
 
-  TenantError = Class.new StrongBoltError
+  TenantError = Class.new StrongboltError
   InverseAssociationNotConfigured = Class.new TenantError
   DirectAssociationNotConfigured = Class.new TenantError
 end

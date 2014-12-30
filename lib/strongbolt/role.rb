@@ -1,4 +1,4 @@
-module StrongBolt
+module Strongbolt
   class Role < ActiveRecord::Base
 
     acts_as_nested_set
@@ -6,11 +6,11 @@ module StrongBolt
     validates :name, presence: true
 
     has_and_belongs_to_many :user_groups,
-      class_name: "StrongBolt::UserGroup"
+      class_name: "Strongbolt::UserGroup"
     has_many :users, through: :user_groups
 
     has_and_belongs_to_many :capabilities,
-      class_name: "StrongBolt::Capability"
+      class_name: "Strongbolt::Capability"
 
     before_destroy :should_not_have_user_groups
     before_destroy :should_not_have_children
@@ -22,7 +22,7 @@ module StrongBolt
     # Returns inherited capabilities
     #
     def inherited_capabilities
-      StrongBolt::Capability.joins(:roles)
+      Strongbolt::Capability.joins(:roles)
         .where("strongbolt_roles.lft < :lft AND strongbolt_roles.rgt > :rgt", lft: lft, rgt: rgt)
         .distinct
       end
@@ -43,4 +43,4 @@ module StrongBolt
   end
 end
 
-Role = StrongBolt::Role unless defined? Role
+Role = Strongbolt::Role unless defined? Role

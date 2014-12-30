@@ -1,14 +1,14 @@
-module StrongBolt
+module Strongbolt
   class Capability < ActiveRecord::Base
 
     Actions = %w{find create update destroy}
 
-    DEFAULT_MODELS = ["StrongBolt::UserGroup",
-      "StrongBolt::Role",
-      "StrongBolt::Capability",
-      "StrongBolt::UsersTenant"]
+    DEFAULT_MODELS = ["Strongbolt::UserGroup",
+      "Strongbolt::Role",
+      "Strongbolt::Capability",
+      "Strongbolt::UsersTenant"]
 
-    has_and_belongs_to_many :roles, class_name: "StrongBolt::Role"
+    has_and_belongs_to_many :roles, class_name: "Strongbolt::Role"
     has_many :users, through: :roles
 
     validates :model, :action, presence: true
@@ -119,4 +119,4 @@ module StrongBolt
   end
 end
 
-Capability = StrongBolt::Capability unless defined? Capability
+Capability = Strongbolt::Capability unless defined? Capability

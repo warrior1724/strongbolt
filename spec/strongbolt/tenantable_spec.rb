@@ -1,9 +1,9 @@
 require "spec_helper"
 
-describe StrongBolt::Tenantable do
+describe Strongbolt::Tenantable do
   
   it "should have been included in ActiveRecord::Base" do
-    expect(ActiveRecord::Base.included_modules).to include StrongBolt::Tenantable
+    expect(ActiveRecord::Base.included_modules).to include Strongbolt::Tenantable
   end
 
   #
@@ -26,7 +26,7 @@ describe StrongBolt::Tenantable do
           send :tenant
         end
       end
-      after { StrongBolt.send :tenants=, [] }
+      after { Strongbolt.send :tenants=, [] }
 
       it "should return true" do
         expect(OtherModel.tenant?).to eq true
@@ -179,16 +179,16 @@ describe StrongBolt::Tenantable do
       end
 
       it "creates a has_many relationship on the User defined" do
-        expect(StrongBolt::Configuration.user_class.constantize.new).to have_many(:tenant_models).through :users_tenants
+        expect(Strongbolt::Configuration.user_class.constantize.new).to have_many(:tenant_models).through :users_tenants
       end
 
       it "creates a relationship on the user to get accessible tenants" do
-        expect(StrongBolt::Configuration.user_class.constantize.new).to respond_to :accessible_tenant_models
+        expect(Strongbolt::Configuration.user_class.constantize.new).to respond_to :accessible_tenant_models
       end
 
       it "should have added models to Capability::Models" do
-        expect(StrongBolt::Capability.models).to be_present
-        expect(StrongBolt::Capability.models.size).to be > 0
+        expect(Strongbolt::Capability.models).to be_present
+        expect(Strongbolt::Capability.models.size).to be > 0
       end
 
     end
@@ -229,7 +229,7 @@ describe StrongBolt::Tenantable do
       it "should raise an error" do
         expect do
           TenantModel.send :tenant
-        end.to raise_error StrongBolt::InverseAssociationNotConfigured
+        end.to raise_error Strongbolt::InverseAssociationNotConfigured
       end
 
     end
@@ -261,7 +261,7 @@ describe StrongBolt::Tenantable do
       it "should raise an error" do
         expect do
           TenantModel.send :tenant
-        end.to raise_error StrongBolt::DirectAssociationNotConfigured
+        end.to raise_error Strongbolt::DirectAssociationNotConfigured
       end
 
     end
