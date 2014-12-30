@@ -1,6 +1,5 @@
 require 'rails/generators/active_record'
 
-
 module Strongbolt
   module Generators
     class InstallGenerator < Rails::Generators::Base

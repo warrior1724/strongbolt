@@ -1,6 +1,6 @@
 require 'rails/generators/base'
 
-module StrongBolt
+module Strongbolt
   module Generators
     class ViewsGenerator < Rails::Generators::Base
       desc "Copies StrongBolt views to your application."
