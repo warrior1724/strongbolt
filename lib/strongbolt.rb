@@ -148,8 +148,18 @@ module Strongbolt
     ! enabled?
   end
 
-  private
+  # Include helpers in the given scope to AC and AV.
+  def self.include_helpers(scope)
+    ActiveSupport.on_load(:action_controller) do
+      include scope::UrlHelpers
+    end
 
+    ActiveSupport.on_load(:action_view) do
+      include scope::UrlHelpers
+    end
+  end
+
+  # Not to use directly
   def self.tenants= tenants
     @@tenants = tenants
   end
