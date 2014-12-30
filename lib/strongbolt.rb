@@ -39,7 +39,9 @@ if defined?(ActionController) and defined?(ActionController::Base)
 
 end
 
-require 'strongbolt/railtie' if defined?(Rails::Railtie)
+#
+# Setup controllers, views, helpers and session related configuration
+#
 require 'strongbolt/engine' if defined?(Rails::Engine)
 
 
