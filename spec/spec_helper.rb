@@ -35,6 +35,7 @@ require 'strongbolt'
 require 'shoulda/matchers'
 
 require 'rspec/rails'
+require 'fabrication'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
@@ -78,5 +79,11 @@ RSpec.configure do |config|
   config.after(:suite) do
     TestsMigrations.new.migrate :down
   end
+
+  Fabrication.configure do |config|
+    config.fabricator_path = 'spec/fabricators'
+    config.path_prefix = File.expand_path("../..", __FILE__)
+  end
+  puts File.expand_path("../..", __FILE__)
 
 end

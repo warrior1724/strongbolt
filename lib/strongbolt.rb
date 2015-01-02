@@ -56,8 +56,8 @@ module Strongbolt
   end
   
   # Delegates to the configuration the access denied
-  def_delegators Configuration, :access_denied, :logger, :tenants, :user_class
-  module_function :access_denied, :logger, :tenants, :user_class
+  def_delegators Configuration, :access_denied, :logger, :tenants, :user_class, :user_class_constant
+  module_function :access_denied, :logger, :tenants, :user_class, :user_class_constant
 
   # Delegates switching thread behavior
   def_delegators Grant::Status, :switch_to_multithread,

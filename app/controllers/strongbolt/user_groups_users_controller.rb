@@ -5,7 +5,7 @@ module Strongbolt
 
     def create
       @user_group = UserGroup.find(params[:user_group_id])
-      @user = Strongbolt.user_class.find(params[:id])
+      @user = Strongbolt.user_class_constant.find(params[:id])
       
       @user_group.users << @user unless @user_group.users.include?(@user)
 
@@ -14,7 +14,7 @@ module Strongbolt
 
     def destroy
       @user_group = UserGroup.find(params[:user_group_id])
-      @user = Strongbolt.user_class.find(params[:id])
+      @user = Strongbolt.user_class_constant.find(params[:id])
       
       @user_group.users.delete @user
 

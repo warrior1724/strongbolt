@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'shoulda-matchers'
   spec.add_development_dependency 'fuubar'
   spec.add_development_dependency 'rspec-rails', '~> 3.1.0'
+  spec.add_development_dependency 'fabrication'
   # spec.add_development_dependency 'actionpack', '~> 4.1.0'
   # spec.add_development_dependency 'activesupport', '~> 4.1.0'
 end

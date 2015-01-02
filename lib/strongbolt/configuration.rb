@@ -15,12 +15,13 @@ module Strongbolt
     #
     # Sets the class name of the user if different then default 'User'
     #
+    mattr_accessor :user_class
     @@user_class = 'User'
-    def self.user_class= name
-      @@user_class = name
-    end
 
-    def self.user_class() @@user_class; end
+    #
+    # Returns the constantize version of user class
+    #
+    def self.user_class_constant() self.user_class.constantize; end
 
     #
     # Sets the logger used by Strongbolt

@@ -3,4 +3,6 @@ Rails.application.routes.draw do
     get :custom, on: :collection
   end
   resources :welcome
+
+  strongbolt
 end
