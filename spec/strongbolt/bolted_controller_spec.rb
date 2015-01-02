@@ -1,27 +1,9 @@
 require "spec_helper"
 
-#
-# We create the controller we'll be using in our tests
-#
-RESTFUL_ACTIONS = [:index, :show, :new, :create, :update, :edit, :destroy]
-
-class PostsController < TestController
-  # Some actions
-  RESTFUL_ACTIONS.each do |action|
-    define_method action do
-    end
-  end
-
-  def custom(); end
-
-  def current_user(); end
-end
-
 # We're testing BoltedController module through this one
 describe PostsController, :type => :controller do
   
   before(:all) do
-    PostsController.send :include, Strongbolt::BoltedController
     define_model "Post"
     @user = User.create!
   end
@@ -127,7 +109,7 @@ describe PostsController, :type => :controller do
       let(:user) { User.new }
 
       before do
-        expect_any_instance_of(PostsController).to receive(:current_user).and_return user
+        expect_any_instance_of(PostsController).to receive(:current_user).twice.and_return user
         get :index
       end
     
@@ -153,7 +135,7 @@ describe PostsController, :type => :controller do
     context "when a user is set" do
 
       before do
-        expect_any_instance_of(PostsController).to receive(:current_user)
+        expect_any_instance_of(PostsController).to receive(:current_user).twice
           .and_return @user
         get :index
       end
@@ -171,7 +153,7 @@ describe PostsController, :type => :controller do
   describe 'catching Grant::Error' do
     context "when unauthorized method exists" do
       before do
-        allow_any_instance_of(PostsController).to receive :unauthorized
+        allow(controller).to receive :unauthorized
         expect_any_instance_of(PostsController).to receive(:index)
           .and_raise Strongbolt::Unauthorized
       end

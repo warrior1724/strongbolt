@@ -5,7 +5,11 @@ module Strongbolt
   module Controllers
     describe UrlHelpers do
       
-      let(:helpersClass) { Class.new }
+      let(:helpersClass) do
+        Class.new do
+          def main_app; end
+        end
+      end
 
       before { helpersClass.send :include, UrlHelpers }
 

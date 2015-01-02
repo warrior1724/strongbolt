@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.add_development_dependency "rails", "~> 4.1.0"
   spec.add_dependency 'awesome_nested_set', '~> 3.0.0'
 
   spec.add_development_dependency "bundler", "~> 1.7.0"
@@ -26,6 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'shoulda-matchers'
   spec.add_development_dependency 'fuubar'
   spec.add_development_dependency 'rspec-rails', '~> 3.1.0'
-  spec.add_development_dependency 'actionpack', '~> 4.1.0'
-  spec.add_development_dependency 'activesupport', '~> 4.1.0'
+  # spec.add_development_dependency 'actionpack', '~> 4.1.0'
+  # spec.add_development_dependency 'activesupport', '~> 4.1.0'
 end
