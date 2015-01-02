@@ -102,7 +102,7 @@ module Strongbolt
   #
   def self.setup &block
     # Fix to prevent an issue where the DB could not be created from scratch
-    return if $0 =~ /rake$/
+    # return if $0 =~ /rake$/
 
     # Configuration by user
     block.call Configuration
