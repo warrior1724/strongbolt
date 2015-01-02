@@ -5,7 +5,7 @@ require "strongbolt/controllers/url_helpers"
 
 module Strongbolt
   class Engine < ::Rails::Engine
-    isolate_namespace Strongbolt
+    # isolate_namespace Strongbolt
 
     initializer "strongbolt.helpers" do
       ActionView::Base.send :include, Strongbolt::Helpers
