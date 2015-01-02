@@ -176,7 +176,7 @@ module Strongbolt
           # Then if the model is owned but isn't preloaded yet
           if instance.class.owned?
             # Tests if the owner id of the instance is the same than the user
-            if (own_instance = instance.owner_id == self.id)
+            if (own_instance = instance.strongbolt_owner_id == self.id)
               @results_cache["#{action_model}all-#{id}"] = own_instance && valid_tenants && @results_cache["#{action_model}all-owned"]
               @results_cache["#{action_model}#{attrs}-#{id}"] = own_instance && valid_tenants && @results_cache["#{action_model}#{attrs}-owned"]
               return true if @results_cache["#{action_model}all-#{id}"] || @results_cache["#{action_model}#{attrs}-#{id}"]

@@ -81,6 +81,15 @@ module Strongbolt
       def accessible?(action, attrs = :any)
         unbolted? || Grant::User.current_user.can?(action, self, attrs)
       end
+
+      #
+      # Returns the owner id according to what's
+      #
+      def strongbolt_owner_id
+        raise ModelNotOwned unless self.class.owned?
+
+        send self.class.owner_attribute
+      end
     end
     
     def self.included(receiver)
@@ -109,17 +118,6 @@ module Strongbolt
           
           granted
         end # End Grant
-
-        #
-        # Returns the owner id according to what's
-        #
-        unless instance_methods.include?(:owner_id)
-          def owner_id
-            raise ModelNotOwned unless self.class.owned?
-
-            send self.class.owner_attribute
-          end
-        end
 
       end
     end

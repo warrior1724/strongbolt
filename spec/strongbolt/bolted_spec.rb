@@ -60,7 +60,7 @@ module Strongbolt
       end
 
       it "should return the user id" do
-        expect(user.owner_id).to eq user.id
+        expect(user.strongbolt_owner_id).to eq user.id
       end
 
       it "should have the right owner attribute" do
@@ -85,7 +85,7 @@ module Strongbolt
       end
 
       it "should return the model user id" do
-        expect(model.owner_id).to eq model.user_id
+        expect(model.strongbolt_owner_id).to eq model.user_id
       end
 
       it "should have the right owner attribute" do
@@ -102,7 +102,7 @@ module Strongbolt
 
       it "should raise error" do
         expect do
-          UnownedModel.new.owner_id
+          UnownedModel.new.strongbolt_owner_id
         end.to raise_error ModelNotOwned
       end
     
