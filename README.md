@@ -35,9 +35,9 @@ By default, the user class is `User` and there is no tenant set.
 
 #### A note on the list of models
 
-Strongbolt has been made to be used with the least configuration possible. If given a tenant, it will traverse the graph of dependencies on this tenant to try to find the models of your application. However, some models may be totally independant or not belong to (directly or indirectly) to a tenant. You may also have no tenant at all.
-In that case, you should list all the models used by your application as Strongbolt as there's no sure way to automatically get the list of them (if you're using third-party gem with models included for instance).
-This can be done in the initializer of stronbolt.
+Strongbolt has been made to be used with the least configuration possible. If given a tenant, it will traverse the graph of dependencies on this tenant to try to configure all the tenant dependent models authorization check ups. However, some models may be totally independant or not belong to (directly or indirectly) to a tenant. You may also have no tenant at all. In these cases, some or all of your models won't be discovered by Strongbolt when running your app.
+To avoid eager loading the whole application to automatically get the list of models, you can specify in the initializer the models of your application.
+This list is prefilled when running the install generator.
 
 ### Controllers
 
