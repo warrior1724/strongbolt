@@ -3,6 +3,11 @@ Strongbolt.setup do |config|
   config.logger = Rails.logger
 
   #
+  # Set here the class name of your user class, if different than "User"
+  #
+  # config.user_class = "User"
+
+  #
   # You can use this block to perform specific actions when a user is denied the access somewhere
   #
   # config.access_denied do |user, instance, action, request|
@@ -13,4 +18,13 @@ Strongbolt.setup do |config|
   # Specify here the list of tenants used by your application
   #
   # config.tenants = "Client", "Region"
+
+  #
+  # If given a tenant, Strongbolt will try to detect all the models within your application.
+  # However, if some models don't have any direct or indirect dependencies on one of your tenant,
+  # Strongbolt won't find it.
+  #
+  # You can list here all the models of your application that doesn't indirectly belong to a tenant.
+  #
+  # config.models = "Movie", "Order"
 end
