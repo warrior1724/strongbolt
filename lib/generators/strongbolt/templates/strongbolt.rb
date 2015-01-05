@@ -26,5 +26,5 @@ Strongbolt.setup do |config|
   #
   # You can list here all the models of your application that doesn't indirectly belong to a tenant.
   #
-  config.models = #{MODELS}
+  config.models = %MODELS%
 end

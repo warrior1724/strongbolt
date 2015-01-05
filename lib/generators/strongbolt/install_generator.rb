@@ -17,7 +17,7 @@ module Strongbolt
         # Copy the file
         copy_file "strongbolt.rb", "config/initializers/strongbolt.rb"
         # Fill in the list of models
-        gsub_file "config/initializers/strongbolt.rb", "#{MODELS}",
+        gsub_file "config/initializers/strongbolt.rb", '%MODELS%',
           ActiveRecord::Base.descendants.map { |m| "'#{m.name}'"  }.join(", ")
       end
 
