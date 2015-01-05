@@ -16,9 +16,12 @@ module Strongbolt
         Rails.application.eager_load!
         # Copy the file
         copy_file "strongbolt.rb", "config/initializers/strongbolt.rb"
-        # Fill in the list of models
+        # Fill in the list of models of the application
         gsub_file "config/initializers/strongbolt.rb", '%MODELS%',
-          ActiveRecord::Base.descendants.map { |m| "'#{m.name}'"  }.join(", ")
+          ActiveRecord::Base.descendants
+            .reject { |m| m.name =~ /^Strongbolt::/ }
+            .map    { |m| "'#{m.name}'"  }
+            .join(", ")
       end
 
       #
