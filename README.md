@@ -43,13 +43,15 @@ This list is prefilled when running the install generator.
 
 Strongbolt perform high level authorization on controllers, to avoid testing more granular authorization and increase the performance. For instance, if an user cannot find any Movies, he certainly won't be able to find the movie with the specific id 5.
 
-You can disable the high level authorization checks by using:
+You can disable the high level authorization checks by using in the controllers:
 
 ```ruby
 skip_controller_authorization,
 skip_controller_authorization, only: [:index]
 skip_controller_authorization, except: [:update]
 ```
+
+You can also specify a list of controllers in the initializer. It is useful for third-party controllers, like devise for instance.
 
 You can also skip ALL authorization checks (BAD IDEA) using:
 
@@ -66,6 +68,8 @@ render_without_authorization :index, :show
 ```
 
 Be careful when using one of this skipping authorization check as it may result in leaked data.
+
+#### Strongbolt::ModelNotFound error
 
 Usually most of your controllers, in a RestFUL design, are backed by a specific model, derived from the name of the controller. In that case Strongbolt will know what model authorization it should test against. Otherwise, it will raise an error unless you specify the model for authorization:
 

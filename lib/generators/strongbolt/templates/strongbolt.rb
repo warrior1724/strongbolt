@@ -20,6 +20,13 @@ Strongbolt.setup do |config|
   # config.tenants = "Client", "Region"
 
   #
+  # You can specify here some controllers where you don't want to perform any controller authorization check up
+  # It can be useful for instance with devise controllers, to avoid subclassing them.
+  # Write the controller names the same way you would with routes
+  #
+  # config.skip_controller_authorization_for "devise/confirmation"
+
+  #
   # If given a tenant, Strongbolt will try to detect all the models within your application.
   # However, if some models don't have any direct or indirect dependencies on one of your tenant,
   # Strongbolt won't find it.
