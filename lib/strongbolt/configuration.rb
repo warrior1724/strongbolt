@@ -80,6 +80,22 @@ module Strongbolt
       Strongbolt::Capability.add_models models
     end
 
+    #
+    # Controllers to skip controller authorization check ups
+    #
+    def self.skip_controller_authorization_for *controllers
+      ActiveSupport.on_load :action_controller do
+        controllers.each do |controller|
+          begin
+            puts "#{controller.classify}Controller"
+            "#{controller.classify}Controller".constantize.send :skip_controller_authorization
+          rescue NameError => e
+            raise NameError, "Controller #{controller} doesn't correspond to a valid controller name"
+          end
+        end
+      end
+    end
+
   end
 
 end

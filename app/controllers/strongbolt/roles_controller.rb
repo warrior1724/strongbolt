@@ -2,7 +2,6 @@ module Strongbolt
   class RolesController < ::StrongboltController
     
     def index
-      puts self.class.instance_methods.join("\n")
       @roles = Role.includes(:parent)
         .order('parent_id IS NOT NULL', 'parent_id', 'name')
     end
