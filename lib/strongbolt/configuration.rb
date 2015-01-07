@@ -87,8 +87,7 @@ module Strongbolt
       ActiveSupport.on_load :action_controller do
         controllers.each do |controller|
           begin
-            puts "#{controller.classify}Controller"
-            "#{controller.classify}Controller".constantize.send :skip_controller_authorization
+            "#{controller.camelize}Controller".constantize.send :skip_controller_authorization
           rescue NameError => e
             raise NameError, "Controller #{controller} doesn't correspond to a valid controller name"
           end
