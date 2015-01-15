@@ -37,44 +37,46 @@
 
 <h3>Users</h3>
 
+<table class="table table-summary table-striped">
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Sign Up Date</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @user_group.users.order(:email).each do |user| %>
+
+      <tr>
+        <td><%= link_to user.email, security_user_path(user) %></td>
+        <td><%= l user.created_at %></td>
+        <td align="right">
+          <%= link_to(user_group_user_path(@user_group, user), method: :delete, class: 'text-danger') do %>
+            <i class="fa fa-times"></i>
+          <% end %>
+        </td>
+      </tr>
+
+    <% end %>
+  </tbody>
+</table>
+
+
 <%= form_tag user_group_users_path(@user_group) do %>
 
-  <table class="table table-summary table-striped">
-    <thead>
-      <tr>
-        <th>Email</th>
-        <th>Sign Up Date</th>
-        <th></th>
-      </tr>
-    </thead>
+  <div class="row">
+    <div class="col-sm-8">
+      <%= select_tag :id, options_for_select(@users.pluck(:email, :id)), :class => "form-control", :prompt => "Select an user..."  %>
+    </div>
+    <div class="spacer visible-xs"></div>
+    <div class="col-sm-4">
+      <%= submit_tag "Add user", class: "btn btn-block btn-primary" %>
+    </div>
+  </div>
 
-    <tbody>
-      <% @user_group.users.order(:email).each do |user| %>
-
-        <tr>
-          <td><%= link_to user.email, user_path(user) %></td>
-          <td><%= l user.created_at %></td>
-          <td align="right">
-            <%= link_to(user_group_user_path(@user_group, user), method: :delete, class: 'text-danger') do %>
-              <i class="fa fa-times"></i>
-            <% end %>
-          </td>
-        </tr>
-
-      <% end %>
-    </tbody>
-    <tfoot>
-      <tr>
-        <td colspan="2">
-          <%= text_field_tag :email, "", class: "form-control autocomplete user", placeholder: "Type an user email to add another one to group" %>
-          <%= hidden_field_tag :id %>
-        </td>
-        <td>
-          <%= submit_tag "Add user", class: "btn btn-block btn-primary" %>
-        </td>
-      </tr>
-    </tfoot>
-  </table>
+  <div class="spacer"></div>
 
 <% end %>
 

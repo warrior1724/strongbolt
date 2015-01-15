@@ -29,6 +29,7 @@ module Strongbolt
       begin
         @role = Role.create! role_params
 
+        flash[:success] = "Role was successfully created!"
         redirect_to role_path(@role)
       rescue ActiveRecord::RecordInvalid => e
         flash[:danger] = "Role could not be created, please review the errors below"
@@ -47,6 +48,7 @@ module Strongbolt
         @role = Role.find params[:id]
         @role.update_attributes! role_params
 
+        flash[:success] = "Role was successfully updated!"
         redirect_to role_path(@role)
       rescue ActiveRecord::RecordInvalid => e
         flash[:danger] = "Role could not be updated, please review the errors below"
