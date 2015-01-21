@@ -50,7 +50,7 @@
     <% @user_group.users.order(:email).each do |user| %>
 
       <tr>
-        <td><%= link_to user.email, security_user_path(user) %></td>
+        <td><%= user.email %></td>
         <td><%= l user.created_at %></td>
         <td align="right">
           <%= link_to(user_group_user_path(@user_group, user), method: :delete, class: 'text-danger') do %>
