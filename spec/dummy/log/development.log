@@ -86,3 +86,20 @@ User class DummyUser wasn't found
   [1m[35m (3.8ms)[0m  CREATE UNIQUE INDEX "unique_schema_migrations" ON "schema_migrations" ("version")
   [1m[36m (0.1ms)[0m  [1mSELECT version FROM "schema_migrations"[0m
   [1m[35m (4.4ms)[0m  INSERT INTO "schema_migrations" (version) VALUES ('20150106225152')
+User class User wasn't found
+User class User wasn't found
+
+
+Started GET "/" for 127.0.0.1 at 2015-01-21 18:37:53 -0500
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by Rails::WelcomeController#index as HTML
+No authorization checking because no current user
+  Rendered /Users/thomas/.rvm/gems/ruby-2.1.3@strongbolt/gems/railties-4.1.6/lib/rails/templates/rails/welcome/index.html.erb (4.7ms)
+Completed 200 OK in 40ms (Views: 40.0ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2015-01-21 18:37:56 -0500
+Processing by Rails::WelcomeController#index as HTML
+No authorization checking because no current user
+  Rendered /Users/thomas/.rvm/gems/ruby-2.1.3@strongbolt/gems/railties-4.1.6/lib/rails/templates/rails/welcome/index.html.erb (0.1ms)
+Completed 200 OK in 2ms (Views: 1.5ms | ActiveRecord: 0.0ms)

@@ -5,6 +5,12 @@ require "strongbolt/controllers/url_helpers"
 
 module Strongbolt
   class Engine < ::Rails::Engine
+
+    initializer 'strongbolt.assets.precompile' do |app|
+      %w(javascripts).each do |sub|
+        app.config.assets.paths << root.join('app', 'assets', sub).to_s
+      end
+    end
     
     initializer "strongbolt.helpers" do
       ActionView::Base.send :include, Strongbolt::Helpers
