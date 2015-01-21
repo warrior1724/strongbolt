@@ -43,7 +43,20 @@ This list is prefilled when running the install generator.
 
 Strongbolt perform high level authorization on controllers, to avoid testing more granular authorization and increase the performance. For instance, if an user cannot find any Movies, he certainly won't be able to find the movie with the specific id 5.
 
-You can disable the high level authorization checks by using in the controllers:
+#### Custom controller actions
+
+Strongbolt relies on the usual Rails restful actions to guess the corresponding model action (edit requires update authorization, new requires create authorization, etc.). However, you will sometimes create other custom actions. In that case, you must specify in the controller how to map these custom controller actions to one of the 4 model actions using:
+
+```ruby
+authorize_as_find :action1, :action2
+authorize_as_create :action, :action2
+authorize_as_update :action, :action2
+authorize_as_destroy :action, :action2
+```
+
+#### Skipping authorization
+
+You can disable the controller-level authorization checks by using in the controllers:
 
 ```ruby
 skip_controller_authorization,
@@ -51,7 +64,11 @@ skip_controller_authorization, only: [:index]
 skip_controller_authorization, except: [:update]
 ```
 
-You can also specify a list of controllers in the initializer. It is useful for third-party controllers, like devise for instance.
+You can also specify a list of controllers in the initializer `config/initializers/strongbolt.rb`. It is useful for third-party controllers, like devise for instance. The syntax is:
+
+```ruby
+config.skip_controller_authorization_for "Devise::SessionsController", "Devise::RegistrationsController"
+```
 
 You can also skip ALL authorization checks (BAD IDEA) using:
 
@@ -69,7 +86,7 @@ render_without_authorization :index, :show
 
 Be careful when using one of this skipping authorization check as it may result in leaked data.
 
-#### Strongbolt::ModelNotFound error
+#### Controller not derived from a Model
 
 Usually most of your controllers, in a RestFUL design, are backed by a specific model, derived from the name of the controller. In that case Strongbolt will know what model authorization it should test against. Otherwise, it will raise an error unless you specify the model for authorization:
 
@@ -85,6 +102,23 @@ To achieve this, use the following within your model:
 ```ruby
 authorize_as "Movie"
 ```
+
+### Troubleshooting
+
+#### Strongbolt::ModelNotFound
+
+This means Strongbolt is trying to perform some controller-level authorizations but cannot infer the model from the controller name. In that case you must use in this controller:
+
+```ruby
+self.model_for_authorization = "Movie"
+```
+
+Or skip controller authorizations when it cannot be related to a model or it is not useful (like for Devise controllers), using either one of the methods described in *Skipping Authorization*.
+
+#### Strongbolt::ActionNotConfigured
+
+This happens when a controller is using a custom action which is not one of the 6 usual restful Rails actions (index, new, create, sho, edit, update, destroy). Refer to *Custom controller actions* to fix this.
+
 
 ## Contributing
 
