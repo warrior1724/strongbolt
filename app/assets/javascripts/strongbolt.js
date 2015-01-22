@@ -1,0 +1,1 @@
+//= require strongbolt/role-capabilities
