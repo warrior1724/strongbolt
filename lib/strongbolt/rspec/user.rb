@@ -2,7 +2,7 @@ require 'rspec/mocks'
 #
 # We define a can! that allows to quickly stub a user authorization
 #
-class User
+Strongbolt.user_class.class_eval do
   def init
     RSpec::Mocks::setup(self) unless self.respond_to? :allow
   end
