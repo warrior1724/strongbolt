@@ -37,16 +37,18 @@ Strongbolt.user_class_constant.class_eval do
     def key_for *args
       action = args[0]
       instance = args[1]
+      attrs = args[2] || :any
+      all_instances = (args[3] || false) ? "all" : "tenanted"
       if instance.is_a?(ActiveRecord::Base)
         model = instance.class.name
         if instance.new_record?
-          "#{action}-#{model}"
+          "#{action}-#{model}-#{attrs}-#{all_instances}"
         else
-          "#{action}-#{model}-#{instance.id}"
+          "#{action}-#{model}-#{attrs}-#{instance.id}"
         end
       else
         model = instance.class.name
-        "#{action}-#{model}"
+        "#{action}-#{model}-#{attrs}-#{all_instances}"
       end
     end
 
