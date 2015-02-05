@@ -25,6 +25,12 @@ To create a Role and User Group that has full access and assign the group to all
 
     $ rake strongbolt:seed
 
+If you plan on using the built-in view to manage user groups, roles and permissions, also add to your application.js:
+
+    //= require strongbolt
+
+You will need to have jQuery or a similar library with Ajax to make it work
+
 ## Usage
 
 ### Configuration

@@ -11,7 +11,7 @@ module Strongbolt
       #                                                          #
       #----------------------------------------------------------#
       def capabilities
-        @capabilities_cache ||= Strongbolt::Capability.joins(:roles)
+        @capabilities_cache ||= Strongbolt::Capability.unscoped.joins(:roles)
           .joins('INNER JOIN strongbolt_roles as children_roles ON strongbolt_roles.lft <= children_roles.lft AND children_roles.rgt <= strongbolt_roles.rgt')
           .joins('INNER JOIN strongbolt_roles_user_groups rug ON rug.role_id = children_roles.id')
           .joins('INNER JOIN strongbolt_user_groups_users ugu ON ugu.user_group_id = rug.user_group_id')
