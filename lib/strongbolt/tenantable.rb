@@ -191,7 +191,7 @@ module Strongbolt
             end
           end
         rescue NameError => e
-          Strongbolt.logger.err "User #{Configuration.user_class} could not have his association to tenant #{name} created"
+          Strongbolt.logger.error "User #{Configuration.user_class} could not have his association to tenant #{name} created"
         end
       end
 
