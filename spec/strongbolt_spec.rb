@@ -219,6 +219,7 @@ describe Strongbolt do
     context "when the model isn't from the user class" do
       
       it "should raise error" do
+        Strongbolt::Configuration.user_class = 'User'
         expect do
           Strongbolt.current_user = Model.new
         end.to raise_error Strongbolt::WrongUserClass

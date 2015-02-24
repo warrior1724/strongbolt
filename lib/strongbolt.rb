@@ -115,8 +115,17 @@ module Strongbolt
     rescue NameError
       logger.warn "User class #{Configuration.user_class} wasn't found"
     end
-  rescue ActiveRecord::StatementInvalid => e
-    logger.fatal "Error while setting up Strongbolt:\n\n#{e}"
+  rescue => e
+    logger.fatal <<-CONTENT
+[ERROR] Strongbolt could not initialized successfully.
+  This can happen when running migrations, and in this situation, you can ignore this message.
+  Otherwise, please review the error below to check what happened:
+
+Error message:
+  #{e.message}
+
+  #{e.backtrace.join("\n")}
+    CONTENT
   end
 
   #
