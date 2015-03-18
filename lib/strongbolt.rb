@@ -101,9 +101,6 @@ module Strongbolt
   # Setting up Strongbolt
   #
   def self.setup &block
-    # Fix to prevent an issue where the DB could not be created from scratch
-    # return if $0 =~ /rake$/
-
     # Configuration by user
     block.call Configuration
 
@@ -116,7 +113,7 @@ module Strongbolt
       logger.warn "User class #{Configuration.user_class} wasn't found"
     end
   rescue => e
-    logger.fatal <<-CONTENT
+    error = <<-CONTENT
 [ERROR] Strongbolt could not initialized successfully.
   This can happen when running migrations, and in this situation, you can ignore this message.
   Otherwise, please review the error below to check what happened:
@@ -126,6 +123,11 @@ Error message:
 
   #{e.backtrace.join("\n")}
     CONTENT
+    logger.fatal error
+    # Display in the console when error test env
+    puts error if defined?(Rails) && Rails.env.test?
+    # If not being done in a rake task db related, this should propagate the error
+    raise e unless $0 =~ /rake$/ && ARGV.join(" ").include?("db:")
   end
 
   #
