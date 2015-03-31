@@ -116,6 +116,7 @@ module Strongbolt
     error = <<-CONTENT
 [ERROR] Strongbolt could not initialized successfully.
   This can happen when running migrations, and in this situation, you can ignore this message.
+  If it happens in test, make sure you've run `rake db:test:prepare` so that test database is ready.
   Otherwise, please review the error below to check what happened:
 
 Error message:
@@ -126,8 +127,8 @@ Error message:
     logger.fatal error
     # Display in the console when error test env
     puts error if defined?(Rails) && Rails.env.test?
-    # If not being done in a rake task db related, this should propagate the error
-    raise e unless $0 =~ /rake$/ && ARGV.join(" ").include?("db:")
+    # If not being done in a rake task, this should propagate the error
+    raise e unless $0 =~ /rake$/ # && ARGV.join(" ").include?("db:")
   end
 
   #
