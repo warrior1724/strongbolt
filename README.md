@@ -109,6 +109,54 @@ To achieve this, use the following within your model:
 authorize_as "Movie"
 ```
 
+### Tenants
+
+Strongbolt allows the utilization of _tenants_. Tenants are vertical scopes within your application. For instance, a project tracking application (like Pivotal) can have several companies as clients, but each company can see only what concerns it. In this example, _Companies_ are tenants of the application.
+
+The initializer let you define the model(s) that should be considered tenants.
+
+Strongbolt's capabilites have a boolean attribute, `require_tenant_access`, that specify whether the user can access all _tenants_ or only the ones he was allowed.
+
+> Let's say your application has _companies_ as tenants.
+> Each companies has several _projects_.
+> The normal user, belonging to a company, would only have access to his company's projects.
+> You would then define for normal user a capability requiring tenant access
+>
+> An admin user, like an engineer of the application, could have access to all the companies' projects
+> An engineer projects permissions would then not require tenant access
+
+Strongbolt will traverse your schema and automatically determine what models in your application is linked to your _Tenant class_.
+
+> Using again the last example, every `project` belongs to a `company`. Projects also belong to a `Country`, which is the country the project is being done.
+> The `country` attribute is an instance of the model `Country` which is stored in a `countries` table.
+> In this scenario, every user would have access to all the countries of this table as this is not linked to the `Company` directly, and he should be able to select whatever country the project is being done.
+> Strongbolt, in this example, will determine that `Country` isn't linked to `Company`.
+
+It will then perform the right permission check based on this requirement and the relationship of the model being checked and the _Tenant class_. If the model being checked is not linked to any of the _Tenant classes_, it won't check any dependency.
+
+#### How to set what tenants a user has access to
+
+Strongbolt comes with a table, `strongbolt_users_tenants`, that will store what tenants users have access to.
+
+When a tenant is declared, it will add some features to the _User class_ that has been defined in the initializer.
+
+First, an association between the _User class_ and the _Tenant class_ will be created, named after the _Tenant class_ name. It is a `has_many :trough => :users_tenants_` association.
+
+> For instance, a `Company` tenant will generate a `companies` association.
+
+A convenient instance method will also be created on the _User class_ to directly access the list of _Tenant class_ a _User_ can access. It is name `accessible_{tenants}` where `{tenants}` is the pluralize version of the _Tenant class_ name.
+
+> `Company` will create an `accessible_companies` instance method
+
+#### Tenanted models
+
+A tenanted model is a model that belongs indirectly to a _Tenant class_. In our example, `Project` is a tenant model of `Company` but `Country` is not.
+
+Strongbolt will create a `has_one` association on every tenanted model, so you can access directly the dependent _Tenant_
+
+> For instance, every `Task` of a `Project` will have a `has_one :company, :through => :project` association automatically created if not existing.
+
+
 ### Troubleshooting
 
 #### Strongbolt::ModelNotFound

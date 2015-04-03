@@ -158,7 +158,7 @@ module Strongbolt
 
         # And return name of association
         return assoc
-      end
+      end #/setup_model
 
       #
       # Setups the has_many thru association on the User class
@@ -193,7 +193,7 @@ module Strongbolt
         rescue NameError => e
           Strongbolt.logger.error "User #{Configuration.user_class} could not have his association to tenant #{name} created"
         end
-      end
+      end #/setup_association_on_user
 
       #
       # Returns the inverse of specified association, using what's given
