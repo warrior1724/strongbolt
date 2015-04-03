@@ -111,28 +111,11 @@ authorize_as "Movie"
 
 ### Tenants
 
-Strongbolt allows the utilization of _tenants_. Tenants are vertical scopes within your application. For instance, a project tracking application (like Pivotal) can have several companies as clients, but each company can see only what concerns it. In this example, _Companies_ are tenants of the application.
+Strongbolt allows the utilization of _tenants_. Tenants are vertical scopes within your application.
+
+> Let's take an example. A project tracking application (like Pivotal) can have several companies as clients, but each company's users can see only what concern them. _Company_ is a tenant of the application.
 
 The initializer let you define the model(s) that should be considered tenants.
-
-Strongbolt's capabilites have a boolean attribute, `require_tenant_access`, that specify whether the user can access all _tenants_ or only the ones he was allowed.
-
-> Let's say your application has _companies_ as tenants.
-> Each companies has several _projects_.
-> The normal user, belonging to a company, would only have access to his company's projects.
-> You would then define for normal user a capability requiring tenant access
->
-> An admin user, like an engineer of the application, could have access to all the companies' projects
-> An engineer projects permissions would then not require tenant access
-
-Strongbolt will traverse your schema and automatically determine what models in your application is linked to your _Tenant class_.
-
-> Using again the last example, every `project` belongs to a `company`. Projects also belong to a `Country`, which is the country the project is being done.
-> The `country` attribute is an instance of the model `Country` which is stored in a `countries` table.
-> In this scenario, every user would have access to all the countries of this table as this is not linked to the `Company` directly, and he should be able to select whatever country the project is being done.
-> Strongbolt, in this example, will determine that `Country` isn't linked to `Company`.
-
-It will then perform the right permission check based on this requirement and the relationship of the model being checked and the _Tenant class_. If the model being checked is not linked to any of the _Tenant classes_, it won't check any dependency.
 
 #### How to set what tenants a user has access to
 
@@ -150,11 +133,27 @@ A convenient instance method will also be created on the _User class_ to directl
 
 #### Tenanted models
 
-A tenanted model is a model that belongs indirectly to a _Tenant class_. In our example, `Project` is a tenant model of `Company` but `Country` is not.
+A tenanted model is a model that belongs indirectly to a _Tenant class_.
 
-Strongbolt will create a `has_one` association on every tenanted model, so you can access directly the dependent _Tenant_
+> For instance, `Project` is a tenanted model of `Company`. Now, let's consider a `belong_to` association that links `Project` to a `Country`. The list of countries is stored in the table `countries` and does not belong to `Company`: `Country` is not a tenanted model.
 
-> For instance, every `Task` of a `Project` will have a `has_one :company, :through => :project` association automatically created if not existing.
+Strongbolt will traverse your schema and automatically determine what models in your application is linked to your _Tenant class_.
+
+> In our example, where `Project` belongs to `Company` and `Country`, but `Country` does not belong to `Company`, Strongbolt will automatically determine that `Project` is a tenanted model and `Country` is not.
+
+Strongbolt will then create a `has_one` association on every tenanted model, so you can access directly the dependent _Tenant_
+
+> For instance, every `Task` of a `Project` will have a `has_one :company, :through => :project` association automatically created (if not already existing).
+
+#### Restricting permissions to accessible tenanted models
+
+Strongbolt's capabilites have a boolean attribute, `require_tenant_access`, that specify whether the user can access all _tenanted models_ or only the ones that belong to the _Tenants_ he has access to.
+
+> Let's look back at the example. Each companies has several _projects_. The normal user, belonging to a company, would only have access to his company's projects. You would then define for normal user a capability *requiring tenant access*
+
+> An admin user, on the other hand, like an engineer of the application, could have access to all the companies' projects. An engineer's projects' permissions would then *not require tenant access*
+
+It will then perform the right permission check based on this requirement and the relationship of the model being checked and the _Tenant class_. If the model being checked is not linked to any of the _Tenant classes_, it won't check any dependency.
 
 
 ### Troubleshooting
