@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150106225152) do
+ActiveRecord::Schema.define(version: 20150416230440) do
 
   create_table "strongbolt_capabilities", force: true do |t|
     t.string   "name"
@@ -57,7 +57,7 @@ ActiveRecord::Schema.define(version: 20150106225152) do
     t.integer "user_id"
   end
 
-  create_table "strongbolt_users_tenants", id: false, force: true do |t|
+  create_table "strongbolt_users_tenants", force: true do |t|
     t.integer "user_id"
     t.integer "tenant_id"
     t.string  "tenant_type"

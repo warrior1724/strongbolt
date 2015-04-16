@@ -44,7 +44,7 @@ class CreateStrongboltTables < ActiveRecord::Migration
       t.integer  :capability_id
     end
 
-    create_table :strongbolt_users_tenants, :id => false, :force => true do |t|
+    create_table :strongbolt_users_tenants, :force => true do |t|
       t.integer  :user_id
       t.integer  :tenant_id
       t.string   :tenant_type
