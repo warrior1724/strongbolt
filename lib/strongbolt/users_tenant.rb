@@ -1,6 +1,7 @@
 module Strongbolt
   class UsersTenant < ActiveRecord::Base
-    belongs_to :user, class_name: Configuration.user_class
+    belongs_to :user, class_name: Configuration.user_class,
+      :inverse_of => :users_tenants
     belongs_to :tenant, polymorphic: true
 
     validates :user, :tenant, presence: true

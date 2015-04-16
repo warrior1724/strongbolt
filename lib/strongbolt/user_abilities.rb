@@ -281,7 +281,7 @@ module Strongbolt
         has_many :roles, through: :user_groups
 
         has_many :users_tenants, class_name: "Strongbolt::UsersTenant",
-          foreign_key: :user_id
+          foreign_key: :user_id, :inverse_of => :user
       end
 
       # Sets up user association
