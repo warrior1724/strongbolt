@@ -206,12 +206,13 @@ module Strongbolt
           user_class = Configuration.user_class.constantize
 
           # Setup the association
-          unless user_class.respond_to? "users_#{plural_association_name}"
-            user_class.has_many :"users_#{plural_association_name}",
-              :class_name => "Strongbolt::Users#{self.name}",
-              :inverse_of => :user,
-              :dependent => :delete_all
-          end
+          # The first one should never be there before
+          user_class.has_many :"users_#{plural_association_name}",
+            :class_name => "Strongbolt::Users#{self.name}",
+            :inverse_of => :user,
+            :dependent => :delete_all
+
+          # This one may have been overriden by the developer
           unless user_class.respond_to? plural_association_name
             user_class.has_many plural_association_name,
               :source => :"#{singular_association_name}",
