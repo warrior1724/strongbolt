@@ -29,7 +29,7 @@ module Strongbolt
     # Avoids authorization checking in the middleware
     #
     initializer "strongbolt.devise_integration" do
-      if defined? DeviseController
+      if defined?(Warden) && defined?(Warden::SessionSerializer)
         Warden::SessionSerializer.perform_without_authorization :store, :fetch, :delete
       end
     end
