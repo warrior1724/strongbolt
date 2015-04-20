@@ -178,6 +178,11 @@ describe Strongbolt::Tenantable do
         end
       end
 
+      it "creates a has_many users_tenant_models" do
+        expect(Strongbolt::Configuration.user_class.constantize.new).to have_many(:users_tenant_models)
+          .dependent(:delete_all)
+      end
+
       it "creates a has_many relationship on the User defined" do
         expect(Strongbolt::Configuration.user_class.constantize.new).to have_many(:tenant_models).through :users_tenant_models
       end

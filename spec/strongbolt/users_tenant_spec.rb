@@ -21,7 +21,7 @@ describe Strongbolt::UsersTenant do
   subject { users_tenant }
 
   it { is_expected.to belong_to :user }
-  it { is_expected.to belong_to :tenant_model }
+  it { is_expected.to belong_to(:tenant_model).class_name("TenantModel") }
 
   it { is_expected.to be_valid }
   it { is_expected.to validate_presence_of :user }

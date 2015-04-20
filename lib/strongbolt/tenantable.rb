@@ -187,6 +187,11 @@ module Strongbolt
               :foreign_key => :tenant_id,
               :class_name => "#{self.name}"
 
+            # We have to create this association every time to have
+            # The correct inverse_of
+            belongs_to :user, class_name: Configuration.user_class,
+              :inverse_of => :users_#{plural_association_name}
+
             validates :#{singular_association_name}, :presence => true
           RUBY
           Strongbolt.const_set "Users#{self.name}", users_tenant_subclass
@@ -203,7 +208,9 @@ module Strongbolt
           # Setup the association
           unless user_class.respond_to? "users_#{plural_association_name}"
             user_class.has_many :"users_#{plural_association_name}",
-              :class_name => "Strongbolt::Users#{self.name}"
+              :class_name => "Strongbolt::Users#{self.name}",
+              :inverse_of => :user,
+              :dependent => :delete_all
           end
           unless user_class.respond_to? plural_association_name
             user_class.has_many plural_association_name,
