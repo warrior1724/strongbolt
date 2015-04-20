@@ -181,7 +181,7 @@ module Strongbolt
           users_tenant_subclass = Class.new(Strongbolt::UsersTenant)
           users_tenant_subclass.class_eval <<-RUBY
             # Ensures permissions on UsersTenant are applied here
-            authorize_as "UsersTenant"
+            authorize_as "Strongbolt::UsersTenant"
             # The association to the actual tenant model
             belongs_to :#{singular_association_name},
               :foreign_key => :tenant_id,
