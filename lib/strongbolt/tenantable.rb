@@ -172,6 +172,7 @@ module Strongbolt
             user_class.has_many plural_association_name,
               :source => :tenant,
               :source_type => self.name,
+              :class_name => self.name,
               :through => :users_tenants
           end
 
