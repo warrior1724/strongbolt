@@ -162,11 +162,25 @@ module Strongbolt
       end #/setup_model
 
 
-
+      #
+      # The initial idea of using a polymorphic association on UsersTenant
+      # leads to some problems* when the tenant is a subclass of a STI schema
+      # and not the whole schema. Using instead STI for the UsersTenant model
+      # allows to achieve the same results without the edge effects.
+      #
+      # *For instance, let's say we have a Resource STI model, with Client
+      # and User as subclasses. Client is a tenant, User is not.
+      # If using the original idea of polymorphic association on UsersTenant,
+      # Helpers like user.client_ids = [5] wouldn't work.
+      # This comes from the fact that AR use the base_class name of the STI model
+      # and not the actual class name to be stored in the _type column.
+      #
+      #
       def create_users_tenant_subclass
         unless Strongbolt.const_defined?("Users#{self.name}")
           users_tenant_subclass = Class.new(Strongbolt::UsersTenant)
           users_tenant_subclass.class_eval <<-RUBY
+            # The association to the actual tenant model
             belongs_to :#{singular_association_name},
               :foreign_key => :tenant_id,
               :class_name => "#{self.name}"

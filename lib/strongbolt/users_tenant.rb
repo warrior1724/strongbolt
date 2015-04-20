@@ -11,6 +11,9 @@ module Strongbolt
 
     # See below for explanation
     # before_validation :set_tenant_type
+    
+    # Ensures permissions on UsersTenant are applied here
+    authorize_as "UsersTenant"
 
     private
 
