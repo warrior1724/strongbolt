@@ -22,7 +22,9 @@ module Strongbolt
       # Adds a managed tenant to the user
       #
       def add_tenant tenant
-        users_tenants.create! tenant: tenant
+        sing_tenant_name = tenant.class.name.demodulize.underscore
+        send("users_#{sing_tenant_name.pluralize}").create! sing_tenant_name => tenant
+        # users_tenants.create! tenant: tenant
       end
 
       #
@@ -279,10 +281,6 @@ module Strongbolt
           :join_table => :strongbolt_user_groups_users
           # :inverse_of => :users doesn't seem available before AR 4.1.5
         has_many :roles, through: :user_groups
-
-        has_many :users_tenants, class_name: "Strongbolt::UsersTenant",
-          foreign_key: :user_id, :inverse_of => :user,
-          :dependent => :delete_all
       end
 
       # Sets up user association

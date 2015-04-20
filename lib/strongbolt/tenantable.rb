@@ -61,6 +61,7 @@ module Strongbolt
         # We add models name to Configuration
         Strongbolt::Configuration.models = @models_traversed.keys
 
+        create_users_tenant_subclass
         setup_association_on_user
 
         @tenant = true
@@ -160,6 +161,43 @@ module Strongbolt
         return assoc
       end #/setup_model
 
+
+      #
+      # The initial idea of using a polymorphic association on UsersTenant
+      # leads to some problems* when the tenant is a subclass of a STI schema
+      # and not the whole schema. Using instead STI for the UsersTenant model
+      # allows to achieve the same results without the edge effects.
+      #
+      # *For instance, let's say we have a Resource STI model, with Client
+      # and User as subclasses. Client is a tenant, User is not.
+      # If using the original idea of polymorphic association on UsersTenant,
+      # Helpers like user.client_ids = [5] wouldn't work.
+      # This comes from the fact that AR use the base_class name of the STI model
+      # and not the actual class name to be stored in the _type column.
+      #
+      #
+      def create_users_tenant_subclass
+        unless Strongbolt.const_defined?("Users#{self.name}")
+          users_tenant_subclass = Class.new(Strongbolt::UsersTenant)
+          users_tenant_subclass.class_eval <<-RUBY
+            # Ensures permissions on UsersTenant are applied here
+            authorize_as "Strongbolt::UsersTenant"
+            # The association to the actual tenant model
+            belongs_to :#{singular_association_name},
+              :foreign_key => :tenant_id,
+              :class_name => "#{self.name}"
+
+            # We have to create this association every time to have
+            # The correct inverse_of
+            belongs_to :user, class_name: Configuration.user_class,
+              :inverse_of => :users_#{plural_association_name}
+
+            validates :#{singular_association_name}, :presence => true
+          RUBY
+          Strongbolt.const_set "Users#{self.name}", users_tenant_subclass
+        end
+      end #/create_users_tenant_subclass
+
       #
       # Setups the has_many thru association on the User class
       #
@@ -168,12 +206,18 @@ module Strongbolt
           user_class = Configuration.user_class.constantize
 
           # Setup the association
+          # The first one should never be there before
+          user_class.has_many :"users_#{plural_association_name}",
+            :class_name => "Strongbolt::Users#{self.name}",
+            :inverse_of => :user,
+            :dependent => :delete_all
+
+          # This one may have been overriden by the developer
           unless user_class.respond_to? plural_association_name
             user_class.has_many plural_association_name,
-              :source => :tenant,
-              :source_type => self.name,
+              :source => :"#{singular_association_name}",
               :class_name => self.name,
-              :through => :users_tenants
+              :through => :"users_#{plural_association_name}"
           end
 
           # Setup a quick method to get accessible clients directly

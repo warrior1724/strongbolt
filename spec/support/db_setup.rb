@@ -102,7 +102,7 @@ class TestsMigrations < ActiveRecord::Migration
     create_table :strongbolt_users_tenants, :id => false, :force => true do |t|
       t.integer  :user_id
       t.integer  :tenant_id
-      t.string   :tenant_type
+      t.string   :type
     end
   end
 end
