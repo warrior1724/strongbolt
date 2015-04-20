@@ -22,7 +22,9 @@ module Strongbolt
       # Adds a managed tenant to the user
       #
       def add_tenant tenant
-        users_tenants.create! tenant: tenant
+        sing_tenant_name = tenant.class.name.demodulize.underscore
+        send("users_#{sing_tenant_name.pluralize}").create! sing_tenant_name => tenant
+        # users_tenants.create! tenant: tenant
       end
 
       #

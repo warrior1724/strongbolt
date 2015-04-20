@@ -2,13 +2,15 @@ module Strongbolt
   class UsersTenant < ActiveRecord::Base
     belongs_to :user, class_name: Configuration.user_class,
       :inverse_of => :users_tenants
-    belongs_to :tenant, polymorphic: true
+    # belongs_to :tenant, polymorphic: true
 
-    validates :user, :tenant, presence: true
-    validate :tenant_model_is_a_tenant
+    self.inheritance_column = :tenant_type
+
+    validates :user, presence: true
+    # validate :tenant_model_is_a_tenant
 
     # See below for explanation
-    before_validation :set_tenant_type
+    # before_validation :set_tenant_type
 
     private
 

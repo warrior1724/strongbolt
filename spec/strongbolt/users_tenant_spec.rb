@@ -16,20 +16,21 @@ describe Strongbolt::UsersTenant do
   let(:user)          { User.create! }
   let(:tenant)        { TenantModel.create! }
 
-  let(:users_tenant)  { Strongbolt::UsersTenant.new user: user, tenant: tenant }
+  let(:users_tenant)  { Strongbolt::UsersTenantModel.new user: user, tenant_model: tenant }
 
   subject { users_tenant }
 
   it { is_expected.to belong_to :user }
-  it { is_expected.to belong_to :tenant }
+  it { is_expected.to belong_to :tenant_model }
 
   it { is_expected.to be_valid }
   it { is_expected.to validate_presence_of :user }
-  it { is_expected.to validate_presence_of :tenant }
+  it { is_expected.to validate_presence_of :tenant_model }
 
   it "should ensure tenant is a Tenant" do
-    users_tenant = Strongbolt::UsersTenant.new user: user, tenant: Model.create!
-    expect(users_tenant).not_to be_valid
+    expect do
+      users_tenant = Strongbolt::UsersTenantModel.new user: user, tenant_model: Model.create!
+    end.to raise_error ActiveRecord::AssociationTypeMismatch
   end
 
 end
