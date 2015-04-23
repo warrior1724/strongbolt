@@ -98,6 +98,7 @@ module Strongbolt
     #
     # Default permissions
     #
+    @@default_capabilities = []
     def self.default_capabilities= list
       @@default_capabilities = list.inject([]) do |capabilities, hash|
         capabilities.concat Capability.from_hash(hash)
@@ -105,7 +106,7 @@ module Strongbolt
     end
 
     def self.default_capabilities
-      @@default_capabilities || []
+      @@default_capabilities
     end
 
   end
