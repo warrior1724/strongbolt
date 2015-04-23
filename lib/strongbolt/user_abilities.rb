@@ -15,7 +15,7 @@ module Strongbolt
           .joins('INNER JOIN strongbolt_roles as children_roles ON strongbolt_roles.lft <= children_roles.lft AND children_roles.rgt <= strongbolt_roles.rgt')
           .joins('INNER JOIN strongbolt_roles_user_groups rug ON rug.role_id = children_roles.id')
           .joins('INNER JOIN strongbolt_user_groups_users ugu ON ugu.user_group_id = rug.user_group_id')
-          .where('ugu.user_id = ?', self.id).distinct
+          .where('ugu.user_id = ?', self.id).distinct.to_a.concat(Strongbolt.default_capabilities)
       end
 
       #
@@ -49,7 +49,6 @@ module Strongbolt
           # -any, all, an ID, or "owned" (if the ID will be verified later) is appended to the key based on which instances
           # a user has access to
           populate_capabilities_cache unless @results_cache.present?
-           
           # Determine the model name and the actual model (if we need to traverse the hierarchy)
           if instance.is_a?(ActiveRecord::Base)
             model = instance.class
@@ -117,7 +116,7 @@ module Strongbolt
             user_id = self.try(:id)
             # We can use the ID of the User object for the key here because
             # there's only one of them
-            if capability.model == 'User'
+            if capability.model == Strongbolt::Configuration.user_class
               @results_cache["#{k}#{attr_k}-#{user_id}"] = true
               @results_cache["#{k}any-#{user_id}"] = true
             else
@@ -160,7 +159,6 @@ module Strongbolt
 
         # we don't know or care about tenants or if this is a new record
         if instance.is_a?(ActiveRecord::Base) && !instance.new_record?
-          
           # First, check if we have a hash/cache hit for User being able to do this action to every instance of the model/class
           return true if @results_cache["#{action_model}all-all"]  #Access to all attributes on ENTIRE class?
           return true if @results_cache["#{action_model}#{attrs}-all"]  #Access to this specific attribute on ENTIRE class?
@@ -262,7 +260,7 @@ module Strongbolt
         @tenants_cache = {}
         # Go over each tenants
         Strongbolt.tenants.each do |tenant|
-          @tenants_cache[tenant.name] = send("#{tenant.singular_association_name}_ids").to_a
+          @tenants_cache[tenant.name] = send("accessible_#{tenant.plural_association_name}").pluck(:id)
           Strongbolt.logger.debug "#{@tenants_cache[tenant.name].size} #{tenant.name}"
         end
       end

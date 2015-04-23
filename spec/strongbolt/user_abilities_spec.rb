@@ -275,6 +275,34 @@ describe Strongbolt::UserAbilities do
         end
       end
 
+      context "when default set of permissions" do
+        before do
+          Strongbolt.setup do |config|
+            config.default_capabilities = [
+              {:model => "OwnedModel", :require_ownership => true, :actions => :update},
+              {:model => "TenantModel", :require_tenant_access => false, :require_ownership => false, :actions => "find"}
+            ]
+          end
+        end
+        after do 
+          Strongbolt.setup do |config|
+            config.default_capabilities = []
+          end
+        end
+
+        let(:other_user) { User.create! }
+        let(:owned_model) { OwnedModel.create! :user => user, :tenant_model => TenantModel.create! }
+        let(:unowned_model) { OwnedModel.create! :user => other_user, :tenant_model => TenantModel.create! }
+
+        it "should let the user update an owned model" do
+          expect(user.can? :update, owned_model).to eq true
+        end
+
+        it "should not let the user update an owned model from another user" do
+          expect(user.can? :update, unowned_model).to eq false
+        end
+      end
+
     end # Creating an owned model
 
     describe "updating an owned model" do

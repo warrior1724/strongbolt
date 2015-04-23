@@ -85,6 +85,35 @@ describe Strongbolt::Configuration do
         expect(Capability.models).to eq ["BottomModel", "Model", "OtherModel", "Strongbolt::Capability", "Strongbolt::Role", "Strongbolt::UserGroup", "Strongbolt::UsersTenant"]
       end
     end
+  end #/models=
+
+
+
+  #
+  # Setting default permissions
+  #
+  describe "default_capabilities=" do
+    
+    before do
+      Strongbolt::Configuration.default_capabilities = [
+        {:model => "User", :actions => :all},
+        {:model => "Model", :actions => "find"}
+      ]
+    end
+    after do
+      Strongbolt::Configuration.default_capabilities = []
+    end
+
+    it "should return 5 Capabilities" do
+      expect(Strongbolt::Configuration.default_capabilities.size).to eq 5
+    end
+
+    it "should return Capability" do
+      Strongbolt::Configuration.default_capabilities.each do |c|
+        expect(c).to be_a Capability
+      end
+    end
+
   end
 
 end

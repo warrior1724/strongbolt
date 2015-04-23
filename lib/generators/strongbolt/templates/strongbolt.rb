@@ -27,6 +27,14 @@ Strongbolt.setup do |config|
   # config.skip_controller_authorization_for "devise/confirmation"
 
   #
+  # List here the set of default permissions granted to every user
+  # You will usually let every user access its own information for instance
+  #
+  config.default_capabilities = [
+    {:model => "User", :require_ownership => true, :require_tenant_access => false, :actions => [:find]}
+  ]
+
+  #
   # If given a tenant, Strongbolt will try to detect all the models within your application.
   # However, if some models don't have any direct or indirect dependencies on one of your tenant,
   # Strongbolt won't find it.

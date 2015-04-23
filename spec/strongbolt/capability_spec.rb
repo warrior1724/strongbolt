@@ -177,6 +177,73 @@ module Strongbolt
 
     end # End Scope and Table
 
+
+
+    #
+    # Create capability from hash
+    #
+    describe "from_hash" do
+      let(:params) { {model: "User", require_ownership: true, require_tenant_access: false} }
+
+      let(:capabilities) { Capability.from_hash params }
+
+      subject { capabilities }
+
+      context "when list of actions" do
+        before { params[:actions] = [:find, :update] }
+
+        it "should have 2 element2" do
+          expect(subject.size).to eq 2  
+        end
+
+        it "should have the right model" do
+          capabilities.each do |c|
+            expect(c.model).to eq "User"
+          end
+        end
+
+        it "should have the right require_ownership" do
+          capabilities.each { |c| expect(c.require_ownership).to eq true  }
+        end
+
+        it "should have the right require_tenant_access" do
+          capabilities.each { |c| expect(c.require_tenant_access).to eq false  }
+        end
+
+        it "should have the right actions" do
+          capabilities.each do |c|
+            expect(["find", "update"]).to include c.action.to_s
+          end
+        end
+      end #/list of actions
+
+      context "when list of actions" do
+        before { params[:actions] = "find" }
+
+        it "should have 1 element" do
+          expect(subject.size).to eq 1  
+        end
+        
+        it "should have the right action" do
+          expect(capabilities[0].action).to eq "find"
+        end
+      end
+
+      context "when :all" do
+        before { params[:actions] = "all" }
+
+        it "should have 4 elements" do
+          expect(subject.size).to eq 4
+        end
+
+        it "should have the right actions" do
+          capabilities.each do |c|
+            expect(Capability::Actions).to include c.action.to_s
+          end
+        end
+      end
+    end
+
   end
 
 end

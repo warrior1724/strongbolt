@@ -22,7 +22,7 @@ require "strongbolt/users_tenant"
 #
 ar_version = ActiveRecord.version.version
 if ar_version >= "4.1.0" && ar_version <= "4.1.1"
-  raise StandardError, "You cannot use Strongbolt with ActiveRecord versions 4.1.0 and 4.1.1. Please upgrade to 4.1.2+"
+  raise StandardError, "You cannot use Strongbolt with ActiveRecord versions 4.1.0 and 4.1.1. Please upgrade to >= 4.1.2"
 end
 
 #
@@ -56,8 +56,10 @@ module Strongbolt
   end
   
   # Delegates to the configuration the access denied
-  def_delegators Configuration, :access_denied, :logger, :tenants, :user_class, :user_class_constant
-  module_function :access_denied, :logger, :tenants, :user_class, :user_class_constant
+  def_delegators Configuration, :access_denied, :logger, :tenants, :user_class, :user_class_constant,
+    :default_capabilities
+  module_function :access_denied, :logger, :tenants, :user_class, :user_class_constant,
+    :default_capabilities
 
   # Delegates switching thread behavior
   def_delegators Grant::Status, :switch_to_multithread,
