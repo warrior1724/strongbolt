@@ -265,6 +265,9 @@ module Strongbolt
         before_action :set_current_user
         after_action :unset_current_user
 
+        # Catch Grant error
+        around_action :catch_grant_error
+
         # Quick check of high level authorization
         before_action :check_authorization
 
