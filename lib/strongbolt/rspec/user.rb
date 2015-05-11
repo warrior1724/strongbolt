@@ -58,7 +58,11 @@ Strongbolt.user_class_constant.class_eval do
   # 2 methods to setup mocking and stubs
   #
   def init
-    RSpec::Mocks::setup(self) unless self.respond_to? :allow
+    if RSpec::Mocks::Version::STRING >= "3.0"
+      require "rspec/mocks/standalone"
+    else
+      RSpec::Mocks::setup(self) unless self.respond_to? :allow
+    end
   end
 
   def setup_stub authorized, arguments
