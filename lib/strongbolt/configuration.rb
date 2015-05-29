@@ -50,8 +50,8 @@ module Strongbolt
     # Adds a tenant if not in the list
     #
     def self.add_tenant tenant
+      tenant = tenant.constantize if tenant.is_a? String
       unless @@tenants.any? { |m| m.name == tenant.name }
-        tenant = tenant.constantize if tenant.is_a? String
         tenant.send :tenant
         @@tenants << tenant
       end
