@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150416230440) do
+ActiveRecord::Schema.define(version: 20150630212251) do
 
   create_table "strongbolt_capabilities", force: true do |t|
     t.string   "name"
@@ -30,6 +30,9 @@ ActiveRecord::Schema.define(version: 20150416230440) do
     t.integer "capability_id"
   end
 
+  add_index "strongbolt_capabilities_roles", ["capability_id"], name: "index_strongbolt_capabilities_roles_on_capability_id"
+  add_index "strongbolt_capabilities_roles", ["role_id"], name: "index_strongbolt_capabilities_roles_on_role_id"
+
   create_table "strongbolt_roles", force: true do |t|
     t.string   "name"
     t.integer  "parent_id"
@@ -40,10 +43,17 @@ ActiveRecord::Schema.define(version: 20150416230440) do
     t.datetime "updated_at"
   end
 
+  add_index "strongbolt_roles", ["lft"], name: "index_strongbolt_roles_on_lft"
+  add_index "strongbolt_roles", ["parent_id"], name: "index_strongbolt_roles_on_parent_id"
+  add_index "strongbolt_roles", ["rgt"], name: "index_strongbolt_roles_on_rgt"
+
   create_table "strongbolt_roles_user_groups", id: false, force: true do |t|
     t.integer "user_group_id"
     t.integer "role_id"
   end
+
+  add_index "strongbolt_roles_user_groups", ["role_id"], name: "index_strongbolt_roles_user_groups_on_role_id"
+  add_index "strongbolt_roles_user_groups", ["user_group_id"], name: "index_strongbolt_roles_user_groups_on_user_group_id"
 
   create_table "strongbolt_user_groups", force: true do |t|
     t.string   "name"
@@ -57,10 +67,18 @@ ActiveRecord::Schema.define(version: 20150416230440) do
     t.integer "user_id"
   end
 
+  add_index "strongbolt_user_groups_users", ["user_group_id"], name: "index_strongbolt_user_groups_users_on_user_group_id"
+  add_index "strongbolt_user_groups_users", ["user_id"], name: "index_strongbolt_user_groups_users_on_user_id"
+
   create_table "strongbolt_users_tenants", force: true do |t|
     t.integer "user_id"
     t.integer "tenant_id"
-    t.string  "tenant_type"
+    t.string  "type"
   end
+
+  add_index "strongbolt_users_tenants", ["tenant_id", "type"], name: "index_strongbolt_users_tenants_on_tenant_id_and_type"
+  add_index "strongbolt_users_tenants", ["tenant_id"], name: "index_strongbolt_users_tenants_on_tenant_id"
+  add_index "strongbolt_users_tenants", ["type"], name: "index_strongbolt_users_tenants_on_type"
+  add_index "strongbolt_users_tenants", ["user_id"], name: "index_strongbolt_users_tenants_on_user_id"
 
 end
