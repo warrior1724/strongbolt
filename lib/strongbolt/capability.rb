@@ -1,5 +1,5 @@
 module Strongbolt
-  class Capability < ActiveRecord::Base
+  class Capability < Base
 
     Actions = %w{find create update destroy}
 

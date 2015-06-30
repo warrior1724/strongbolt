@@ -1,5 +1,5 @@
 module Strongbolt
-  class UserGroup < ActiveRecord::Base
+  class UserGroup < Base
 
     has_many :user_groups_users,
       :class_name => "Strongbolt::UserGroupsUser",

@@ -1,5 +1,5 @@
 module Strongbolt
-  class Role < ActiveRecord::Base
+  class Role < Base
 
     acts_as_nested_set
 

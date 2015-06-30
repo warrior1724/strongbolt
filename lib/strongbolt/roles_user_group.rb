@@ -1,5 +1,7 @@
 module Strongbolt
-  class RolesUserGroup < ActiveRecord::Base
+  class RolesUserGroup < Base
+    authorize_as "Strongbolt::UserGroup"
+
     belongs_to :user_group,
       :class_name => "Strongbolt::UserGroup",
       :inverse_of => :roles_user_groups

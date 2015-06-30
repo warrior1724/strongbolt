@@ -1,5 +1,7 @@
 module Strongbolt
-  class CapabilitiesRole < ActiveRecord::Base
+  class CapabilitiesRole < Base
+    authorize_as "Strongbolt::Role"
+
     belongs_to :role,
       :class_name => "Strongbolt::Role",
       :inverse_of => :capabilities_roles
