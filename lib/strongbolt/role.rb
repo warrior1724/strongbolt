@@ -5,14 +5,20 @@ module Strongbolt
 
     validates :name, presence: true
 
-    has_and_belongs_to_many :user_groups,
-      class_name: "Strongbolt::UserGroup"
+    has_many :roles_user_groups,
+      :class_name => "Strongbolt::RolesUserGroup",
+      :dependent => :restrict_with_exception,
+      :inverse_of => :role
+    has_many :user_groups, :through => :roles_user_groups
+    
     has_many :users, through: :user_groups
 
-    has_and_belongs_to_many :capabilities,
-      class_name: "Strongbolt::Capability"
+    has_many :capabilities_roles,
+      :class_name => "Strongbolt::CapabilitiesRole",
+      :dependent => :delete_all,
+      :inverse_of => :role
+    has_many :capabilities, :through => :capabilities_roles
 
-    before_destroy :should_not_have_user_groups
     before_destroy :should_not_have_children
 
     # We SHOULD NOT destroy descendants in our case
@@ -28,12 +34,6 @@ module Strongbolt
       end
 
     private
-
-    def should_not_have_user_groups
-      if user_groups.count > 0
-        raise ActiveRecord::DeleteRestrictionError.new :user_groups
-      end
-    end
 
     def should_not_have_children
       if children.count > 0

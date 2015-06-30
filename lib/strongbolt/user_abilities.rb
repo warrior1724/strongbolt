@@ -273,11 +273,9 @@ module Strongbolt
       receiver.send :include, InstanceMethods
 
       receiver.class_eval do
-        has_and_belongs_to_many :user_groups,
-          :foreign_key => :user_id,
-          :class_name => "Strongbolt::UserGroup",
-          :join_table => :strongbolt_user_groups_users
-          # :inverse_of => :users doesn't seem available before AR 4.1.5
+        has_many :user_groups_users, :class_name => "Strongbolt::UserGroupsUser", :dependent => :delete_all
+        has_many :user_groups, :through => :user_groups_users
+        
         has_many :roles, through: :user_groups
       end
 

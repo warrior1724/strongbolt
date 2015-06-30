@@ -8,15 +8,21 @@ module Strongbolt
 
     subject { role }
 
-    it { should be_valid }
+    it { is_expected.to be_valid }
 
-    it { should validate_presence_of :name }
+    it { is_expected.to validate_presence_of :name }
 
-    it { should have_and_belong_to_many :user_groups }
-    it { should have_many(:users).through :user_groups  }
-    it { should have_and_belong_to_many :capabilities }
+    it { is_expected.to have_many(:roles_user_groups).class_name("Strongbolt::RolesUserGroup")
+      .dependent :restrict_with_exception }
+    it { is_expected.to have_many(:user_groups).through :roles_user_groups }
 
-    it { should belong_to(:parent).class_name("Strongbolt::Role") }
+    it { is_expected.to have_many(:users).through :user_groups  }
+    
+    it { is_expected.to have_many(:capabilities_roles).class_name("Strongbolt::CapabilitiesRole")
+      .dependent :delete_all }
+    it { is_expected.to have_many(:capabilities).through :capabilities_roles }
+
+    it { is_expected.to belong_to(:parent).class_name("Strongbolt::Role") }
 
     describe "inherited capabilities" do
       
@@ -30,7 +36,11 @@ module Strongbolt
         child = Role.create! name: "Child", parent: role
 
         # Some capabilities
-        role.capabilities.create! model: "Model", action: "create"
+        begin
+          role.capabilities.create! model: "Model", action: "create"
+        rescue => e
+          puts e.record.capabilities_roles[0].errors.full_messages
+        end
         child.capabilities.create! model: "Model", action: "destroy"
         @inherited1 = father.capabilities.create! model: "Model", action: "update"
         @inherited2 = grandfather.capabilities.create! model: "Model", action: "find"

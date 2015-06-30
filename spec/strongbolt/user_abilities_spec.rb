@@ -54,9 +54,9 @@ describe Strongbolt::UserAbilities do
 
   subject { user }
 
-
-  # Doesn't work I don't know why
-  # it { is_expected.to have_and_belong_to_many :user_groups }
+  it { is_expected.to have_many(:user_groups_users).class_name("Strongbolt::UserGroupsUser")
+    .dependent :delete_all }
+  it { is_expected.to have_many(:user_groups).through :user_groups_users }
   it { is_expected.to have_many(:roles).through :user_groups }
   it { is_expected.to respond_to(:capabilities) }
   it { is_expected.to have_many(:tenant_models) }

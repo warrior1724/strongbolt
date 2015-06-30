@@ -11,7 +11,9 @@ module Strongbolt
     #
     # Associations
     #
-    it { is_expected.to have_and_belong_to_many(:roles).class_name "Strongbolt::Role" }
+    it { is_expected.to have_many(:capabilities_roles).class_name("Strongbolt::CapabilitiesRole")
+      .dependent :restrict_with_exception }
+    it { is_expected.to have_many(:roles).through :capabilities_roles }
     it { is_expected.to have_many(:users).through :roles }
 
 

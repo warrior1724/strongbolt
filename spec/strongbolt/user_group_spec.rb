@@ -12,8 +12,14 @@ module Strongbolt
 
     it { is_expected.to validate_presence_of :name }
 
-    it { is_expected.to have_and_belong_to_many(:users).class_name Strongbolt::Configuration.user_class }
-    it { is_expected.to have_and_belong_to_many(:roles).class_name "Strongbolt::Role" }
+    it { is_expected.to have_many(:user_groups_users).class_name("Strongbolt::UserGroupsUser")
+      .dependent :restrict_with_exception }
+    it { is_expected.to have_many(:users).through :user_groups_users }
+
+    it { is_expected.to have_many(:roles_user_groups).class_name("Strongbolt::RolesUserGroup")
+      .dependent :delete_all }
+    it { is_expected.to have_many(:roles).through :roles_user_groups }
+    
     it { is_expected.to have_many(:capabilities).through :roles }
 
     context "when there are users linked to it" do

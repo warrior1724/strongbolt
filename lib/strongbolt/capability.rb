@@ -8,15 +8,19 @@ module Strongbolt
       "Strongbolt::Capability",
       "Strongbolt::UsersTenant"]
 
-    has_and_belongs_to_many :roles, class_name: "Strongbolt::Role"
+    has_many :capabilities_roles,
+      :class_name => "Strongbolt::CapabilitiesRole",
+      :dependent => :restrict_with_exception,
+      :inverse_of => :capability
+    
+    has_many :roles, :through => :capabilities_roles
+
     has_many :users, through: :roles
 
     validates :model, :action, presence: true
     validates :action, inclusion: Actions,
       uniqueness: {scope: [:model, :require_ownership, :require_tenant_access]}
     validate :model_exists?
-
-    before_destroy :should_not_have_roles
 
     before_validation :set_default
     after_initialize :set_default
@@ -144,15 +148,6 @@ module Strongbolt
         rescue NameError => e
           errors.add :model, "#{model} is not a valid model"
         end
-      end
-    end
-
-    #
-    # Should not have roles
-    #
-    def should_not_have_roles
-      if roles.size > 0
-        raise ActiveRecord::DeleteRestrictionError.new :roles
       end
     end
 
