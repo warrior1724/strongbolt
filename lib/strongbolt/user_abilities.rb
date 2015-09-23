@@ -273,7 +273,10 @@ module Strongbolt
       receiver.send :include, InstanceMethods
 
       receiver.class_eval do
-        has_many :user_groups_users, :class_name => "Strongbolt::UserGroupsUser", :dependent => :delete_all
+        has_many :user_groups_users,
+          :class_name => "Strongbolt::UserGroupsUser",
+          :dependent => :delete_all,
+          :inverse_of => :user
         has_many :user_groups, :through => :user_groups_users
         
         has_many :roles, through: :user_groups

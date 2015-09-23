@@ -29,17 +29,17 @@ class CreateStrongboltTables < ActiveRecord::Migration
       t.timestamps
     end
 
-    create_table :strongbolt_user_groups_users, :id => false, :force => true do |t|
+    create_table :strongbolt_user_groups_users, :force => true do |t|
       t.integer :user_group_id
       t.integer :user_id
     end
 
-    create_table :strongbolt_roles_user_groups, :id => false, :force => true do |t|
+    create_table :strongbolt_roles_user_groups, :force => true do |t|
       t.integer :user_group_id
       t.integer :role_id
     end
 
-    create_table :strongbolt_capabilities_roles, :id => false, :force => true do |t|
+    create_table :strongbolt_capabilities_roles, :force => true do |t|
       t.integer  :role_id
       t.integer  :capability_id
     end
