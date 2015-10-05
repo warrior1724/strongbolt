@@ -89,7 +89,7 @@ module Strongbolt
     # If user is an instance of something and different from what we have
     if user.present?
       # Raise error if wrong user class
-      if user.class.name != Strongbolt::Configuration.user_class
+      unless valid_user? user
         raise Strongbolt::WrongUserClass
       end
 
@@ -101,6 +101,16 @@ module Strongbolt
 
     # Then we call the original grant method
     Grant::User.current_user = user unless Grant::User.current_user == user
+  end
+
+  #
+  # Ensures the user instance given is a valid user for that configuration
+  # It checks whether the class or the base_class (in case of STI) of the instance class
+  # has been configured as the user model
+  #
+  def self.valid_user? user
+    user.class.name == Strongbolt::Configuration.user_class ||
+      user.class.base_class.name == Strongbolt::Configuration.user_class
   end
 
   #

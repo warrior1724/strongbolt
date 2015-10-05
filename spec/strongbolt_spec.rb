@@ -214,6 +214,48 @@ describe Strongbolt do
 
       end # End when User class has Abilities
 
+      context "when the user model is the base class of a STI" do
+        before do
+          define_model "BaseUser" do
+            self.table_name = 'users'
+          end
+          define "UserWithSTI", BaseUser do
+          end
+          Strongbolt::Configuration.user_class = 'BaseUser'
+        end
+
+        let(:user) { UserWithSTI.new }
+
+        it "should allow setting as user a subclass" do
+          Strongbolt.current_user = user
+          expect(Strongbolt.current_user).to eq user
+        end
+      end #/ end when user model is the base class of a STI
+
+      context "when the user model is a subclass of a STI" do
+        before do
+          define_model "BaseUser" do
+            self.table_name = 'users'
+          end
+          define "UserWithSTI", BaseUser do
+          end
+          Strongbolt::Configuration.user_class = "UserWithSTI"
+        end
+
+        let(:user) { UserWithSTI.new }
+
+        it "should allow setting as user a subclass" do
+          Strongbolt.current_user = user
+          expect(Strongbolt.current_user).to eq user
+        end
+
+        it "should not allos the base class" do
+          expect do
+            Strongbolt.current_user = BaseUser.new
+          end.to raise_error Strongbolt::WrongUserClass
+        end
+      end #/ end when user model is the base class of a STI
+
     end # End when user given is the right class
 
     context "when the model isn't from the user class" do
