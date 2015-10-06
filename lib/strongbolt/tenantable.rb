@@ -210,7 +210,8 @@ module Strongbolt
           user_class.has_many :"users_#{plural_association_name}",
             :class_name => "Strongbolt::Users#{self.name}",
             :inverse_of => :user,
-            :dependent => :delete_all
+            :dependent => :delete_all,
+            :foreign_key => :user_id
 
           # This one may have been overriden by the developer
           unless user_class.respond_to? plural_association_name

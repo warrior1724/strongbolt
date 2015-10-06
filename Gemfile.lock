@@ -8,7 +8,7 @@ GIT
 PATH
   remote: .
   specs:
-    strongbolt (0.3.2)
+    strongbolt (0.3.4)
       awesome_nested_set (~> 3.0.0)
 
 GEM
