@@ -44,7 +44,7 @@ module Strongbolt
              (instance.is_a?(ActiveRecord::Base) || instance.is_a?(Class) || instance.is_a?(String)) && attrs.is_a?(Symbol)
         
           # Pre-populate all the capabilities into a results cache for quick lookup. Permissions for all "non-owned" objects are
-          # immediately available; additional lookups are required for owned objects (e.g. User, MediaMarket, etc.).
+          # immediately available; additional lookups are required for owned objects (e.g. User, CheckoutBag, etc.).
           # The results cache key is formatted as "action model attribute" (attribute can be any, all or an actual attribute)
           # -any, all, an ID, or "owned" (if the ID will be verified later) is appended to the key based on which instances
           # a user has access to
@@ -121,7 +121,7 @@ module Strongbolt
               @results_cache["#{k}any-#{user_id}"] = true
             else
             # On the other hand, it doesn't make sense to pre-populate the valid
-            # IDs for the thousands of MMs, CDs, and States when we probably are never
+            # IDs for the models with a lot of instances when we probably are never
             # going to need to know this. Instead, adding 'owned' is a hint to actually look
             # up later if we own a particular geography.
               @results_cache["#{k}#{attr_k}-owned"] = true
