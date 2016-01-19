@@ -109,7 +109,7 @@ describe PostsController, :type => :controller do
       let(:user) { User.new }
 
       before do
-        expect_any_instance_of(PostsController).to receive(:current_user).twice.and_return user
+        expect_any_instance_of(PostsController).to receive(:current_user).and_return user
         get :index
       end
     
@@ -135,7 +135,7 @@ describe PostsController, :type => :controller do
     context "when a user is set" do
 
       before do
-        expect_any_instance_of(PostsController).to receive(:current_user).twice
+        expect_any_instance_of(PostsController).to receive(:current_user)
           .and_return @user
         get :index
       end
