@@ -26,11 +26,8 @@ module Strongbolt
     #
     # Sets the logger used by Strongbolt
     #
+    mattr_accessor :logger
     @@logger = DefaultLogger.new
-    def self.logger= logger
-      @@logger = logger
-    end
-    def self.logger() @@logger; end
 
     #
     # Sets the tenants of the application
