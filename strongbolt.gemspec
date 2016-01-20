@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["thomas.cesareherriau@gmail.com", "chris@amg.tv"]
   spec.summary       = "RBAC Framework for model-level authorization"
   spec.description   = "Use model-level authorization with a very granular roles and permissions definition."
-  spec.homepage      = ""
+  spec.homepage      = "http://github.com/AnalyticsMediaGroup/strongbolt"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
