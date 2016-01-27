@@ -8,8 +8,7 @@ Only works with Rails 4.
 
 Add this line to your application's Gemfile:
 
-    gem 'grant', '>= 2.2', git: "git@github.com:AnalyticsMediaGroup/grant.git"
-    gem 'strongbolt', git: "git@github.com:AnalyticsMediaGroup/strongbolt.git"
+    gem 'strongbolt'
 
 And then execute:
 
