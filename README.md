@@ -72,7 +72,7 @@ skip_controller_authorization, except: [:update]
 You can also specify a list of controllers in the initializer `config/initializers/strongbolt.rb`. It is useful for third-party controllers, like devise for instance. The syntax is:
 
 ```ruby
-config.skip_controller_authorization_for "Devise::SessionsController", "Devise::RegistrationsController"
+config.skip_controller_authorization_for "Devise::Sessions", "Devise::Registrations"
 ```
 
 You can also skip ALL authorization checks (BAD IDEA) using:
@@ -122,9 +122,11 @@ Strongbolt comes with a table, `strongbolt_users_tenants`, that will store what 
 
 When a tenant is declared, it will add some features to the _User class_ that has been defined in the initializer.
 
-First, an association between the _User class_ and the _Tenant class_ will be created, named after the _Tenant class_ name. It is a `has_many :trough => :users_tenants_` association.
+First, an association between the _User class_ and the _Tenant class_ will be created, named after the _Tenant class_ name. It is a `has_many :trough => :users_tenants_` association. You can grant or revoke access to tenants just by interacting with that association.
 
 > For instance, a `Company` tenant will generate a `companies` association.
+
+> To grant access to `companyA` to the user `myUser`, you just add it to the association `myUser.companies << companyA`. To revoke access to all companies the user might have, you would use `myUser.companies.clear`.
 
 A convenient instance method will also be created on the _User class_ to directly access the list of _Tenant class_ a _User_ can access. It is name `accessible_{tenants}` where `{tenants}` is the pluralize version of the _Tenant class_ name.
 
@@ -148,7 +150,7 @@ Strongbolt will then create a `has_one` association on every tenanted model, so 
 
 Strongbolt's capabilites have a boolean attribute, `require_tenant_access`, that specify whether the user can access all _tenanted models_ or only the ones that belong to the _Tenants_ he has access to.
 
-> Let's look back at the example. Each companies has several _projects_. The normal user, belonging to a company, would only have access to his company's projects. You would then define for normal user a capability *requiring tenant access*
+> Let's look back at the example. Each company has several _projects_. The normal user, belonging to a company, would only have access to his companies projects. You would then define a capability *requiring tenant access* for the normal user.
 
 > An admin user, on the other hand, like an engineer of the application, could have access to all the companies' projects. An engineer's projects' permissions would then *not require tenant access*
 
