@@ -7,6 +7,6 @@
   <%= f.input :parent_id, collection: Role.where.not(id: @role.id).order('parent_id IS NOT NULL', :parent_id, :name) %>
   <%= f.input :description %>
 
-  <%= f.button :wrapped, class: 'btn-primary', value: 'Save' %>
+  <%= f.button :submit, class: 'btn-primary', value: 'Save' %>
 
 <% end %>

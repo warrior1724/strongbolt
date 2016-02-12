@@ -1,5 +1,6 @@
 require "active_record"
 require "awesome_nested_set"
+require "simple_form"
 
 require "grant/grantable"
 require "grant/status"
@@ -58,7 +59,7 @@ module Strongbolt
   def self.table_name_prefix
     'strongbolt_'
   end
-  
+
   # Delegates to the configuration the access denied
   def_delegators Configuration, :access_denied, :logger, :tenants, :user_class, :user_class_constant,
     :default_capabilities
@@ -198,7 +199,7 @@ end
 
 #
 # We add a method to any object to quickly tell which method
-# should not have any authorization check perform 
+# should not have any authorization check perform
 #
 class Object
   def self.perform_without_authorization *method_names

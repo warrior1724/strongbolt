@@ -13,7 +13,7 @@ module Strongbolt
       :create   => :create,
       :destroy  => :destroy
     }
-    
+
     module ClassMethods
       #
       # Allows defining a specific model for this controller,
@@ -26,7 +26,7 @@ module Strongbolt
         when nil then nil
         else
           raise ArgumentError, "Model for authorization must be a Class or the name of the Class"
-        end 
+        end
       end
 
       #
@@ -136,7 +136,7 @@ module Strongbolt
       end
 
     end
-    
+
     module InstanceMethods
 
       def can? *args
@@ -208,7 +208,7 @@ module Strongbolt
             # rescue Strongbolt::ModelNotFound
             #   Strongbolt.logger.warn "No class found or defined for controller #{controller_name}"
             #   return
-            # end 
+            # end
 
             # Unless it is authorized for this action
             unless Strongbolt.current_user.can? crud_operation_of(action_name), obj
@@ -256,9 +256,9 @@ module Strongbolt
         Strongbolt.without_authorization { yield }
         Strongbolt.logger.warn "Authorization were disabled!"
       end
-      
+
     end
-    
+
     def self.included(receiver)
       receiver.class_eval do
         # Compulsory filters
