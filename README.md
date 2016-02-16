@@ -2,6 +2,8 @@
 
 RBAC framework for model-level authorization gem with very granular control on permissions, using Capabilities, Roles and UserGroups.
 
+Checkout our [minimal example app](https://github.com/AnalyticsMediaGroup/strongbolt) to try it out without the need to set it up yourself.
+
 Only works with Rails 4.
 
 ## Installation
@@ -29,6 +31,8 @@ If you plan on using the built-in view to manage user groups, roles and permissi
     //= require strongbolt
 
 You will need to have jQuery or a similar library with Ajax to make it work
+
+There is a minimal example app using Strongbolt made available [here](https://github.com/AnalyticsMediaGroup/strongbolt). If you experience any issues setting Strongbolt up or configuring it, this example app is already setup for you and might be able to resolve some issues.
 
 ## Usage
 
