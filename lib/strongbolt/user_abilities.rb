@@ -1,9 +1,9 @@
 module Strongbolt
   module UserAbilities
     module ClassMethods
-      
+
     end
-    
+
     module InstanceMethods
       #----------------------------------------------------------#
       #                                                          #
@@ -33,16 +33,16 @@ module Strongbolt
       #
       def can? action, instance, attrs = :any, all_instance = false
         without_grant do
-      
+
           # Get the actual instance if we were given AR
           instance = instance.try(:first) if instance.is_a?(ActiveRecord::Relation)
           return false if instance.nil?
-          
+
           # We require this to be an *existing* user, that the action and attribute be symbols
           # and that the instance is a class or a String
-          raise ArgumentError, "Action must be a symbol and instance must be Class, String, Symbol or AR" unless self.id.present? && action.is_a?(Symbol) && 
+          raise ArgumentError, "Action must be a symbol and instance must be Class, String, Symbol or AR" unless self.id.present? && action.is_a?(Symbol) &&
              (instance.is_a?(ActiveRecord::Base) || instance.is_a?(Class) || instance.is_a?(String)) && attrs.is_a?(Symbol)
-        
+
           # Pre-populate all the capabilities into a results cache for quick lookup. Permissions for all "non-owned" objects are
           # immediately available; additional lookups are required for owned objects (e.g. User, CheckoutBag, etc.).
           # The results cache key is formatted as "action model attribute" (attribute can be any, all or an actual attribute)
@@ -61,11 +61,11 @@ module Strongbolt
                         # if we don't need it, so just defer until we determine there's an actual need
             model_name = instance
           end
-          
+
           # Look up the various possible valid entries in the cache that would allow us to see this
           return capability_in_cache?(action, instance, model_name, attrs, all_instance)
 
-        end #end w/o grant   
+        end #end w/o grant
       end
 
       #
@@ -93,14 +93,14 @@ module Strongbolt
       #
       def populate_capabilities_cache
         beginning = Time.now
-        
+
         @results_cache ||= {}
         @model_ancestor_cache ||= {}
 
         # User can find itself by default
         @results_cache["findUserany-any"] = true
         @results_cache["findUserany-#{id}"] = true
-        
+
         #
         # Store every capability fetched
         #
@@ -108,7 +108,7 @@ module Strongbolt
 
           k = "#{capability.action}#{capability.model}"
           attr_k = capability.attr || 'all'
-          
+
           @results_cache["#{k}#{attr_k}-any"] = true
           @results_cache["#{k}any-any"] = true
 
@@ -137,7 +137,7 @@ module Strongbolt
         end # End each capability
 
         Strongbolt.logger.info "Populated capabilities in #{(Time.now - beginning)*1000}ms"
-      
+
         @results_cache
       end # End Populate capabilities Cache
 
@@ -150,10 +150,10 @@ module Strongbolt
       #  Checks if the user can perform 'action' on 'instance'   #
       #                                                          #
       #----------------------------------------------------------#
-      
+
       def capability_in_cache?(action, instance, model_name, attrs = :any, all_instance = false)
         action_model = "#{action}#{model_name}"
-        
+
         Strongbolt.logger.warn "User has no results cache" if @results_cache.empty?
         Strongbolt.logger.debug { "Authorizing user to perform #{action} on #{instance.inspect}" }
 
@@ -162,13 +162,13 @@ module Strongbolt
           # First, check if we have a hash/cache hit for User being able to do this action to every instance of the model/class
           return true if @results_cache["#{action_model}all-all"]  #Access to all attributes on ENTIRE class?
           return true if @results_cache["#{action_model}#{attrs}-all"]  #Access to this specific attribute on ENTIRE class?
-          
+
           # If we're checking on a specific instance of the class, not the general model,
           # append the id to the key
           id = instance.try(:id)
           return true if @results_cache["#{action_model}all-#{id}"] # Access to all this instance's attributes?
           return true if @results_cache["#{action_model}#{attrs}-#{id}"] #Access to this instance's attribute?
-          
+
           # Checking ownership and tenant access
           # Block access for non tenanted instance
           valid_tenants = has_access_to_tenants?(instance)
@@ -209,14 +209,14 @@ module Strongbolt
           return true if @results_cache["#{action_model}#{attrs}-any"] && ! all_instance  #Access to this specific attribute on at least once instance?
         end
         #logger.info "Cache miss for checking access to #{key}"
-        
+
         return false
       end
 
       #
       # Checks if the instance given fulfills tenant management rules
       #
-      def has_access_to_tenants? instance, tenants = nil        
+      def has_access_to_tenants? instance, tenants = nil
         # If no tenants list given, we take all
         tenants ||= Strongbolt.tenants
         # Populate the cache if needed
@@ -256,7 +256,7 @@ module Strongbolt
         return if @tenants_cache.present?
 
         Strongbolt.logger.debug "Populating tenants cache for user #{self.id}"
-        
+
         @tenants_cache = {}
         # Go over each tenants
         Strongbolt.tenants.each do |tenant|
@@ -267,7 +267,7 @@ module Strongbolt
 
 
     end # End InstanceMethods
-    
+
     def self.included(receiver)
       receiver.extend         ClassMethods
       receiver.send :include, InstanceMethods
@@ -279,7 +279,7 @@ module Strongbolt
           :inverse_of => :user,
           :foreign_key => :user_id
         has_many :user_groups, :through => :user_groups_users
-        
+
         has_many :roles, through: :user_groups
       end
 

@@ -91,30 +91,30 @@ module Strongbolt
           else
             raise DirectAssociationNotConfigured, "Class #{klass.name} is 1 degree from #{self.name} but the association isn't configured, you should implement it before using tenant method"
           end
-        
+
         # The coming class has a relationship to the tenant
         else
           # If already created, we don't need to go further
           return singular_association_name if klass.new.respond_to?(singular_association_name)
           return plural_association_name if klass.new.respond_to?(plural_association_name)
-          
+
           # Inverse association
           inverse = inverse_of(association)
-          
+
           # If no inverse, we cannot go further
           if inverse.nil?
             raise InverseAssociationNotConfigured, "Assocation #{association.name} on #{association.klass.name} could not be configured correctly as no inverse has been found"
           elsif inverse.options.has_key? :polymorphic
             return nil
           end
-            
+
 
           # Common options
           options = {
             through: inverse.name,
             autosave: false
           }
-          
+
           # If the target is linked through some sort of has_many
           if link == plural_association_name || inverse.collection?
             # Has many
@@ -123,7 +123,7 @@ module Strongbolt
             # Setup the scope with_name_of_plural_associations
             # Current tenant table name
             klass.has_many assoc, options
-            
+
             Strongbolt.logger.debug "#{klass.name} has_many #{plural_association_name} through: #{options[:through]}\n\n"
 
           # Otherwise, it's linked through a has one
@@ -133,7 +133,7 @@ module Strongbolt
             # Setup the association
             # Setup the scope with_name_of_plural_associations
             klass.has_one assoc, options
-            
+
             Strongbolt.logger.debug "#{klass.name} has_one #{singular_association_name} through: #{options[:through]}\n\n"
           end
         end
@@ -177,7 +177,7 @@ module Strongbolt
       #
       #
       def create_users_tenant_subclass
-        unless Strongbolt.const_defined?("Users#{self.name}")
+        unless Strongbolt.const_defined?(users_tenants_subclass_name)
           users_tenant_subclass = Class.new(Strongbolt::UsersTenant)
           users_tenant_subclass.class_eval <<-RUBY
             # Ensures permissions on UsersTenant are applied here
@@ -194,7 +194,7 @@ module Strongbolt
 
             validates :#{singular_association_name}, :presence => true
           RUBY
-          Strongbolt.const_set "Users#{self.name}", users_tenant_subclass
+          Strongbolt.const_set users_tenants_subclass_name, users_tenant_subclass
         end
       end #/create_users_tenant_subclass
 
@@ -208,7 +208,7 @@ module Strongbolt
           # Setup the association
           # The first one should never be there before
           user_class.has_many :"users_#{plural_association_name}",
-            :class_name => "Strongbolt::Users#{self.name}",
+            :class_name => "Strongbolt::#{users_tenants_subclass_name}",
             :inverse_of => :user,
             :dependent => :delete_all,
             :foreign_key => :user_id
@@ -240,6 +240,18 @@ module Strongbolt
           Strongbolt.logger.error "User #{Configuration.user_class} could not have his association to tenant #{name} created"
         end
       end #/setup_association_on_user
+
+      #
+      # returns the name of the subclass of Strongbolt::UsersTenant, containing
+      # the associations between users and the tenant model this is running in.
+      #
+      def users_tenants_subclass_name
+        # If the name is something like Strongbolt::UserGroup, we have to remove the double colons.
+        # This results to 'StrongboltUserGroup'.
+        # The module name is left in the name, so that we won't have any collisions
+        # with the same class names in different modules.
+        "Users#{self.name.gsub('::', '')}"
+      end #/users_tenants_subclass_name
 
       #
       # Returns the inverse of specified association, using what's given
@@ -292,10 +304,10 @@ module Strongbolt
       end
 
     end
-    
+
     module InstanceMethods
     end
-    
+
     def self.included(receiver)
       receiver.extend         ClassMethods
       receiver.send :include, InstanceMethods

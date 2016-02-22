@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    strongbolt (0.3.6)
+    strongbolt (0.3.7)
       awesome_nested_set (~> 3.0.0)
       grant (~> 3.0)
       simple_form (~> 3.0)
