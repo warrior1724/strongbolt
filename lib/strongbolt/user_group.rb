@@ -6,7 +6,7 @@ module Strongbolt
       :dependent => :restrict_with_exception,
       :inverse_of => :user_group
     has_many :users, :through => :user_groups_users
-    
+
     has_many :roles_user_groups,
       :class_name => "Strongbolt::RolesUserGroup",
       :dependent => :delete_all,

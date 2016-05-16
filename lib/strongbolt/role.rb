@@ -10,7 +10,7 @@ module Strongbolt
       :dependent => :restrict_with_exception,
       :inverse_of => :role
     has_many :user_groups, :through => :roles_user_groups
-    
+
     has_many :users, through: :user_groups
 
     has_many :capabilities_roles,
@@ -31,7 +31,7 @@ module Strongbolt
       Strongbolt::Capability.joins(:roles)
         .where("strongbolt_roles.lft < :lft AND strongbolt_roles.rgt > :rgt", lft: lft, rgt: rgt)
         .distinct
-      end
+    end
 
     private
 

@@ -12,7 +12,7 @@ module Strongbolt
       :class_name => "Strongbolt::CapabilitiesRole",
       :dependent => :restrict_with_exception,
       :inverse_of => :capability
-    
+
     has_many :roles, :through => :capabilities_roles
 
     has_many :users, through: :roles
@@ -57,7 +57,7 @@ module Strongbolt
           ! (table.last[:model] == capability.model &&
             table.last[:require_ownership] == capability.require_ownership &&
             table.last[:require_tenant_access] == capability.require_tenant_access)
-          
+
           table << {
             model: capability.model,
             require_ownership: capability.require_ownership,
@@ -87,7 +87,7 @@ module Strongbolt
           require_ownership: capability.require_ownership,
           require_tenant_access: capability.require_tenant_access
         }
-        
+
         hash[key] ||= {
           find: false,
           create: false,

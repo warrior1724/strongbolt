@@ -11,7 +11,7 @@ module Strongbolt
         app.config.assets.paths << root.join('app', 'assets', sub).to_s
       end
     end
-    
+
     initializer "strongbolt.helpers" do
       ActionView::Base.send :include, Strongbolt::Helpers
     end

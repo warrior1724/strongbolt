@@ -73,7 +73,7 @@ module Strongbolt
       end
 
     end
-    
+
     module InstanceMethods
       #
       # Asks permission to performa an operation on the current instance
@@ -91,7 +91,7 @@ module Strongbolt
         send self.class.owner_attribute
       end
     end
-    
+
     def self.included(receiver)
       receiver.extend         ClassMethods
       receiver.send :include, InstanceMethods
@@ -115,7 +115,7 @@ module Strongbolt
           unless granted
             Strongbolt.access_denied user, instance, action, $request.try(:fullpath)
           end
-          
+
           granted
         end # End Grant
 
