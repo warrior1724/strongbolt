@@ -42,5 +42,3 @@ module Strongbolt
     end
   end
 end
-
-Role = Strongbolt::Role unless defined? Role

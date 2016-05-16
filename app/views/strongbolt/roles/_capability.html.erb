@@ -2,8 +2,8 @@
       data-model="<%= key[:model] %>"
       data-require-ownership=<%= key[:require_ownership] %>
       data-require-tenant-access=<%= key[:require_tenant_access] %>>
-  
-  <% Capability::Actions.each do |action| %>
+
+  <% Strongbolt::Capability::Actions.each do |action| %>
     <% if inherited_capability[action.to_sym] %>
       <button type="button" disabled class="btn btn-xs btn-success" title="Inherited">
         <%= action.capitalize %>

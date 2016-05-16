@@ -4,7 +4,7 @@
   method: params[:action].to_sym == :new ? :post : :put) do |f| %>
 
   <%= f.input :name %>
-  <%= f.input :parent_id, collection: Role.where.not(id: @role.id).order('parent_id IS NOT NULL', :parent_id, :name) %>
+  <%= f.input :parent_id, collection: Strongbolt::Role.where.not(id: @role.id).order('parent_id IS NOT NULL', :parent_id, :name) %>
   <%= f.input :description %>
 
   <%= f.button :submit, class: 'btn-primary', value: 'Save' %>

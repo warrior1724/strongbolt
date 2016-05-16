@@ -20,5 +20,3 @@ module Strongbolt
 
   end
 end
-
-UserGroup = Strongbolt::UserGroup unless defined? UserGroup

@@ -8,5 +8,3 @@ module Strongbolt
     validates :user, presence: true
   end
 end
-
-UsersTenant = Strongbolt::UsersTenant unless defined? UsersTenant

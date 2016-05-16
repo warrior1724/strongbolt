@@ -1,4 +1,4 @@
-<%= simple_form_for(Capability.new, url: role_capabilities_path(@role), as: :capability) do |f| %>
+<%= simple_form_for(Strongbolt::Capability.new, url: role_capabilities_path(@role), as: :capability) do |f| %>
   <table class="table table-striped table-condensed" id="role-capabilities" data-url="<%= role_capabilities_path(@role) %>">
 
     <thead>
@@ -12,7 +12,7 @@
 
     <tbody>
       <% @keys.each do |key| %>
-          
+
         <tr>
           <td><%= key[:model] %></td>
           <td>
@@ -32,7 +32,7 @@
 
       <tfoot>
         <tr>
-          <td><%= f.input_field :model, collection: Capability.models, include_blank: false %></td>
+          <td><%= f.input_field :model, collection: Strongbolt::Capability.models, include_blank: false %></td>
           <td><%= f.input_field :require_ownership, as: :select, include_blank: false %></td>
           <td><%= f.input_field :require_tenant_access, as: :select, include_blank: false %></td>
           <td colspan="4">

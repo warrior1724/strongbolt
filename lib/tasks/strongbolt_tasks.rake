@@ -7,19 +7,19 @@ namespace :strongbolt do
       #
       # Creates capabilities for all models/actions
       #
-      Capability.models.each do |model|
-        Capability::Actions.each do |action|
-          Capability.where(model: model, action: action,
+      Strongbolt::Capability.models.each do |model|
+        Strongbolt::Capability::Actions.each do |action|
+          Strongbolt::Capability.where(model: model, action: action,
             require_tenant_access: false).first_or_create
         end
       end
 
       # The role
-      role = Role.create! name: "FULL ACCESS (TEMPORARY)"
-      role.capabilities = Capability.all
+      role = Strongbolt::Role.create! name: "FULL ACCESS (TEMPORARY)"
+      role.capabilities = Strongbolt::Capability.all
 
       # The user group
-      ug = UserGroup.create! name: "FULL ACCESS USERS (TEMPORARY)"
+      ug = Strongbolt::UserGroup.create! name: "FULL ACCESS USERS (TEMPORARY)"
       ug.roles << role
 
       # Assign to all users

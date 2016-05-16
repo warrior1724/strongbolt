@@ -1,13 +1,13 @@
 require "spec_helper"
 
 describe Strongbolt::Configuration do
-  
+
 
   #
   # User class
   #
   describe "user class" do
-    
+
     it "should default to User" do
       expect(Strongbolt::Configuration.user_class).to eq "User"
     end
@@ -29,7 +29,7 @@ describe Strongbolt::Configuration do
   # Setting up tenants
   #
   describe 'tenants=' do
-    
+
     before do
       define_model "Model" do
         self.table_name = "models"
@@ -59,11 +59,11 @@ describe Strongbolt::Configuration do
       Strongbolt::Configuration.models = "OtherModel", "Model"
     end
     after do
-      Capability.models = nil
+      Strongbolt::Capability.models = nil
     end
 
     it "should set Capability::Models" do
-      expect(Capability.models).to eq ["Model", "OtherModel", "Strongbolt::Capability", "Strongbolt::Role", "Strongbolt::UserGroup", "Strongbolt::UsersTenant"]
+      expect(Strongbolt::Capability.models).to eq ["Model", "OtherModel", "Strongbolt::Capability", "Strongbolt::Role", "Strongbolt::UserGroup", "Strongbolt::UsersTenant"]
     end
 
     context "when adding other models" do
@@ -72,7 +72,7 @@ describe Strongbolt::Configuration do
       end
 
       it "should merge with current models" do
-        expect(Capability.models).to eq ["LastModel", "Model", "OtherModel", "Strongbolt::Capability", "Strongbolt::Role", "Strongbolt::UserGroup", "Strongbolt::UsersTenant"]
+        expect(Strongbolt::Capability.models).to eq ["LastModel", "Model", "OtherModel", "Strongbolt::Capability", "Strongbolt::Role", "Strongbolt::UserGroup", "Strongbolt::UsersTenant"]
       end
     end
 
@@ -82,7 +82,7 @@ describe Strongbolt::Configuration do
       end
 
       it "should merge with current models" do
-        expect(Capability.models).to eq ["BottomModel", "Model", "OtherModel", "Strongbolt::Capability", "Strongbolt::Role", "Strongbolt::UserGroup", "Strongbolt::UsersTenant"]
+        expect(Strongbolt::Capability.models).to eq ["BottomModel", "Model", "OtherModel", "Strongbolt::Capability", "Strongbolt::Role", "Strongbolt::UserGroup", "Strongbolt::UsersTenant"]
       end
     end
   end #/models=
@@ -93,7 +93,7 @@ describe Strongbolt::Configuration do
   # Setting default permissions
   #
   describe "default_capabilities=" do
-    
+
     before do
       Strongbolt::Configuration.default_capabilities = [
         {:model => "User", :actions => :all},
@@ -110,7 +110,7 @@ describe Strongbolt::Configuration do
 
     it "should return Capability" do
       Strongbolt::Configuration.default_capabilities.each do |c|
-        expect(c).to be_a Capability
+        expect(c).to be_a Strongbolt::Capability
       end
     end
 

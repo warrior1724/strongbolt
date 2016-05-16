@@ -161,5 +161,3 @@ module Strongbolt
     end
   end
 end
-
-Capability = Strongbolt::Capability unless defined? Capability

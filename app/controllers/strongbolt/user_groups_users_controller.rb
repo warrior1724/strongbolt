@@ -1,12 +1,12 @@
 module Strongbolt
   class UserGroupsUsersController < ::StrongboltController
 
-    self.model_for_authorization = "UserGroup"
+    self.model_for_authorization = "Strongbolt::UserGroup"
 
     def create
       @user_group = UserGroup.find(params[:user_group_id])
       @user = Strongbolt.user_class_constant.find(params[:id])
-      
+
       @user_group.users << @user unless @user_group.users.include?(@user)
 
       redirect_to request.referrer || user_group_path(@user_group)
@@ -15,7 +15,7 @@ module Strongbolt
     def destroy
       @user_group = UserGroup.find(params[:user_group_id])
       @user = Strongbolt.user_class_constant.find(params[:id])
-      
+
       @user_group.users.delete @user
 
       redirect_to request.referrer || user_group_path(@user_group)
