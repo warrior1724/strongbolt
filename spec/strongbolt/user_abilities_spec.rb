@@ -76,7 +76,7 @@ describe Strongbolt::UserAbilities do
     @other_tenant_model = TenantModel.create!
     # Add to the user
     user.add_tenant @tenant_model
-    
+
     # Another user
     @other_user = User.create!
     # A owned model, owned
@@ -123,7 +123,7 @@ describe Strongbolt::UserAbilities do
     # But can create setting only the attribute name
     @role.capabilities.create! model: "UnownedModel", action: "create", attr: "name",
       :require_tenant_access => false
-    
+
     # Admin can do whatever
     @other_role.capabilities.create! model: "UnownedModel", action: "create"
   end
@@ -135,7 +135,7 @@ describe Strongbolt::UserAbilities do
   # Adding a tenant to the user
   #
   describe "add_tenant" do
-    
+
     context 'when instance is from a tenant' do
       let(:model) { TenantModel.create! }
 
@@ -172,38 +172,38 @@ describe Strongbolt::UserAbilities do
     before { create_fixtures }
 
     context "when same tenant" do
-      
+
       it "should be true when model is tenant" do
-        expect(user.has_access_to_tenants? @tenant_model).to eq true
+        expect(user.send :has_access_to_tenants?, @tenant_model).to eq true
       end
 
       it "should be true when model is first child" do
-        expect(user.has_access_to_tenants? @unowned_model).to eq true
+        expect(user.send :has_access_to_tenants?, @unowned_model).to eq true
       end
 
       it "should be true when grand child" do
-        expect(user.has_access_to_tenants? @child_model).to eq true
+        expect(user.send :has_access_to_tenants?, @child_model).to eq true
       end
 
       it "should be true for a user defined association" do
-        expect(user.has_access_to_tenants? @linked_to_tenant).to eq true
+        expect(user.send :has_access_to_tenants?, @linked_to_tenant).to eq true
       end
 
     end
 
     context "when different tenant" do
       it "should be false when model is tenant" do
-        expect(user.has_access_to_tenants? @other_tenant_model).to eq false
+        expect(user.send :has_access_to_tenants?, @other_tenant_model).to eq false
       end
 
       it "should be false when model is first child" do
-        expect(user.has_access_to_tenants? @unmanaged_model).to eq false
+        expect(user.send :has_access_to_tenants?, @unmanaged_model).to eq false
       end
     end
 
     context "when model doesn't have link to tenant" do
       it "should return true" do
-        expect(user.has_access_to_tenants? @model).to eq true
+        expect(user.send :has_access_to_tenants?, @model).to eq true
       end
     end
   end
@@ -214,7 +214,7 @@ describe Strongbolt::UserAbilities do
   # All Capabilities
   #
   describe 'capabilities' do
-    
+
     before { create_fixtures }
 
     let(:capabilities) { user.capabilities }
@@ -233,11 +233,11 @@ describe Strongbolt::UserAbilities do
   #
 
   describe "can?" do
-    
+
     before { create_fixtures }
 
     describe "creating an owned model" do
-      
+
       context "when authorized" do
         let(:tenant_model) { TenantModel.create! }
 
@@ -284,7 +284,7 @@ describe Strongbolt::UserAbilities do
             ]
           end
         end
-        after do 
+        after do
           Strongbolt.setup do |config|
             config.default_capabilities = []
           end
@@ -320,7 +320,7 @@ describe Strongbolt::UserAbilities do
     end # Updating an owned model
 
     describe "creating a model with attribute restriction" do
-      
+
       context "when requiring all attributes" do
         it "should return false" do
           expect(user.can? :create, UnownedModel, :all).to eq false
@@ -392,13 +392,13 @@ describe Strongbolt::UserAbilities do
   #
 
   describe "Populate Capabilities Cache" do
-    
+
     #
     # We create some fixtures for the population of cache to be tested
     #
     before { create_fixtures }
 
-    let(:cache) { user.populate_capabilities_cache }
+    let(:cache) { user.send(:populate_capabilities_cache) }
 
     subject { cache }
 
@@ -430,14 +430,14 @@ describe Strongbolt::UserAbilities do
   # OWNS?
   #
   describe "owns?" do
-    
+
     #
     # Another user
     #
     context "when testing against a user" do
 
       context 'when other user' do
-      
+
         let(:other_user) { User.create! }
 
         it "should not own it" do
@@ -459,7 +459,7 @@ describe Strongbolt::UserAbilities do
     # Another object
     #
     context "when testing against another model having user_id" do
-      
+
       context "when owning it" do
         let(:model) { Model.create! user_id: user.id }
 
@@ -467,7 +467,7 @@ describe Strongbolt::UserAbilities do
           expect(user.owns? model).to eq true
         end
       end
-      
+
       context "when not owning it" do
         let(:model) { Model.create! user_id: 0 }
 
@@ -485,7 +485,7 @@ describe Strongbolt::UserAbilities do
   # Another object unowned
   #
   context "when testing against a model not having user id" do
-    
+
     let(:model) { UnownedModel.create! }
 
     it "should not own it" do

@@ -112,6 +112,81 @@ To achieve this, use the following within your model:
 authorize_as "Movie"
 ```
 
+All ActiveRecord models will get the following methods added by Strongbolt.
+
+##### ::bolted?
+
+Returns true if authorization checks are enabled.
+
+##### ::unbolted?
+
+Returns true if authorization checks are disabled.
+
+##### ::owned?
+
+Returns true when the model is owned by user (has a belongs_to association with the user class). Example: `Client.owned?`
+
+##### ::owner_attribute
+
+The attribute of the model which is used to determine the owner. Example: `Client.owner_attribute` would return `:user_id`, `User.owner_attribute` would `:id`.
+
+##### ::tenant?
+
+Returns true when the model is a tenant (see below for a description of tenants).
+
+##### ::authorize_as
+
+See above. Allows a different model to be used for authorization checks instead.
+
+##### ::name_for_authorization
+
+See above. Returns the name of the model to be used for authorization checks.
+
+### Users
+
+Your user class (configured in the initializer via `config.user_class`) will have the following methods added by Strongbolt.
+
+##### #capabilities
+
+Returns all capabilities assigned to the user, including inherited ones. The return type is an array of `Strongbolt::Capability` instances. Example: `user.capabilities`
+
+##### #add_tenant(tenant_instance)
+
+Give the user access to the given tenant (see below for a description of tenants). Example: `user.add_tenant Client.find_by(name: 'AMG')`
+
+##### #owns?(instance)
+
+Checks whether the user own the given instance and returns a boolean. `instance` can be any instance of an ActiveRecord model. If the model has an attribute `user_id` it is compared to the user's ID to decide if he owns it. A user owns his own user instance. Example: `user.owns? Client.find_by(name: 'AMG')`, `user.owns? user`
+
+##### #can?(action, instance, attrs = :any, all_instance = false)
+
+Return true/false and determines whether the user is authorized to perform `action` on `instance`. `action` has to be a symbol (`:find, :create, :update, :destroy`). `instance` has to be a class or instance of an ActiveRecord model. `attrs` has to be `:any` always for now (it could be used for attribute level authorization, but that's not supported yet). `all_instance` can be set to true when `instance` is a call, to check whether the user can perform `action` on all instances of that class.
+Examples:
+- `user.can?(:find, Client.find_by(name: 'AMG'))`
+- `user.can?(:create, Plan)`
+- `user.can?(:update, Client, :any, true)`
+
+##### #cannot?(...)
+
+Inverse of `user.can?(...)`
+
+##### #user_groups
+
+ActiveRecord has_may Association with `Strongbolt::UserGroup`
+
+##### #roles
+
+ActiveRecord has_may Association with `Strongbolt::Role` through `Strongbolt::UserGroup`
+
+##### #{tenants}
+
+ActiveRecord has_may Association with the tenant model. The name is the pluralized version of the tenant model name. Example: `User.clients`
+
+##### #accessible_{tenants}
+
+Method returning all tenants of the type the user has access to. Example: `User.accessible_clients`
+
+
 ### Tenants
 
 Strongbolt allows the utilization of _tenants_. Tenants are vertical scopes within your application.

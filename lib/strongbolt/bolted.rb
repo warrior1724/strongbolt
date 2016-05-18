@@ -17,7 +17,7 @@ module Strongbolt
 
       #
       # Not secure if Grant is disabled, there's no current user
-      # or if we're using Rails console 
+      # or if we're using Rails console
       #
       def unbolted?
         Grant::Status.grant_disabled? || (defined?(Rails) && defined?(Rails.console)) ||
@@ -29,20 +29,7 @@ module Strongbolt
       # relationship with the user class
       #
       def owned?
-        @owned ||= name == Configuration.user_class || owner_association.present?
-      end
-
-      #
-      # Returns the association to the user, if present
-      #
-      def owner_association
-        @owner_association ||= reflect_on_all_associations(:belongs_to).select do |assoc|
-          unless assoc.options.has_key? :polymorphic
-            assoc.klass.name == Configuration.user_class
-          else
-            false
-          end
-        end.try(:first)
+        @owned ||= self <= Configuration.user_class.constantize || owner_association.present?
       end
 
       #
@@ -51,11 +38,18 @@ module Strongbolt
       def owner_attribute
         return unless owned?
 
-        @owner_attribute ||= if name == Configuration.user_class
+        @owner_attribute ||= if self <= Configuration.user_class.constantize
           :id
         else
           owner_association.foreign_key.to_sym
         end
+      end
+
+      #
+      # Authorize as another model
+      #
+      def authorize_as model_name
+        @name_for_authorization = model_name
       end
 
       #
@@ -65,11 +59,19 @@ module Strongbolt
         @name_for_authorization ||= self.name
       end
 
+      private
+
       #
-      # Authorize as another model
+      # Returns the association to the user, if present
       #
-      def authorize_as model_name
-        @name_for_authorization = model_name
+      def owner_association
+        @owner_association ||= reflect_on_all_associations(:belongs_to).select do |assoc|
+          unless assoc.options.has_key? :polymorphic
+            assoc.klass <= Configuration.user_class.constantize
+          else
+            false
+          end
+        end.try(:first)
       end
 
     end

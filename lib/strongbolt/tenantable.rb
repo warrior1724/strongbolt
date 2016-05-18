@@ -4,6 +4,8 @@ module Strongbolt
 
       def tenant?() (@tenant.present? && @tenant) || Strongbolt.tenants.include?(name); end
 
+      private
+
       #
       # Returns associations potential name
       #
@@ -13,8 +15,6 @@ module Strongbolt
       def plural_association_name
         @plural_association_name ||= self.name.demodulize.underscore.pluralize.to_sym
       end
-
-      private
 
       #
       # Specifies that the class can be tenanted

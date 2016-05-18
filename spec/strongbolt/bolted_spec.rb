@@ -3,7 +3,7 @@ require "spec_helper"
 module Strongbolt
 
   describe Bolted do
-    
+
     #
     # Bolted?
     #
@@ -67,7 +67,7 @@ module Strongbolt
         expect(User.owner_attribute).to eq :id
       end
     end
-    
+
     context 'when model is ownable' do
 
       before do
@@ -91,11 +91,11 @@ module Strongbolt
       it "should have the right owner attribute" do
         expect(OwnedModel.owner_attribute).to eq :user_id
       end
-    
+
     end
-    
+
     context 'when model isnt ownable' do
-      
+
       it "should be true" do
         expect(UnownedModel).not_to be_owned
       end
@@ -105,7 +105,7 @@ module Strongbolt
           UnownedModel.new.strongbolt_owner_id
         end.to raise_error ModelNotOwned
       end
-    
+
     end
 
   end
@@ -115,7 +115,7 @@ module Strongbolt
   #
   describe 'name_for_authorization' do
     it "should default to model name" do
-      expect(Model.name_for_authorization).to eq "Model"
+      expect(Model.send(:name_for_authorization)).to eq "Model"
     end
   end
 
@@ -123,12 +123,12 @@ module Strongbolt
   # Authorize as
   #
   describe 'authorize_as' do
-    
+
     before { Model.authorize_as "ParentModel" }
     after { Model.authorize_as nil }
 
     it "should have changed name for authorization" do
-      expect(Model.name_for_authorization).to eq "ParentModel"
+      expect(Model.send(:name_for_authorization)).to eq "ParentModel"
     end
 
   end

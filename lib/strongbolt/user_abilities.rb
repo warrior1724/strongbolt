@@ -52,10 +52,10 @@ module Strongbolt
           # Determine the model name and the actual model (if we need to traverse the hierarchy)
           if instance.is_a?(ActiveRecord::Base)
             model = instance.class
-            model_name = model.name_for_authorization
+            model_name = model.send(:name_for_authorization)
           elsif instance.is_a?(Class)
             model = instance
-            model_name = model.name_for_authorization
+            model_name = model.send(:name_for_authorization)
           else
             model = nil # We could do model_name.constantize, but there's a big cost to doing this
                         # if we don't need it, so just defer until we determine there's an actual need
@@ -87,6 +87,7 @@ module Strongbolt
       end
 
 
+      private
 
       #
       # Populate the capabilities cache
@@ -140,7 +141,6 @@ module Strongbolt
 
         @results_cache
       end # End Populate capabilities Cache
-
 
 
 
@@ -228,14 +228,14 @@ module Strongbolt
           begin
             if instance.class == tenant
               tenant_ids = [instance.id]
-            elsif instance.respond_to?(tenant.singular_association_name)
-              if instance.send(tenant.singular_association_name).present?
-                tenant_ids = [instance.send(tenant.singular_association_name).id]
+            elsif instance.respond_to?(tenant.send(:singular_association_name))
+              if instance.send(tenant.send(:singular_association_name)).present?
+                tenant_ids = [instance.send(tenant.send(:singular_association_name)).id]
               else
                 tenant_ids = []
               end
-            elsif instance.respond_to?(tenant.plural_association_name)
-              tenant_ids = instance.send("#{tenant.singular_association_name}_ids")
+            elsif instance.respond_to?(tenant.send(:plural_association_name))
+              tenant_ids = instance.send("#{tenant.send(:singular_association_name)}_ids")
             else
               next result
             end
@@ -260,7 +260,7 @@ module Strongbolt
         @tenants_cache = {}
         # Go over each tenants
         Strongbolt.tenants.each do |tenant|
-          @tenants_cache[tenant.name] = send("accessible_#{tenant.plural_association_name}").pluck(:id)
+          @tenants_cache[tenant.name] = send("accessible_#{tenant.send(:plural_association_name)}").pluck(:id)
           Strongbolt.logger.debug "#{@tenants_cache[tenant.name].size} #{tenant.name}"
         end
       end

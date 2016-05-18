@@ -105,16 +105,6 @@ module Strongbolt
   end
 
   #
-  # Ensures the user instance given is a valid user for that configuration
-  # It checks whether the class or the base_class (in case of STI) of the instance class
-  # has been configured as the user model
-  #
-  def self.valid_user? user
-    user.class.name == Strongbolt::Configuration.user_class ||
-      user.class.base_class.name == Strongbolt::Configuration.user_class
-  end
-
-  #
   # Setting up Strongbolt
   #
   def self.setup &block
@@ -180,6 +170,17 @@ Error message:
     ! enabled?
   end
 
+  #
+  # Ensures the user instance given is a valid user for that configuration
+  # It checks whether the class or the base_class (in case of STI) of the instance class
+  # has been configured as the user model
+  #
+  def self.valid_user? user
+    user.class.name == Strongbolt::Configuration.user_class ||
+      user.class.base_class.name == Strongbolt::Configuration.user_class
+  end
+  private_class_method :valid_user?
+
   # Include helpers in the given scope to AC and AV.
   def self.include_helpers(scope)
     ActiveSupport.on_load(:action_controller) do
@@ -191,10 +192,11 @@ Error message:
     end
   end
 
-  # Not to use directly
+  # Not to use directly, only used in tests
   def self.tenants= tenants
     @@tenants = tenants
   end
+  private_class_method :tenants=
 end
 
 #

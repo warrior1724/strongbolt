@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Strongbolt::Tenantable do
-  
+
   it "should have been included in ActiveRecord::Base" do
     expect(ActiveRecord::Base.included_modules).to include Strongbolt::Tenantable
   end
@@ -109,7 +109,7 @@ describe Strongbolt::Tenantable do
           self.table_name = "child_models"
 
           belongs_to :other_child_model, foreign_key: :model_id
-        end 
+        end
 
         #
         # Cousin of second degree child
@@ -119,7 +119,7 @@ describe Strongbolt::Tenantable do
 
           belongs_to :model, polymorphic: true
           has_one :unowned_model, foreign_key: :model_id
-        end 
+        end
 
         #
         # Top level model, parent of Tenant Model
@@ -202,9 +202,9 @@ describe Strongbolt::Tenantable do
     #
     # When an association lacks an inverse (none configured and none found)
     #
-      
+
     context "when an association lacks an inverse" do
-    
+
       before(:all) do
         #
         # Tenant Model
@@ -242,9 +242,9 @@ describe Strongbolt::Tenantable do
     #
     # When a direct association lacks a reference to the tenant
     #
-      
+
     context "when an association lacks an inverse" do
-    
+
       before(:all) do
         #
         # Tenant Model
