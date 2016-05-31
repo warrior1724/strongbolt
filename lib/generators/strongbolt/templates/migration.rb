@@ -68,6 +68,8 @@ class CreateStrongboltTables < ActiveRecord::Migration
     add_index :strongbolt_users_tenants, :tenant_id
     add_index :strongbolt_users_tenants, :type
     add_index :strongbolt_users_tenants, [:tenant_id, :type]
+
+    add_index :strongbolt_user_groups_users, [:user_group_id, :user_id], unique: true, name: :index_strongbolt_user_groups_users_unique
   end
 end
 

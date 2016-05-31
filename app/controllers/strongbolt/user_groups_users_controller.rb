@@ -10,6 +10,9 @@ module Strongbolt
       @user_group.users << @user unless @user_group.users.include?(@user)
 
       redirect_to request.referrer || user_group_path(@user_group)
+    rescue ActiveRecord::RecordNotUnique
+      # user was already in the group, just ignoring this
+      redirect_to request.referrer || user_group_path(@user_group)
     end
 
     def destroy
