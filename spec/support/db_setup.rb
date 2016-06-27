@@ -55,6 +55,26 @@ class TestsMigrations < ActiveRecord::Migration
       t.integer :child_id
     end
 
+    create_table :tenant_a, :force => true do |t|
+      t.string :name
+
+      t.timestamps
+    end
+
+    create_table :tenant_b, :force => true do |t|
+      t.string :name
+
+      t.timestamps
+    end
+
+    create_table :model_with_tenants, :force => true do |t|
+      t.string :name
+      t.integer :tenant_a_id
+      t.integer :tenant_b_id
+
+      t.timestamps
+    end
+
     create_table :strongbolt_capabilities, :force => true do |t|
       t.string   :name
       t.string   :description

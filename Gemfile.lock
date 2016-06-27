@@ -40,6 +40,7 @@ GEM
       activerecord (>= 4.0.0, < 5)
     builder (3.2.2)
     concurrent-ruby (1.0.2)
+    database_cleaner (1.5.3)
     diff-lcs (1.2.5)
     erubis (2.7.0)
     fabrication (2.15.2)
@@ -119,6 +120,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (> 1.7.0)
+  database_cleaner
   fabrication
   fuubar
   rails (~> 4.1.0)

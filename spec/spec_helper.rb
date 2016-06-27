@@ -36,6 +36,7 @@ require 'shoulda/matchers'
 
 require 'rspec/rails'
 require 'fabrication'
+require 'database_cleaner'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
@@ -74,6 +75,14 @@ RSpec.configure do |config|
   config.before(:suite) do
     TestsMigrations.new.migrate :up
     User.send :include, Strongbolt::UserAbilities
+    DatabaseCleaner.clean_with :truncation
+    DatabaseCleaner.strategy = :transaction
+  end
+
+  config.around(:each) do |spec|
+    DatabaseCleaner.start
+    spec.run
+    DatabaseCleaner.clean
   end
 
   config.after(:suite) do

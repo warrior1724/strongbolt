@@ -121,10 +121,10 @@ module Strongbolt
               @results_cache["#{k}#{attr_k}-#{user_id}"] = true
               @results_cache["#{k}any-#{user_id}"] = true
             else
-            # On the other hand, it doesn't make sense to pre-populate the valid
-            # IDs for the models with a lot of instances when we probably are never
-            # going to need to know this. Instead, adding 'owned' is a hint to actually look
-            # up later if we own a particular geography.
+              # On the other hand, it doesn't make sense to pre-populate the valid
+              # IDs for the models with a lot of instances when we probably are never
+              # going to need to know this. Instead, adding 'owned' is a hint to actually look
+              # up later if we own a particular geography.
               @results_cache["#{k}#{attr_k}-owned"] = true
               @results_cache["#{k}any-owned"] = true
             end
@@ -216,6 +216,8 @@ module Strongbolt
       #
       # Checks if the instance given fulfills tenant management rules
       #
+      # returns true even if instance has no relationship to any tenant
+      #
       def has_access_to_tenants? instance, tenants = nil
         # If no tenants list given, we take all
         tenants ||= Strongbolt.tenants
@@ -224,7 +226,8 @@ module Strongbolt
 
         # Go over each tenants and check if we access to at least one of the tenant
         # models linked to it
-        tenants.inject(true) do |result, tenant|
+        found_any_tenant_relationship = false
+        has_access_to_any_tenant = tenants.inject(false) do |result, tenant|
           begin
             if instance.class == tenant
               tenant_ids = [instance.id]
@@ -245,8 +248,11 @@ module Strongbolt
           rescue ActiveModel::MissingAttributeError
             tenant_ids = []
           end
-          result && (tenant_ids.size == 0 || (@tenants_cache[tenant.name] & tenant_ids).present?)
+          found_any_tenant_relationship = true unless tenant_ids.empty?
+          has_access_to_current_tenant = (tenant_ids.size > 0 && (@tenants_cache[tenant.name] & tenant_ids).present?)
+          result || has_access_to_current_tenant
         end
+        has_access_to_any_tenant || !found_any_tenant_relationship
       end
 
       #
