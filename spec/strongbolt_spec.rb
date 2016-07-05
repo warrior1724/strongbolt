@@ -1,12 +1,12 @@
 require "spec_helper"
 
 describe Strongbolt do
-  
+
   #
   # Important included modules
   #
   it "should have included Grant::Grantable in ActiveRecord::Base" do
-    expect(ActiveRecord::Base.included_modules).to include Grant::Grantable  
+    expect(ActiveRecord::Base.included_modules).to include Grant::Grantable
   end
 
   it "should have included Bolted in ActiveRecord::Base" do
@@ -45,7 +45,7 @@ describe Strongbolt do
   # Access denied
   #
   describe "access denied" do
-    
+
     before do
       block = double('block', :call => nil)
       expect(block).to receive(:call).with 'user', 'instance', 'action', 'request_path'
@@ -118,13 +118,13 @@ describe Strongbolt do
       it "should raise error" do
         expect do
           AnyClass.new.method("ok", "ok2") {}
-        end.to raise_error
+        end.to raise_error(StandardError)
       end
     end
 
     context "when skipped" do
       before { AnyClass.perform_without_authorization :method }
-      
+
       it "should skip authorization" do
         expect do
           AnyClass.new.method("ok", "ok2") {}
@@ -171,7 +171,7 @@ describe Strongbolt do
           define_model "UserWithout" do
             self.table_name = 'users'
           end
-          
+
           # We configure the user class
           Strongbolt::Configuration.user_class = 'UserWithout'
         end
@@ -190,20 +190,20 @@ describe Strongbolt do
           expect(Grant::User.current_user).to eq user
         end
       end # End when User Class doesn't have the UserAbilities included
-      
+
       context 'when the model has the UserAbilities module included' do
-        
+
         before do
           define_model "UserWithAbilities" do
             include Strongbolt::UserAbilities
             self.table_name = 'users'
           end
-          
+
           # We configure the user class
           Strongbolt::Configuration.user_class = 'UserWithAbilities'
         end
         after { undefine_model "UserWithAbilities" }
-        
+
         let(:user) { UserWithAbilities.new }
 
         it "should set the current user" do
@@ -259,7 +259,7 @@ describe Strongbolt do
     end # End when user given is the right class
 
     context "when the model isn't from the user class" do
-      
+
       it "should raise error" do
         Strongbolt::Configuration.user_class = 'User'
         expect do

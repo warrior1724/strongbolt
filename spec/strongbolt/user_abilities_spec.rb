@@ -157,7 +157,7 @@ describe Strongbolt::UserAbilities do
       it "should raise an error" do
         expect do
           user.add_tenant model
-        end.to raise_error
+        end.to raise_error NoMethodError
       end
     end
 

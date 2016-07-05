@@ -2,7 +2,7 @@ require "spec_helper"
 
 # We're testing BoltedController module through this one
 describe PostsController, :type => :controller do
-  
+
   before(:all) do
     define_model "Post"
     @user = User.create!
@@ -44,8 +44,8 @@ describe PostsController, :type => :controller do
   describe "helpers" do
     before { Strongbolt.current_user = User.create! }
     after { Strongbolt.current_user = nil }
-    
-    describe "can?" do  
+
+    describe "can?" do
       it "should respond to can?" do
         expect(PostsController.new).to respond_to :can?
       end
@@ -55,8 +55,8 @@ describe PostsController, :type => :controller do
         PostsController.new.can? :find, User
       end
     end
-    
-    describe "cannot?" do  
+
+    describe "cannot?" do
       it "should respond to cannot?" do
         expect(PostsController.new).to respond_to :cannot?
       end
@@ -88,14 +88,14 @@ describe PostsController, :type => :controller do
       PostsController.after_action :unset_current_user
       PostsController.before_action :check_authorization
     end
-    
+
     context 'when no user' do
       before do
         expect_any_instance_of(PostsController).to receive(:current_user)
           .at_least(1).times.and_return nil
         get :index
       end
-    
+
       it "should set nil user" do
         expect(Strongbolt.current_user).to be_nil
       end
@@ -112,7 +112,7 @@ describe PostsController, :type => :controller do
         expect_any_instance_of(PostsController).to receive(:current_user).and_return user
         get :index
       end
-    
+
       it "should set the user" do
         expect(Strongbolt.current_user).to eq user
       end
@@ -131,7 +131,7 @@ describe PostsController, :type => :controller do
     after do
       PostsController.before_action :check_authorization
     end
-    
+
     context "when a user is set" do
 
       before do
@@ -139,7 +139,7 @@ describe PostsController, :type => :controller do
           .and_return @user
         get :index
       end
-    
+
       it "should have unsetted the user" do
         expect(Strongbolt.current_user).to be_nil
       end
@@ -195,7 +195,7 @@ describe PostsController, :type => :controller do
     #
 
     context "when no error" do
-    
+
       before(:all) do
         # Model linked to the controller
         define_model "Post" do
@@ -236,7 +236,7 @@ describe PostsController, :type => :controller do
       # When calling a custom action without CRUD associated
       #
       context "when calling unmapped action" do
-        
+
         it "should raise ActionNotConfigured" do
           expect do
             get :custom
@@ -358,7 +358,7 @@ describe PostsController, :type => :controller do
     #
 
     context "when controller doesn't have model" do
-      
+
       before do
         undefine_model "Post"
         setup_session
@@ -367,7 +367,7 @@ describe PostsController, :type => :controller do
       it "should raise error" do
         expect do
           get :index
-        end.to raise_error
+        end.to raise_error Strongbolt::ModelNotFound
       end
 
     end # End when no model associated
@@ -405,9 +405,9 @@ describe PostsController, :type => :controller do
       end
     end
     after { PostsController.model_for_authorization = nil }
-    
+
     context "when given as a string" do
-      
+
       context "and not exists" do
         it "should raise error" do
           expect do
@@ -444,7 +444,7 @@ describe PostsController, :type => :controller do
   # Fetching authorization model when not specified
   #
   describe "model_for_authorization" do
-    
+
     context "when model is infered from controller" do
       before do
         define_model "Post"
@@ -481,13 +481,13 @@ describe PostsController, :type => :controller do
   # Skipping controller authorization
   #
   describe 'skip_controller_authorization' do
-    
+
     after { PostsController.before_action :check_authorization }
-    
+
     context "when no argument" do
 
       before { PostsController.skip_controller_authorization }
-      
+
       RESTFUL_ACTIONS.each do |action|
         it "should not call check_authorization" do
           expect_any_instance_of(PostsController).not_to receive(:check_authorization)
@@ -500,9 +500,9 @@ describe PostsController, :type => :controller do
     context 'with only argument' do
 
       before { PostsController.skip_controller_authorization only: skipped_actions }
-      
+
       context "when 1 action" do
-        
+
         let(:skipped_actions) { :index }
 
         RESTFUL_ACTIONS.each do |action|
@@ -519,7 +519,7 @@ describe PostsController, :type => :controller do
       end # End 1 action
 
       context "when several actions" do
-        
+
         let(:skipped_actions) { [:show, :index] }
 
         RESTFUL_ACTIONS.each do |action|
@@ -538,11 +538,11 @@ describe PostsController, :type => :controller do
     end # End when only argument
 
     context "with except argument" do
-      
+
       before { PostsController.skip_controller_authorization except: preserved_actions }
-      
+
       context "when 1 action" do
-        
+
         let(:preserved_actions) { :index }
 
         RESTFUL_ACTIONS.each do |action|
@@ -559,7 +559,7 @@ describe PostsController, :type => :controller do
       end # End 1 action
 
       context "when several actions" do
-        
+
         let(:preserved_actions) { [:show, :index] }
 
         RESTFUL_ACTIONS.each do |action|
@@ -662,7 +662,7 @@ describe PostsController, :type => :controller do
   # Render without authorization
   #
   describe "render_without_authorization" do
-    
+
     after { PostsController.render_with_authorization }
 
     it "should have aliased render" do
