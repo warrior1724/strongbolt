@@ -63,6 +63,9 @@ module Strongbolt
       # and can be passed only: [] or except: []
       #
       def skip_controller_authorization opts = {}
+        if Rails::VERSION::MAJOR >= 5
+          opts = { raise: false }.merge(opts)
+        end
         skip_before_action :check_authorization, opts
       end
 
