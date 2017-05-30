@@ -1,4 +1,4 @@
-class CreateStrongboltTablesIndexes < ActiveRecord::Migration
+class CreateStrongboltTablesIndexes < ActiveRecord::Migration[4.2]
   def change
     add_index :strongbolt_roles, :parent_id
     add_index :strongbolt_roles, :lft

@@ -1,4 +1,4 @@
-class CreateStrongboltTables < ActiveRecord::Migration
+class CreateStrongboltTables < ActiveRecord::Migration[4.2]
   def change
     create_table :strongbolt_capabilities, :force => true do |t|
       t.string   :name
