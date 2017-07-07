@@ -7,7 +7,7 @@ module Strongbolt
   class Engine < ::Rails::Engine
 
     initializer 'strongbolt.assets.precompile' do |app|
-      next if Rails.application.config.api_only
+      next if Rails.application.config.try(:api_only)
       %w(javascripts).each do |sub|
         app.config.assets.paths << root.join('app', 'assets', sub).to_s
       end
