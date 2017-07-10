@@ -1,0 +1,13 @@
+dependencies:
+  pre:
+    - gem install bundler
+
+database:
+  override:
+    # no need for a database right now
+    - echo "Skipping DB section."
+
+test:
+  override:
+    - bundle exec rspec --profile 10
+    #- bundle exec rubocop
