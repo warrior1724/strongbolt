@@ -1,25 +1,24 @@
 module Strongbolt
   class Capability < Base
+    Actions = %w[find create update destroy].freeze
 
-    Actions = %w{find create update destroy}
-
-    DEFAULT_MODELS = ["Strongbolt::UserGroup",
-      "Strongbolt::Role",
-      "Strongbolt::Capability",
-      "Strongbolt::UsersTenant"]
+    DEFAULT_MODELS = ['Strongbolt::UserGroup',
+                      'Strongbolt::Role',
+                      'Strongbolt::Capability',
+                      'Strongbolt::UsersTenant'].freeze
 
     has_many :capabilities_roles,
-      :class_name => "Strongbolt::CapabilitiesRole",
-      :dependent => :restrict_with_exception,
-      :inverse_of => :capability
+             class_name: 'Strongbolt::CapabilitiesRole',
+             dependent: :restrict_with_exception,
+             inverse_of: :capability
 
-    has_many :roles, :through => :capabilities_roles
+    has_many :roles, through: :capabilities_roles
 
     has_many :users, through: :roles
 
     validates :model, :action, presence: true
     validates :action, inclusion: Actions,
-      uniqueness: {scope: [:model, :require_ownership, :require_tenant_access]}
+                       uniqueness: { scope: %i[model require_ownership require_tenant_access] }
     validate :model_exists?
 
     before_validation :set_default
@@ -28,10 +27,15 @@ module Strongbolt
     #
     # List all the models to be used in capabilities
     #
-    def self.models() @models ||= DEFAULT_MODELS; end
-    def self.models=(models) @models = models; end
+    def self.models
+      @models ||= DEFAULT_MODELS
+    end
 
-    def self.add_models models
+    class << self
+      attr_writer :models
+    end
+
+    def self.add_models(models)
       @models ||= DEFAULT_MODELS
       @models |= [*models]
       @models.sort!
@@ -39,9 +43,9 @@ module Strongbolt
 
     scope :ordered, -> {
       select("#{self.table_name}.*")
-        .select("CASE WHEN action = 'find' THEN 0 " +
-                "WHEN action = 'create' THEN 1 " +
-                "WHEN action = 'update' THEN 2 " +
+        .select("CASE WHEN action = 'find' THEN 0 " \
+                "WHEN action = 'create' THEN 1 " \
+                "WHEN action = 'update' THEN 2 " \
                 "WHEN action = 'destroy' THEN 3 END AS action_id")
         .order(:model, :require_ownership, :require_tenant_access, 'action_id')
     }
@@ -54,9 +58,9 @@ module Strongbolt
       table = []
       all.ordered.each do |capability|
         if table.last.nil? ||
-          ! (table.last[:model] == capability.model &&
-            table.last[:require_ownership] == capability.require_ownership &&
-            table.last[:require_tenant_access] == capability.require_tenant_access)
+           !(table.last[:model] == capability.model &&
+             table.last[:require_ownership] == capability.require_ownership &&
+             table.last[:require_tenant_access] == capability.require_tenant_access)
 
           table << {
             model: capability.model,
@@ -98,11 +102,8 @@ module Strongbolt
         hash[key][capability.action.to_sym] = true
       end
       hash
-    end
+    end #
 
-
-
-    #
     # Create a set capabilities from a hash
     # which has:
     # {
@@ -114,20 +115,20 @@ module Strongbolt
     # Actions can be either one operation, an array of operations,
     # or :all meaning all operations
     #
-    def self.from_hash hash
+    def self.from_hash(hash)
       hash.symbolize_keys!
       actions_from_list(hash[:actions]).map do |action|
-        new :model => hash[:model],
-          :require_ownership => hash[:require_ownership],
-          :require_tenant_access => hash[:require_tenant_access],
-          :action => action
+        new model: hash[:model],
+            require_ownership: hash[:require_ownership],
+            require_tenant_access: hash[:require_tenant_access],
+            action: action
       end
     end
 
     #
     # Virtual setter of actions
     #
-    def self.actions_from_list actions
+    def self.actions_from_list(actions)
       # Transform actions array
       if actions.respond_to?(:to_sym) && actions.to_sym == :all
         Actions # All actions
@@ -145,7 +146,7 @@ module Strongbolt
       if model.present?
         begin
           model.constantize
-        rescue NameError => e
+        rescue NameError
           errors.add :model, "#{model} is not a valid model"
         end
       end

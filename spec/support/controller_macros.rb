@@ -1,5 +1,4 @@
 module ControllerMacros
-
   def login_user
     before(:each) do
       @user = Fabricate :user
@@ -7,5 +6,4 @@ module ControllerMacros
     end
     let(:current_user) { @user }
   end
-
 end

@@ -10,4 +10,4 @@ database:
 test:
   override:
     - bundle exec rspec --profile 10
-    #- bundle exec rubocop
+    - bundle exec rubocop

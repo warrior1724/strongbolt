@@ -28,5 +28,5 @@ Strongbolt.setup do |config|
   #
   # config.models = 'HABTM_Roles', 'HABTM_UserGroups', 'HABTM_Capabilities', 'HABTM_Users', 'HABTM_Roles'
 
-  config.skip_controller_authorization_for "without_authorization"
+  config.skip_controller_authorization_for 'without_authorization'
 end

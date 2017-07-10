@@ -1,8 +1,9 @@
 module Strongbolt
   module Tenantable
     module ClassMethods
-
-      def tenant?() (@tenant.present? && @tenant) || Strongbolt.tenants.include?(name); end
+      def tenant?
+        (@tenant.present? && @tenant) || Strongbolt.tenants.include?(name)
+      end
 
       private
 
@@ -12,6 +13,7 @@ module Strongbolt
       def singular_association_name
         @singular_association_name ||= self.name.demodulize.underscore.to_sym
       end
+
       def plural_association_name
         @plural_association_name ||= self.name.demodulize.underscore.pluralize.to_sym
       end
@@ -21,21 +23,21 @@ module Strongbolt
       # It will traverse all the has_many relationships
       # and add a has_one :tenant if not specified
       #
-      def tenant opts = {}
+      def tenant(_opts = {})
         # Stops if already configured
         return if tenant?
 
-        Strongbolt.logger.debug "-------------------------------------------------------------------\n" +
-          "Configuring tenant #{self.name}\n" +
-          "-------------------------------------------------------------------\n\n"
+        Strongbolt.logger.debug "-------------------------------------------------------------------\n" \
+                                "Configuring tenant #{self.name}\n" \
+                                "-------------------------------------------------------------------\n\n"
         #
         # We're traversing using BFS the relationships
         #
         # Keep track of traversed models and their relationship to the tenant
-        @models_traversed = {self.name => self}
+        @models_traversed = { self.name => self }
         # File of models/associations to traverse
         models_to_traverse = reflect_on_all_associations
-        while models_to_traverse.size > 0
+        until models_to_traverse.empty?
           # BFS search, shiftin first elt of array (older)
           current_association = models_to_traverse.shift
           # We don't check has_many :through association,
@@ -46,15 +48,14 @@ module Strongbolt
           # So unless we've already traversed this model, or that's a through relationship
           # or a polymorphic association
           # Also we don't go following belongs_to relationship, it becomes crazy
-          if should_visit? current_association
-            # We setup the model using the association given
-            method = setup_model(current_association)
-            # We flag the model, storing the name of the method used to link to tenant
-            @models_traversed[current_association.klass.name] = method
-            # And add its relationships into the array, at the end, if method not nil
-            if method.present?
-              models_to_traverse.concat current_association.klass.reflect_on_all_associations
-            end
+          next unless should_visit? current_association
+          # We setup the model using the association given
+          method = setup_model(current_association)
+          # We flag the model, storing the name of the method used to link to tenant
+          @models_traversed[current_association.klass.name] = method
+          # And add its relationships into the array, at the end, if method not nil
+          if method.present?
+            models_to_traverse.concat current_association.klass.reflect_on_all_associations
           end
         end
 
@@ -71,7 +72,7 @@ module Strongbolt
       # Setup a model and returns the method name in symbol of the
       # implemented link to the tenant
       #
-      def setup_model association
+      def setup_model(association)
         # Source class
         original_class = association.active_record
         # Current class
@@ -104,10 +105,9 @@ module Strongbolt
           # If no inverse, we cannot go further
           if inverse.nil?
             raise InverseAssociationNotConfigured, "Assocation #{association.name} on #{association.klass.name} could not be configured correctly as no inverse has been found"
-          elsif inverse.options.has_key? :polymorphic
+          elsif inverse.options.key? :polymorphic
             return nil
           end
-
 
           # Common options
           options = {
@@ -145,22 +145,21 @@ module Strongbolt
           scope "with_#{plur}", -> { includes assoc }
 
           scope "where_#{plur}_among", ->(values) do
-              if values.is_a? Array
-                # If objects
-                values = values.map(&:id) if values.first.respond_to? :id
-              else
-                # If object
-                values = values.id if values.respond_to?(:id)
-              end
+                                         if values.is_a? Array
+                                           # If objects
+                                           values = values.map(&:id) if values.first.respond_to? :id
+                                         elsif values.respond_to?(:id)
+                                           # If object
+                                           values = values.id
+                                         end
 
-              includes(assoc).where(table_name => {id: values})
-            end
+                                         includes(assoc).where(table_name => { id: values })
+                                       end
         end
 
         # And return name of association
-        return assoc
-      end #/setup_model
-
+        assoc
+      end # /setup_model
 
       #
       # The initial idea of using a polymorphic association on UsersTenant
@@ -196,50 +195,48 @@ module Strongbolt
           RUBY
           Strongbolt.const_set users_tenants_subclass_name, users_tenant_subclass
         end
-      end #/create_users_tenant_subclass
+      end # /create_users_tenant_subclass
 
       #
       # Setups the has_many thru association on the User class
       #
       def setup_association_on_user
-        begin
-          user_class = Configuration.user_class.constantize
+        user_class = Configuration.user_class.constantize
 
-          # Setup the association
-          # The first one should never be there before
-          user_class.has_many :"users_#{plural_association_name}",
-            :class_name => "Strongbolt::#{users_tenants_subclass_name}",
-            :inverse_of => :user,
-            :dependent => :delete_all,
-            :foreign_key => :user_id
+        # Setup the association
+        # The first one should never be there before
+        user_class.has_many :"users_#{plural_association_name}",
+                            class_name: "Strongbolt::#{users_tenants_subclass_name}",
+                            inverse_of: :user,
+                            dependent: :delete_all,
+                            foreign_key: :user_id
 
-          # This one may have been overriden by the developer
-          unless user_class.respond_to? plural_association_name
-            user_class.has_many plural_association_name,
-              :source => :"#{singular_association_name}",
-              :class_name => self.name,
-              :through => :"users_#{plural_association_name}"
-          end
+        # This one may have been overriden by the developer
+        unless user_class.respond_to? plural_association_name
+          user_class.has_many plural_association_name,
+                              source: :"#{singular_association_name}",
+                              class_name: self.name,
+                              through: :"users_#{plural_association_name}"
+        end
 
-          # Setup a quick method to get accessible clients directly
-          unless user_class.respond_to? "accessible_#{plural_association_name}"
-            user_class.class_exec(self, plural_association_name) do |klass, plur|
-              define_method "accessible_#{plur}" do
-                # If can find ALL the tenants
-                if can? :find, klass, :any, true
-                  # Then it can access all of them
-                  klass.all
-                else
-                  # Otherwise, only the ones he manages
-                  send plur
-                end
+        # Setup a quick method to get accessible clients directly
+        unless user_class.respond_to? "accessible_#{plural_association_name}"
+          user_class.class_exec(self, plural_association_name) do |klass, plur|
+            define_method "accessible_#{plur}" do
+              # If can find ALL the tenants
+              if can? :find, klass, :any, true
+                # Then it can access all of them
+                klass.all
+              else
+                # Otherwise, only the ones he manages
+                send plur
               end
             end
           end
-        rescue NameError => e
-          Strongbolt.logger.error "User #{Configuration.user_class} could not have his association to tenant #{name} created"
         end
-      end #/setup_association_on_user
+      rescue NameError
+        Strongbolt.logger.error "User #{Configuration.user_class} could not have his association to tenant #{name} created"
+      end # /setup_association_on_user
 
       #
       # returns the name of the subclass of Strongbolt::UsersTenant, containing
@@ -251,13 +248,13 @@ module Strongbolt
         # The module name is left in the name, so that we won't have any collisions
         # with the same class names in different modules.
         "Users#{self.name.gsub('::', '')}"
-      end #/users_tenants_subclass_name
+      end # /users_tenants_subclass_name
 
       #
       # Returns the inverse of specified association, using what's given
       # as inverse_of or trying to guess it
       #
-      def inverse_of association
+      def inverse_of(association)
         # If specified in association configuration
         return association.inverse_of if association.has_inverse?
 
@@ -266,15 +263,15 @@ module Strongbolt
         # Else we need to find it, using the class as reference
         association.klass.reflect_on_all_associations.each do |assoc|
           # If the association is polymorphic
-          if assoc.options.has_key? :polymorphic
+          if assoc.options.key? :polymorphic
             polymorphic_associations << assoc
 
           # If same class than the original source of the association
           elsif assoc.klass == association.active_record
 
-            Strongbolt.logger.debug "Selected inverse of #{association.name} between #{association.active_record} " +
-              "and #{association.klass} is #{assoc.name}.\n " +
-              "If not, please configure manually the inverse of #{association.name}\n"
+            Strongbolt.logger.debug "Selected inverse of #{association.name} between #{association.active_record} " \
+                                    "and #{association.klass} is #{assoc.name}.\n " \
+                                    "If not, please configure manually the inverse of #{association.name}\n"
 
             return assoc
           end
@@ -284,7 +281,7 @@ module Strongbolt
           return polymorphic_associations.first
         end
 
-        return nil
+        nil
       end
 
       #
@@ -296,13 +293,12 @@ module Strongbolt
       # and not HasManyThrough, unless it's AR v >= 4.1.0 && < 4.2.0 where
       # they define a HasManyAndBelongsTo as a HasManyThrough in the reflections
       #
-      def should_visit? association
-        ! (association.is_a?(ActiveRecord::Reflection::ThroughReflection) ||
+      def should_visit?(association)
+        !(association.is_a?(ActiveRecord::Reflection::ThroughReflection) ||
             association.macro == :belongs_to ||
-            (@models_traversed.has_key?(association.klass.name) &&
-              @models_traversed[association.klass.name].present?) )
+            (@models_traversed.key?(association.klass.name) &&
+              @models_traversed[association.klass.name].present?))
       end
-
     end
 
     module InstanceMethods

@@ -4,13 +4,13 @@ module ActionDispatch::Routing
   #
   class Mapper
     def strongbolt
-      scope :module => :strongbolt do
+      scope module: :strongbolt do
         resources :user_groups do
-          resources :user_groups_users, as: :users, path: 'users', only: [:create, :destroy]
+          resources :user_groups_users, as: :users, path: 'users', only: %i[create destroy]
         end
 
         resources :roles do
-          resources :capabilities, only: [:create, :destroy] do
+          resources :capabilities, only: %i[create destroy] do
             delete :destroy, on: :collection
           end
         end

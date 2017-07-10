@@ -1,3 +1,3 @@
 Fabricator :user do
-  username              "USER"
+  username 'USER'
 end

@@ -19,7 +19,7 @@ if defined?(RSpec)
     end
 
     config.around(:each) do |example|
-      Strongbolt.without_authorization &example
+      Strongbolt.without_authorization(&example)
       # Clear all the User authorizations that could have been defined
       User.clear_authorizations
       # Removes the user from current_user to avoid leaks

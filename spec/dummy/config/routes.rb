@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   strongbolt
 
   resources :posts do
@@ -7,6 +6,5 @@ Rails.application.routes.draw do
   end
   resources :welcome
 
-  get "without_authorization" => "without_authorization#show"
-  
+  get 'without_authorization' => 'without_authorization#show'
 end

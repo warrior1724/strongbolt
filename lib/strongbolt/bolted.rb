@@ -21,7 +21,7 @@ module Strongbolt
       #
       def unbolted?
         Grant::Status.grant_disabled? || (defined?(Rails) && defined?(Rails.console)) ||
-           Strongbolt.current_user.nil?
+          Strongbolt.current_user.nil?
       end
 
       #
@@ -39,16 +39,16 @@ module Strongbolt
         return unless owned?
 
         @owner_attribute ||= if self <= Configuration.user_class.constantize
-          :id
-        else
-          owner_association.foreign_key.to_sym
-        end
+                               :id
+                             else
+                               owner_association.foreign_key.to_sym
+                             end
       end
 
       #
       # Authorize as another model
       #
-      def authorize_as model_name
+      def authorize_as(model_name)
         @name_for_authorization = model_name
       end
 
@@ -66,14 +66,13 @@ module Strongbolt
       #
       def owner_association
         @owner_association ||= reflect_on_all_associations(:belongs_to).select do |assoc|
-          unless assoc.options.has_key? :polymorphic
-            assoc.klass <= Configuration.user_class.constantize
-          else
+          if assoc.options.key? :polymorphic
             false
+          else
+            assoc.klass <= Configuration.user_class.constantize
           end
         end.try(:first)
       end
-
     end
 
     module InstanceMethods
@@ -102,7 +101,6 @@ module Strongbolt
 
       # We add the grant to filter everything
       receiver.class_eval do
-
         #
         # We use the grant helper method to test authorizations on all methods
         #
@@ -111,16 +109,17 @@ module Strongbolt
           # Check the user permission unless no user or rails console
           # Not using unbolted? here
           granted = ((defined?(Rails) && defined?(Rails.console)) || user.nil?) ||
-            user.can?( action, instance )
+                    user.can?(action, instance)
 
           # If not granted, trigger the access denied
           unless granted
+            # rubocop:disable Style/GlobalVars
             Strongbolt.access_denied user, instance, action, $request.try(:fullpath)
+            # rubocop:enable Style/GlobalVars
           end
 
           granted
         end # End Grant
-
       end
     end
   end

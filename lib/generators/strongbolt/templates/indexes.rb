@@ -16,6 +16,6 @@ class CreateStrongboltTablesIndexes < ActiveRecord::Migration[4.2]
     add_index :strongbolt_users_tenants, :user_id
     add_index :strongbolt_users_tenants, :tenant_id
     add_index :strongbolt_users_tenants, :type
-    add_index :strongbolt_users_tenants, [:tenant_id, :type]
+    add_index :strongbolt_users_tenants, %i[tenant_id type]
   end
 end

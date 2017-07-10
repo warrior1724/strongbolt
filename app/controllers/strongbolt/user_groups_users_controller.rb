@@ -1,7 +1,6 @@
 module Strongbolt
   class UserGroupsUsersController < ::StrongboltController
-
-    self.model_for_authorization = "Strongbolt::UserGroup"
+    self.model_for_authorization = 'Strongbolt::UserGroup'
 
     def create
       @user_group = UserGroup.find(params[:user_group_id])
@@ -24,7 +23,7 @@ module Strongbolt
       redirect_to request.referrer || user_group_path(@user_group)
     end
 
-    rescue_from ActiveRecord::RecordNotFound do |e|
+    rescue_from ActiveRecord::RecordNotFound do |_e|
       if @user_group.nil?
         flash[:danger] = "User Group ##{params[:user_group_id]} does not exist"
         redirect_to user_groups_path
@@ -33,6 +32,5 @@ module Strongbolt
         redirect_to user_group_path(@user_group)
       end
     end
-
   end
 end

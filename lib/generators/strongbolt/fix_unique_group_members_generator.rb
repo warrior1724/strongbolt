@@ -1,4 +1,4 @@
-require "strongbolt/generators/migration"
+require 'strongbolt/generators/migration'
 
 module Strongbolt
   module Generators
@@ -12,9 +12,8 @@ module Strongbolt
       source_root File.expand_path('../templates', __FILE__)
 
       def copy_fix
-        copy_migration "fix_unique_group_members", "fix_unique_group_members"
+        copy_migration 'fix_unique_group_members', 'fix_unique_group_members'
       end
-
     end
   end
 end

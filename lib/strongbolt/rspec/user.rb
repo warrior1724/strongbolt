@@ -7,12 +7,11 @@ Strongbolt.user_class_constant.class_eval do
   # Best to use a class context and use class instance variables
   #
   class << self
-
     def authorizations
       @authorizations ||= {}
     end
 
-    def set_authorization_for user, authorized, *args
+    def set_authorization_for(user, authorized, *args)
       return if user.new_record?
 
       self.authorizations[user.id] ||= {}
@@ -23,22 +22,22 @@ Strongbolt.user_class_constant.class_eval do
       @authorizations = {}
     end
 
-    def authorized? user, *args
+    def authorized?(user, *args)
       # Cannot do if user not saved
       return false if user.new_record?
       key = key_for(*args)
       if self.authorizations[user.id].present? && self.authorizations[user.id][key].present?
         return self.authorizations[user.id][key]
       else
-        user._can? *args
+        user._can?(*args)
       end
     end
 
-    def key_for *args
+    def key_for(*args)
       action = args[0]
       instance = args[1]
       attrs = args[2] || :any
-      all_instances = (args[3] || false) ? "all" : "tenanted"
+      all_instances = args[3] || false ? 'all' : 'tenanted'
       if instance.is_a?(ActiveRecord::Base)
         model = instance.class.name
         if instance.new_record?
@@ -51,21 +50,20 @@ Strongbolt.user_class_constant.class_eval do
         "#{action}-#{model}-#{attrs}-#{all_instances}"
       end
     end
-
   end
 
   #
   # 2 methods to setup mocking and stubs
   #
   def init
-    if RSpec::Mocks::Version::STRING >= "3.0"
-      require "rspec/mocks/standalone"
+    if RSpec::Mocks::Version::STRING >= '3.0'
+      require 'rspec/mocks/standalone'
     else
-      RSpec::Mocks::setup(self) unless self.respond_to? :allow
+      RSpec::Mocks.setup(self) unless self.respond_to? :allow
     end
   end
 
-  def setup_stub authorized, arguments
+  def setup_stub(authorized, arguments)
     init
     # Set the authorizations on a class level
     self.class.set_authorization_for self, authorized, *arguments
@@ -76,15 +74,15 @@ Strongbolt.user_class_constant.class_eval do
   #
   alias_method :_can?, :can?
 
-  def can? *args
+  def can?(*args)
     self.class.authorized? self, *args
   end
 
-  def can! *args
+  def can!(*args)
     setup_stub true, args
   end
 
-  def cannot! *args
+  def cannot!(*args)
     setup_stub false, args
   end
 end

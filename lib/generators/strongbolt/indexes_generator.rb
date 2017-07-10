@@ -1,4 +1,4 @@
-require "strongbolt/generators/migration"
+require 'strongbolt/generators/migration'
 
 module Strongbolt
   module Generators
@@ -11,9 +11,8 @@ module Strongbolt
       source_root File.expand_path('../templates', __FILE__)
 
       def copy_fix
-        copy_migration "indexes", "create_strongbolt_tables_indexes"
+        copy_migration 'indexes', 'create_strongbolt_tables_indexes'
       end
-
     end
   end
 end

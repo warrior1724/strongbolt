@@ -1,7 +1,7 @@
 #
 # We create the controller we'll be using in our tests
 #
-RESTFUL_ACTIONS = [:index, :show, :new, :create, :update, :edit, :destroy]
+RESTFUL_ACTIONS = %i[index show new create update edit destroy].freeze
 
 class PostsController < TestController
   include Strongbolt::BoltedController

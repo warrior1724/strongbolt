@@ -4,7 +4,10 @@ require 'action_dispatch'
 
 module Rails
   class App
-    def env_config; {} end
+    def env_config
+      {}
+    end
+
     def routes
       return @routes if defined?(@routes)
       @routes = ActionDispatch::Routing::RouteSet.new
@@ -23,6 +26,6 @@ module Rails
   end
 
   def self.env
-    "test"
+    'test'
   end
 end

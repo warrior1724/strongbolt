@@ -9,13 +9,13 @@ module Strongbolt
     # It's not very nice like that but would be too complicated to do like Devise for now...
     #
     module UrlHelpers
-      URLS = %w{role  user_group user_group_user role_capability}
+      URLS = %w[role user_group user_group_user role_capability].freeze
 
       #
       # Creates the url helpers for the specific url and scope
       #
-      def self.create_url_helper url, scope=nil
-        [:path, :url].each do |path_or_url|
+      def self.create_url_helper(url, scope = nil)
+        %i[path url].each do |path_or_url|
           class_eval <<-URL_HELPERS
             def #{scope.present? ? "#{scope}_" : ''}#{url}_#{path_or_url} *args
               send(:main_app).send("#{scope.present? ? "#{scope}_" : ''}strongbolt_#{url}_#{path_or_url}", *args)
@@ -30,7 +30,7 @@ module Strongbolt
       URLS.each do |url|
         create_url_helper url
         create_url_helper url.pluralize
-        [:new, :edit].each { |scope| create_url_helper url, scope }
+        %i[new edit].each { |scope| create_url_helper url, scope }
       end
     end
   end

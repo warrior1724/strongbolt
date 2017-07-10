@@ -1,23 +1,22 @@
 module Strongbolt
   class Role < Base
-
     acts_as_nested_set
 
     validates :name, presence: true
 
     has_many :roles_user_groups,
-      :class_name => "Strongbolt::RolesUserGroup",
-      :dependent => :restrict_with_exception,
-      :inverse_of => :role
-    has_many :user_groups, :through => :roles_user_groups
+             class_name: 'Strongbolt::RolesUserGroup',
+             dependent: :restrict_with_exception,
+             inverse_of: :role
+    has_many :user_groups, through: :roles_user_groups
 
     has_many :users, through: :user_groups
 
     has_many :capabilities_roles,
-      :class_name => "Strongbolt::CapabilitiesRole",
-      :dependent => :delete_all,
-      :inverse_of => :role
-    has_many :capabilities, :through => :capabilities_roles
+             class_name: 'Strongbolt::CapabilitiesRole',
+             dependent: :delete_all,
+             inverse_of: :role
+    has_many :capabilities, through: :capabilities_roles
 
     before_destroy :should_not_have_children
 
@@ -29,15 +28,15 @@ module Strongbolt
     #
     def inherited_capabilities
       Strongbolt::Capability.joins(:roles)
-        .where("strongbolt_roles.lft < :lft AND strongbolt_roles.rgt > :rgt", lft: lft, rgt: rgt)
-        .distinct
+                            .where('strongbolt_roles.lft < :lft AND strongbolt_roles.rgt > :rgt', lft: lft, rgt: rgt)
+                            .distinct
     end
 
     private
 
     def should_not_have_children
       if children.count > 0
-        raise ActiveRecord::DeleteRestrictionError.new :children
+        raise ActiveRecord::DeleteRestrictionError, :children
       end
     end
   end

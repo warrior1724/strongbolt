@@ -1,5 +1,4 @@
 module TransactionalSpecs
-
   def self.included(base)
     base.class_eval do
       around(:each) do |spec|
@@ -13,5 +12,4 @@ module TransactionalSpecs
       end
     end
   end
-
 end

@@ -1,16 +1,14 @@
-require "spec_helper"
+require 'spec_helper'
 
 module Strongbolt
-
   describe CapabilitiesController do
-
     subject { response }
 
     # #
     # # GET #index
     # #
     # describe "GET #index" do
-      
+
     #   before do
     #     Fabricate :capability
     #     get :index
@@ -26,7 +24,6 @@ module Strongbolt
     #   end
 
     # end # End GET #index
-
 
     # #
     # # GET #show
@@ -48,10 +45,9 @@ module Strongbolt
     #
     # POST #create
     #
-    describe "POST #create" do
-
+    describe 'POST #create' do
       let(:create) { post :create, capability: attributes }
-      
+
       # context "when valid attributes" do
       #   let(:attributes) { Fabricate.attributes_for :capability }
 
@@ -67,35 +63,34 @@ module Strongbolt
       #   end
       # end
 
-      context "when valid attributes and role id present" do
-
+      context 'when valid attributes and role id present' do
         let(:role) { Fabricate :role }
         let(:attributes) { Fabricate.attributes_for :capability }
 
-        context "html" do
+        context 'html' do
           let(:create) { post :create, capability: attributes, role_id: role.id }
 
-          it "should redirect to role" do
+          it 'should redirect to role' do
             create
             expect(response).to redirect_to role_path(role)
           end
 
-          it "should add a capability to the role" do
+          it 'should add a capability to the role' do
             expect do
               create
             end.to change(role.capabilities, :count).by 1
           end
         end
 
-        context "json" do |variable|
+        context 'json' do |_variable|
           let(:create) { post :create, capability: attributes, role_id: role.id, format: :json }
 
-          it "should redirect to role" do
+          it 'should redirect to role' do
             create
-            expect(response.code).to eq "200"
+            expect(response.code).to eq '200'
           end
 
-          it "should add a capability to the role" do
+          it 'should add a capability to the role' do
             expect do
               create
             end.to change(role.capabilities, :count).by 1
@@ -129,16 +124,12 @@ module Strongbolt
       #     expect(response).to redirect_to capabilities_path
       #   end
       # end
-
     end # END POST #create
-
-
 
     #
     # DELETE #destroy
     #
-    describe "DELETE #destroy" do
-
+    describe 'DELETE #destroy' do
       before do
         @capability = Fabricate :capability
       end
@@ -167,7 +158,7 @@ module Strongbolt
       #   before do
       #     capability.roles << Fabricate(:role)
       #   end
-        
+
       #   it "should redirect to capabilities list" do
       #     destroy
       #     expect(response).to redirect_to capability_path(capability)
@@ -186,69 +177,61 @@ module Strongbolt
 
       # end
 
-      context "when role_id given" do
+      context 'when role_id given' do
         let(:role) { Fabricate :role }
-        
+
         before do
           role.capabilities << capability
         end
 
-        context "when capability id given" do
-
+        context 'when capability id given' do
           let(:destroy) { delete :destroy, id: capability.id, role_id: role.id }
 
-
-          it "should not delete a capability" do
+          it 'should not delete a capability' do
             expect do
               destroy
             end.not_to change(Capability, :count)
           end
 
-          it "should remove the capability from role" do
+          it 'should remove the capability from role' do
             destroy
             role.reload
             expect(role.capabilities).not_to include capability
           end
 
-          it "should redirect to role" do
+          it 'should redirect to role' do
             destroy
             expect(response).to redirect_to role_path(role)
           end
-
         end
 
-        context "when capability data given and format json" do
+        context 'when capability data given and format json' do
           let(:attributes) do
-            {model: capability.model, require_ownership: capability.require_ownership,
+            { model: capability.model, require_ownership: capability.require_ownership,
               require_tenant_access: capability.require_tenant_access,
-              action: capability.action}
+              action: capability.action }
           end
 
           let(:destroy) { delete :destroy, role_id: role.id, capability: capability.attributes, format: :json }
 
-          it "should not delete a capability" do
+          it 'should not delete a capability' do
             expect do
               destroy
             end.not_to change(Capability, :count)
           end
 
-          it "should remove the capability from role" do
+          it 'should remove the capability from role' do
             destroy
             role.reload
             expect(role.capabilities).not_to include capability
           end
 
-          it "should render 200" do
+          it 'should render 200' do
             destroy
-            expect(response.code).to eq "200"
+            expect(response.code).to eq '200'
           end
         end
       end
-
-
     end
-
-
   end
-
 end

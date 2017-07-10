@@ -1,4 +1,4 @@
-require "strongbolt/generators/migration"
+require 'strongbolt/generators/migration'
 
 module Strongbolt
   module Generators
@@ -11,13 +11,12 @@ module Strongbolt
       source_root File.expand_path('../templates', __FILE__)
 
       def copy_fix
-        unless Strongbolt::UsersTenant.primary_key.nil?
-          puts"Strongbolt::UsersTenant already has a primary key, no need to use the fix"
+        if Strongbolt::UsersTenant.primary_key.nil?
+          copy_migration 'fix', 'fix_strongbolt_users_tenants_id'
         else
-          copy_migration "fix", "fix_strongbolt_users_tenants_id"
+          puts 'Strongbolt::UsersTenant already has a primary key, no need to use the fix'
         end
       end
-
     end
   end
 end

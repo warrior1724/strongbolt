@@ -1,4 +1,4 @@
-ENV["RAILS_ENV"] ||= 'test'
+ENV['RAILS_ENV'] ||= 'test'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -26,7 +26,7 @@ RSpec.configure do |config|
 end
 
 # The dummy application
-require File.expand_path("../dummy/config/environment", __FILE__)
+require File.expand_path('../dummy/config/environment', __FILE__)
 
 # require 'fixtures/application'
 # require 'fixtures/controllers'
@@ -40,7 +40,7 @@ require 'database_cleaner'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
-Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
@@ -89,10 +89,9 @@ RSpec.configure do |config|
     TestsMigrations.new.migrate :down
   end
 
-  Fabrication.configure do |config|
-    config.fabricator_path = 'spec/fabricators'
-    config.path_prefix = File.expand_path("../..", __FILE__)
+  Fabrication.configure do |fabrication_config|
+    fabrication_config.fabricator_path = 'spec/fabricators'
+    fabrication_config.path_prefix = File.expand_path('../..', __FILE__)
   end
-  puts File.expand_path("../..", __FILE__)
-
+  puts File.expand_path('../..', __FILE__)
 end

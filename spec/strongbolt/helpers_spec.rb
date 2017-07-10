@@ -1,12 +1,11 @@
-require "spec_helper"
-require "strongbolt/helpers"
+require 'spec_helper'
+require 'strongbolt/helpers'
 
 describe Strongbolt::Helpers do
-
   before do
     @user = User.create!
 
-    define("Helper", Object) do
+    define('Helper', Object) do
       include Strongbolt::Helpers
     end
 
@@ -19,25 +18,24 @@ describe Strongbolt::Helpers do
 
   let(:user) { @user }
   let(:helper) { Helper.new }
-  
-  describe "can?" do
+
+  describe 'can?' do
     before do
-      expect(user).to receive(:can?).with :find, "me"
+      expect(user).to receive(:can?).with :find, 'me'
     end
 
-    it "should call the user method" do
-      helper.can?(:find) { "me" }
-    end
-  end
-  
-  describe "cannot?" do
-    before do
-      expect(user).to receive(:can?).with :find, "me"
-    end
-
-    it "should call the user method" do
-      helper.cannot? :find, "me"
+    it 'should call the user method' do
+      helper.can?(:find) { 'me' }
     end
   end
 
+  describe 'cannot?' do
+    before do
+      expect(user).to receive(:can?).with :find, 'me'
+    end
+
+    it 'should call the user method' do
+      helper.cannot? :find, 'me'
+    end
+  end
 end

@@ -1,32 +1,31 @@
 module Strongbolt
   module BoltedController
-
     #
     # Maps controller actions to CRUD operations
     #
     ACTIONS_MAPPING = {
-      :index    => :find,
-      :show     => :find,
-      :edit     => :update,
-      :update   => :update,
-      :new      => :create,
-      :create   => :create,
-      :destroy  => :destroy
-    }
+      index: :find,
+      show: :find,
+      edit: :update,
+      update: :update,
+      new: :create,
+      create: :create,
+      destroy: :destroy
+    }.freeze
 
     module ClassMethods
       #
       # Allows defining a specific model for this controller,
       # if it cannot be infer from the controller name
       #
-      def model_for_authorization= model
+      def model_for_authorization=(model)
         @model_for_authorization = case model
-        when Class then model
-        when String then constantize_model(model)
-        when nil then nil
-        else
-          raise ArgumentError, "Model for authorization must be a Class or the name of the Class"
-        end
+                                   when Class then model
+                                   when String then constantize_model(model)
+                                   when nil then nil
+                                   else
+                                     raise ArgumentError, 'Model for authorization must be a Class or the name of the Class'
+                                   end
       end
 
       #
@@ -40,14 +39,14 @@ module Strongbolt
           # We cannot just do controller_name.classify as it doesn't keep the modules
           # We'll also check demoduling one module after the other for case when
           # the controller and/or the model have different modules
-          full_name = name.sub("Controller", "").classify
+          full_name = name.sub('Controller', '').classify
           # Split by ::
           splits = full_name.split('::')
           # While we still have modules to test
           while splits.size >= 1
             begin
               return constantize_model splits.join('::')
-            rescue Strongbolt::ModelNotFound => e
+            rescue Strongbolt::ModelNotFound
             ensure
               # Removes first element
               splits.shift
@@ -62,10 +61,8 @@ module Strongbolt
       # No argument given will skip for all actions,
       # and can be passed only: [] or except: []
       #
-      def skip_controller_authorization opts = {}
-        if Rails::VERSION::MAJOR >= 5
-          opts = { raise: false }.merge(opts)
-        end
+      def skip_controller_authorization(opts = {})
+        opts = { raise: false }.merge(opts) if Rails::VERSION::MAJOR >= 5
         skip_before_action :check_authorization, opts
       end
 
@@ -73,7 +70,7 @@ module Strongbolt
       # Skip all authorization checking for the controller,
       # or a subset of actions
       #
-      def skip_all_authorization opts = {}
+      def skip_all_authorization(opts = {})
         skip_controller_authorization opts
         around_action :disable_authorization, opts
       end
@@ -81,7 +78,7 @@ module Strongbolt
       #
       # Sets what CRUD operation match a specific sets of non RESTful actions
       #
-      [:find, :update, :create, :destroy].each do |operation|
+      %i[find update create destroy].each do |operation|
         define_method "authorize_as_#{operation}" do |*args|
           args.each do |action|
             actions_mapping[action] = operation
@@ -92,7 +89,7 @@ module Strongbolt
       #
       # Render without authorization, for better performance
       #
-      def render_without_authorization *actions
+      def render_without_authorization(*actions)
         self.actions_without_authorization = [*actions]
 
         class_eval do
@@ -100,11 +97,11 @@ module Strongbolt
           # It needs to be created afterward,
           # No idea why
           #
-          def render *args
+          def render(*args)
             if render_without_authorization?
-              Strongbolt.without_authorization { _render *args }
+              Strongbolt.without_authorization { _render(*args) }
             else
-              _render *args
+              _render(*args)
             end
           end
         end
@@ -130,24 +127,20 @@ module Strongbolt
       #
       # Try to constantize a class
       #
-      def constantize_model name
-        begin
-          name.constantize
-        rescue NameError
-          raise Strongbolt::ModelNotFound, "Model for controller #{controller_name} wasn't found"
-        end
+      def constantize_model(name)
+        name.constantize
+      rescue NameError
+        raise Strongbolt::ModelNotFound, "Model for controller #{controller_name} wasn't found"
       end
-
     end
 
     module InstanceMethods
-
-      def can? *args
-        Strongbolt.current_user.can? *args
+      def can?(*args)
+        Strongbolt.current_user.can?(*args)
       end
 
-      def cannot? *args
-        Strongbolt.current_user.cannot? *args
+      def cannot?(*args)
+        Strongbolt.current_user.cannot?(*args)
       end
 
       #
@@ -163,11 +156,11 @@ module Strongbolt
       #
       # DOESN'T WORK WHEN DEFINED HERE?
       #
-      def render *args
+      def render(*args)
         if render_without_authorization?
-          Strongbolt.without_authorization { _render *args }
+          Strongbolt.without_authorization { _render(*args) }
         else
-          _render *args
+          _render(*args)
         end
       end
 
@@ -183,7 +176,9 @@ module Strongbolt
       #
       def set_current_user
         # To be accessible in the model when not granted
+        # rubocop:disable Style/GlobalVars
         $request = request
+        # rubocop:enable Style/GlobalVars
         Grant::Status.without_grant do
           Strongbolt.current_user = send(:current_user) if respond_to?(:current_user)
         end
@@ -207,7 +202,7 @@ module Strongbolt
           begin
             # Current model
             # begin
-              obj = self.class.model_for_authorization
+            obj = self.class.model_for_authorization
             # rescue Strongbolt::ModelNotFound
             #   Strongbolt.logger.warn "No class found or defined for controller #{controller_name}"
             #   return
@@ -224,7 +219,7 @@ module Strongbolt
             raise e
           end
         else
-          Strongbolt.logger.warn "No authorization checking because no current user"
+          Strongbolt.logger.warn 'No authorization checking because no current user'
         end
       end
 
@@ -232,17 +227,15 @@ module Strongbolt
       # Catch Grant::Error and send Strongbolt::Unauthorized instead
       #
       def catch_grant_error
-        begin
-          yield
-        rescue Grant::Error => e
-          raise Strongbolt::Unauthorized, e.to_s
-        end
+        yield
+      rescue Grant::Error => e
+        raise Strongbolt::Unauthorized, e.to_s
       end
 
       #
       # Returns the CRUD operations based on the action name
       #
-      def crud_operation_of action
+      def crud_operation_of(action)
         operation = self.class.actions_mapping[action.to_sym]
         # If nothing find, we raise an error
         if operation.nil?
@@ -257,9 +250,8 @@ module Strongbolt
       #
       def disable_authorization
         Strongbolt.without_authorization { yield }
-        Strongbolt.logger.warn "Authorization were disabled!"
+        Strongbolt.logger.warn 'Authorization were disabled!'
       end
-
     end
 
     def self.included(receiver)
@@ -285,16 +277,13 @@ module Strongbolt
           if respond_to? :unauthorized
             unauthorized e
           else
-            raise Strongbolt::Unauthorized.new e.to_s
+            raise Strongbolt::Unauthorized, e.to_s
           end
         end
-
       end # End receiver class eval
 
       receiver.extend         ClassMethods
       receiver.send :include, InstanceMethods
-
     end # End self.included
-
   end
 end
