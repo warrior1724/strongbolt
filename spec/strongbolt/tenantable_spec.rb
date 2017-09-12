@@ -66,6 +66,7 @@ describe Strongbolt::Tenantable do
                                     class_name: 'TenantModel'
 
           has_many :other_child_models, class_name: 'OtherChildModel'
+          has_one :very_polymorphic_sibling_model, as: :model, class_name: 'VeryPolymorphicSiblingModel'
         end
 
         #
@@ -80,6 +81,7 @@ describe Strongbolt::Tenantable do
                                    class_name: 'UncleModel'
           has_one :sibling_model, class_name: 'SiblingModel'
           has_one :polymorphic_sibling_model, class_name: 'PolymorphicSiblingModel'
+
 
           has_and_belongs_to_many :bottom_models,
                                   join_table: 'model_models',
@@ -106,6 +108,7 @@ describe Strongbolt::Tenantable do
           self.table_name = 'child_models'
 
           belongs_to :other_child_model, foreign_key: :model_id
+          has_one :very_polymorphic_sibling_model, as: :other_model, class_name: 'VeryPolymorphicSiblingModel'
         end
 
         #
@@ -117,6 +120,18 @@ describe Strongbolt::Tenantable do
           belongs_to :model, polymorphic: true
           has_one :unowned_model, foreign_key: :model_id
         end
+
+        #
+        # Cousin of second degree child
+        #
+        define_model 'VeryPolymorphicSiblingModel' do
+          self.table_name = 'other_child_models'
+
+          belongs_to :model, polymorphic: true
+          belongs_to :other_model, polymorphic: true
+
+        end
+
 
         #
         # Top level model, parent of Tenant Model
@@ -192,6 +207,13 @@ describe Strongbolt::Tenantable do
         expect(Strongbolt::Capability.models).to be_present
         expect(Strongbolt::Capability.models.size).to be > 0
       end
+
+      it 'should not raise an error' do
+        expect do
+          TenantModel.send :tenant
+        end.not_to raise_error Strongbolt::DirectAssociationNotConfigured
+      end
+
     end
 
     #

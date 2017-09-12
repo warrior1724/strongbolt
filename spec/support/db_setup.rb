@@ -43,6 +43,15 @@ class TestsMigrations < ActiveRecord::Migration
       t.timestamps
     end
 
+    create_table :other_child_models, force: true do |t|
+      t.integer :model_id
+      t.string  :model_type
+      t.integer :other_model_id
+      t.string  :other_model_type
+
+      t.timestamps
+    end
+
     create_table :unowned_models, force: true do |t|
       t.string :name
       t.string :value
