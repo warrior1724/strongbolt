@@ -82,7 +82,6 @@ describe Strongbolt::Tenantable do
           has_one :sibling_model, class_name: 'SiblingModel'
           has_one :polymorphic_sibling_model, class_name: 'PolymorphicSiblingModel'
 
-
           has_and_belongs_to_many :bottom_models,
                                   join_table: 'model_models',
                                   class_name: 'BottomModel',
@@ -129,9 +128,7 @@ describe Strongbolt::Tenantable do
 
           belongs_to :model, polymorphic: true
           belongs_to :other_model, polymorphic: true
-
         end
-
 
         #
         # Top level model, parent of Tenant Model
@@ -211,9 +208,8 @@ describe Strongbolt::Tenantable do
       it 'should not raise an error' do
         expect do
           TenantModel.send :tenant
-        end.not_to raise_error Strongbolt::DirectAssociationNotConfigured
+        end.not_to raise_error
       end
-
     end
 
     #

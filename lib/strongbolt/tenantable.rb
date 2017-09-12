@@ -254,7 +254,7 @@ module Strongbolt
       # Returns the inverse of specified association, using what's given
       # as inverse_of or trying to guess it
       #
-      def inverse_of association
+      def inverse_of(association)
         # If specified in association configuration
         return association.inverse_of if association.has_inverse?
 
@@ -263,17 +263,17 @@ module Strongbolt
         # Else we need to find it, using the class as reference
         association.klass.reflect_on_all_associations.each do |assoc|
           # If the association is polymorphic
-          if assoc.options.has_key? :polymorphic
-            if association.options and association.options[:as] == assoc.name
+          if assoc.options.key? :polymorphic
+            if association.options && association.options[:as] == assoc.name
               return assoc
             end
             polymorphic_associations << assoc
           # If same class than the original source of the association
           elsif assoc.klass == association.active_record
 
-            Strongbolt.logger.debug "Selected inverse of #{association.name} between #{association.active_record} " +
-              "and #{association.klass} is #{assoc.name}.\n " +
-              "If not, please configure manually the inverse of #{association.name}\n"
+            Strongbolt.logger.debug "Selected inverse of #{association.name} between #{association.active_record} " \
+                                    "and #{association.klass} is #{assoc.name}.\n " \
+                                    "If not, please configure manually the inverse of #{association.name}\n"
 
             return assoc
           end
@@ -283,7 +283,7 @@ module Strongbolt
           return polymorphic_associations.first
         end
 
-        return nil
+        nil
       end
 
       #
