@@ -38,10 +38,20 @@ ActiveRecord::Base.send :include, Strongbolt::Bolted
 #
 # Default behavior, when method current_user defined on controller
 #
-if defined?(ActionController) && defined?(ActionController::Base)
+#if defined?(ActionController) && defined?(ActionController::Base)
+#
+#  ActionController::Base.send :include, Strongbolt::BoltedController
+#
+#end
 
-  ActionController::Base.send :include, Strongbolt::BoltedController
-
+# added by warrior1724 for rails-api only
+if defined?(ActionController)
+   if defined?(ActionController::Base)
+     ActionController::Base.send :include, Strongbolt::BoltedController
+   end
+   if defined?(ActionController::API)
+     ActionController::API.send :include, Strongbolt::BoltedController
+ end
 end
 
 #
