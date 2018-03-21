@@ -1,3 +1,3 @@
 module Strongbolt
-  VERSION = '0.3.14'.freeze
+  VERSION = '0.3.15'.freeze
 end
