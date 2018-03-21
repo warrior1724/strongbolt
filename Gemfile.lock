@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    strongbolt (0.3.13)
+    strongbolt (0.3.14)
       awesome_nested_set (~> 3.1.0)
       grant (~> 3.0)
       simple_form (~> 3.0)
@@ -45,8 +45,8 @@ GEM
       tzinfo (~> 1.1)
     arel (6.0.4)
     ast (2.3.0)
-    awesome_nested_set (3.1.1)
-      activerecord (>= 4.0.0, < 5.1)
+    awesome_nested_set (3.1.4)
+      activerecord (>= 4.0.0, < 5.3)
     builder (3.2.3)
     concurrent-ruby (1.0.5)
     crass (1.0.3)
@@ -138,9 +138,9 @@ GEM
     ruby-progressbar (1.8.1)
     shoulda-matchers (2.7.0)
       activesupport (>= 3.0.0)
-    simple_form (3.2.1)
-      actionpack (> 4, < 5.1)
-      activemodel (> 4, < 5.1)
+    simple_form (3.5.1)
+      actionpack (> 4, < 5.2)
+      activemodel (> 4, < 5.2)
     sprockets (3.7.1)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
