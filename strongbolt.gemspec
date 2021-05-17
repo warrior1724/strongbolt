@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'awesome_nested_set', '~> 3.1.0'
   spec.add_dependency 'grant', '~> 3.0'
-  spec.add_dependency 'simple_form', '~> 3.0'
+  spec.add_dependency 'simple_form', '~> 5.1.0'
 
   spec.add_development_dependency 'rails', '~> 4.2.0'
   spec.add_development_dependency 'bundler'
